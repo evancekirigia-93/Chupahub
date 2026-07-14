@@ -1,0 +1,1 @@
+import {categories,products} from '@/lib/data';export default function sitemap(){return['','checkout','admin'].map(p=>({url:`https://chupahub.com/${p}`})).concat(categories.map(c=>({url:`https://chupahub.com/category/${c.slug}`}))).concat(products.map(p=>({url:`https://chupahub.com/product/${p.slug}`})))}

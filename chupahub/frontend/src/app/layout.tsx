@@ -1,0 +1,3 @@
+import type {Metadata} from 'next';import './globals.css';import {Header,Footer} from '@/components/Site';
+export const metadata:Metadata={metadataBase:new URL('https://chupahub.com'),title:{default:'ChupaHub | Premium Liquor Delivery Kenya',template:'%s | ChupaHub'},description:'Premium black-and-gold liquor marketplace with whisky, gin, wine, champagne, mixers, loyalty points, M-Pesa and live delivery tracking.',openGraph:{title:'ChupaHub',description:'Premium liquor marketplace',type:'website'},robots:'index, follow'};
+export default function RootLayout({children}:{children:React.ReactNode}){return <html lang="en"><body><Header/>{children}<Footer/></body></html>}
