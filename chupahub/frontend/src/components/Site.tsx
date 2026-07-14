@@ -61,14 +61,14 @@ export function Footer() {
 
 export function CategoryGrid() {
   return (
-    <section className="mx-auto grid max-w-6xl grid-cols-3 gap-1 px-1 py-3 sm:gap-3 sm:px-4 md:grid-cols-4">
+    <section className="mx-auto grid max-w-6xl grid-cols-3 gap-2 px-3 py-4 sm:grid-cols-4 sm:gap-3 sm:px-4 lg:grid-cols-6">
       {categories.map((category) => (
-        <Link href={`/category/${category.slug}`} key={category.slug} className={`group relative h-40 overflow-hidden bg-gradient-to-br ${category.color} shadow-card sm:h-56 sm:rounded-2xl`}>
+        <Link href={`/category/${category.slug}`} key={category.slug} className={`group relative h-28 overflow-hidden rounded-2xl bg-gradient-to-br ${category.color} shadow-card sm:h-36`}>
           <img src={category.image} alt="" className="absolute inset-0 h-full w-full object-cover opacity-45 transition group-hover:scale-105" />
           <div className="tile-shade absolute inset-0" />
           <div className="absolute inset-x-0 bottom-0 p-3 text-center text-white">
-            <div className="mx-auto mb-2 grid h-16 w-16 place-items-center rounded-full bg-white/85 text-4xl shadow-card sm:h-24 sm:w-24 sm:text-6xl">{category.icon}</div>
-            <h2 className="text-2xl font-bold sm:text-3xl">{category.name}</h2>
+            <div className="mx-auto mb-2 grid h-10 w-10 place-items-center rounded-full bg-white/90 text-2xl shadow-card sm:h-14 sm:w-14 sm:text-3xl">{category.icon}</div>
+            <h2 className="text-lg font-bold sm:text-xl">{category.name}</h2>
           </div>
         </Link>
       ))}
@@ -82,7 +82,7 @@ export function ProductCard({ p }: { p: typeof products[number] }) {
   return (
     <Link href={`/product/${p.slug}`} className="block overflow-hidden rounded-2xl bg-white shadow-card transition hover:-translate-y-1 hover:shadow-orange">
       <div className="relative">
-        <img src={p.images[0]} alt={p.name} className="h-48 w-full object-cover" />
+        <img src={p.images[0]} alt={p.name} className="h-44 w-full object-contain bg-brand-soft p-3" />
         {discount > 0 && <span className="absolute right-3 top-3 rounded-full bg-brand-deep px-3 py-1 text-sm font-black text-white">-{discount}%</span>}
       </div>
       <div className="p-4">
