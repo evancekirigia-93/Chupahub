@@ -7,20 +7,20 @@ import { categories, money, products } from '@/lib/data';
 export function Header() {
   return (
     <header className="bg-brand-deep text-white shadow-orange">
-      <div className="mx-auto flex max-w-6xl items-center justify-between px-4 pt-5 text-sm font-semibold sm:pt-4">
+      <div className="mx-auto flex max-w-6xl items-center justify-between px-4 pt-2 text-xs font-semibold sm:pt-3">
         <span>Delivery within Nairobi: <strong>10-50min</strong></span>
-        <span className="rounded-full bg-white/15 px-3 py-1">18+</span>
+        <span className="rounded-full bg-white/15 px-2.5 py-0.5">18+</span>
       </div>
 
-      <nav className="mx-auto max-w-6xl px-4 py-4">
+      <nav className="mx-auto max-w-6xl px-4 py-3">
         <div className="flex items-center justify-between gap-3">
           <button className="flex items-center gap-2 rounded-xl px-1 py-2 text-sm uppercase tracking-wide focus-ring" aria-label="Open menu">
             <Menu size={32} />
             <span>Menu</span>
           </button>
 
-          <Link href="/" className="flex items-center gap-2 text-2xl font-black tracking-tight" aria-label="ChupaHub home">
-            <span className="grid h-10 w-10 place-items-center rounded-full bg-white text-brand-deep shadow-card">🍾</span>
+          <Link href="/" className="flex items-center gap-2 text-xl font-black tracking-tight" aria-label="ChupaHub home">
+            <span className="grid h-8 w-8 place-items-center rounded-full bg-white text-brand-deep shadow-card">🍾</span>
             <span>ChupaHub</span>
           </Link>
 
@@ -34,9 +34,9 @@ export function Header() {
           </div>
         </div>
 
-        <label className="mt-4 flex items-center gap-3 rounded-xl bg-white px-4 py-4 text-brand-ink shadow-card">
+        <label className="mt-3 flex items-center gap-2 rounded-full bg-white px-4 py-2.5 text-brand-ink shadow-card">
           <Search className="text-brand-orange" />
-          <input className="w-full bg-transparent text-lg outline-none placeholder:text-neutral-500" placeholder="Search products..." aria-label="Search products" />
+          <input className="w-full bg-transparent text-sm outline-none placeholder:text-neutral-500" placeholder="Search products..." aria-label="Search products" />
         </label>
       </nav>
     </header>
@@ -67,7 +67,7 @@ export function CategoryGrid() {
           <img src={category.image} alt="" className="absolute inset-0 h-full w-full object-cover opacity-45 transition group-hover:scale-105" />
           <div className="tile-shade absolute inset-0" />
           <div className="absolute inset-x-0 bottom-0 p-3 text-center text-white">
-            <div className="mx-auto mb-2 grid h-10 w-10 place-items-center rounded-full bg-white/90 text-2xl shadow-card sm:h-14 sm:w-14 sm:text-3xl">{category.icon}</div>
+            <div className="mx-auto mb-2 grid h-8 w-8 place-items-center rounded-full bg-white/90 text-2xl shadow-card sm:h-14 sm:w-14 sm:text-3xl">{category.icon}</div>
             <h2 className="text-lg font-bold sm:text-xl">{category.name}</h2>
           </div>
         </Link>
@@ -81,19 +81,19 @@ export function ProductCard({ p }: { p: typeof products[number] }) {
 
   return (
     <Link href={`/product/${p.slug}`} className="block bg-transparent transition hover:-translate-y-1">
-      <div className="relative flex h-44 items-end justify-center">
-        <img src={p.images[0]} alt={p.name} className="h-40 w-full object-contain" />
-        <button className="absolute right-0 top-3 rounded-full bg-brand-deep px-4 py-2 text-sm font-black text-white shadow-orange">+ Add</button>
+      <div className="relative flex h-36 items-end justify-center">
+        <img src={p.images[0]} alt={p.name} className="h-32 w-full object-contain" />
+        <button className="absolute right-0 top-3 rounded-full bg-brand-deep px-3 py-1.5 text-xs font-black text-white shadow-orange">+ Add</button>
       </div>
       <div className="pt-2">
         <div className="flex items-center gap-2">
-          <b className="rounded-md bg-yellow-300 px-2 py-0.5 text-xl leading-none text-brand-ink"><span className="text-[11px]">KSh</span> {p.price.toLocaleString('en-KE')}</b>
+          <b className="rounded-md bg-yellow-300 px-2 py-0.5 text-base leading-none text-brand-ink"><span className="text-[11px]">KSh</span> {p.price.toLocaleString('en-KE')}</b>
           {p.oldPrice && <s className="text-sm text-neutral-500">{money(p.oldPrice)}</s>}
         </div>
         {discount > 0 && <p className="mt-1 text-sm font-black text-green-700">{discount}% off</p>}
-        <h3 className="mt-1 text-[15px] font-medium leading-tight text-brand-ink">{p.name}</h3>
-        <p className="mt-1 text-sm text-neutral-600">{p.country} · {p.bottleSize} · {p.abv}% ABV</p>
-        <p className="mt-2 text-sm font-bold text-green-700">▥ Many in stock</p>
+        <h3 className="mt-1 text-[13px] font-medium leading-tight text-brand-ink">{p.name}</h3>
+        <p className="mt-1 text-xs text-neutral-600">{p.country} · {p.bottleSize} · {p.abv}% ABV</p>
+        <p className="mt-1.5 text-xs font-bold text-green-700">▥ Many in stock</p>
       </div>
     </Link>
   );
@@ -103,7 +103,7 @@ export function ProductRail({ title }: { title: string }) {
   return (
     <section className="mx-auto max-w-6xl px-4 py-8">
       <div className="mb-4 flex items-center justify-between">
-        <h2 className="text-2xl font-extrabold tracking-tight text-brand-ink">{title}</h2>
+        <h2 className="text-xl font-extrabold tracking-tight text-brand-ink">{title}</h2>
         <Link href="/category/whisky" className="font-bold text-brand-orange">View all</Link>
       </div>
       <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
