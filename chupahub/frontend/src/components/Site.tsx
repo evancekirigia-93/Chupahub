@@ -92,7 +92,7 @@ export function ProductCard({ p }: { p: typeof products[number] }) {
           {p.oldPrice && <s className="text-sm text-neutral-500">{money(p.oldPrice)}</s>}
         </div>
         <h3 className="mt-1 text-[13px] font-medium leading-tight text-brand-ink">{p.name}</h3>
-        <p className="mt-1 text-xs text-neutral-600">{p.country} · {p.bottleSize} · {p.abv}% ABV</p>
+        <p className="mt-0.5 text-[10px] uppercase tracking-wide text-neutral-500">{p.abv}% ABV</p>
       </div>
     </Link>
   );
