@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { Heart, Menu, Search, ShoppingBag, Star, UserCircle } from 'lucide-react';
+import { Heart, Menu, Search, ShoppingBag, UserCircle } from 'lucide-react';
 import { categories, money, products } from '@/lib/data';
 
 export function Header() {
@@ -80,20 +80,20 @@ export function ProductCard({ p }: { p: typeof products[number] }) {
   const discount = p.oldPrice ? Math.round((1 - p.price / p.oldPrice) * 100) : 0;
 
   return (
-    <Link href={`/product/${p.slug}`} className="block overflow-hidden rounded-2xl bg-white shadow-card transition hover:-translate-y-1 hover:shadow-orange">
-      <div className="relative">
-        <img src={p.images[0]} alt={p.name} className="h-44 w-full object-contain bg-brand-soft p-3" />
-        {discount > 0 && <span className="absolute right-3 top-3 rounded-full bg-brand-deep px-3 py-1 text-sm font-black text-white">-{discount}%</span>}
+    <Link href={`/product/${p.slug}`} className="block bg-transparent transition hover:-translate-y-1">
+      <div className="relative flex h-44 items-end justify-center">
+        <img src={p.images[0]} alt={p.name} className="h-40 w-full object-contain" />
+        <button className="absolute right-0 top-3 rounded-full bg-brand-deep px-4 py-2 text-sm font-black text-white shadow-orange">+ Add</button>
       </div>
-      <div className="p-4">
-        <div className="flex justify-between text-sm font-semibold text-brand-orange"><span>{p.brand}</span><span className="flex items-center gap-1"><Star size={15} fill="currentColor" />{p.rating}</span></div>
-        <h3 className="mt-1 text-lg font-black text-brand-ink">{p.name}</h3>
-        <p className="mt-1 line-clamp-2 text-sm text-neutral-600">{p.description}</p>
-        <div className="mt-3 flex items-end gap-2">
-          <b className="text-xl text-brand-deep">{money(p.price)}</b>
-          {p.oldPrice && <s className="text-sm text-neutral-400">{money(p.oldPrice)}</s>}
+      <div className="pt-2">
+        <div className="flex items-center gap-2">
+          <b className="rounded-md bg-yellow-300 px-2 py-0.5 text-xl leading-none text-brand-ink"><span className="text-[11px]">KSh</span> {p.price.toLocaleString('en-KE')}</b>
+          {p.oldPrice && <s className="text-sm text-neutral-500">{money(p.oldPrice)}</s>}
         </div>
-        <button className="orange-gradient mt-4 w-full rounded-xl py-3 font-black text-white">Add to Cart</button>
+        {discount > 0 && <p className="mt-1 text-sm font-black text-green-700">{discount}% off</p>}
+        <h3 className="mt-1 text-[15px] font-medium leading-tight text-brand-ink">{p.name}</h3>
+        <p className="mt-1 text-sm text-neutral-600">{p.country} · {p.bottleSize} · {p.abv}% ABV</p>
+        <p className="mt-2 text-sm font-bold text-green-700">▥ Many in stock</p>
       </div>
     </Link>
   );
@@ -103,7 +103,7 @@ export function ProductRail({ title }: { title: string }) {
   return (
     <section className="mx-auto max-w-6xl px-4 py-8">
       <div className="mb-4 flex items-center justify-between">
-        <h2 className="text-3xl font-black text-brand-ink">{title}</h2>
+        <h2 className="text-2xl font-extrabold tracking-tight text-brand-ink">{title}</h2>
         <Link href="/category/whisky" className="font-bold text-brand-orange">View all</Link>
       </div>
       <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
