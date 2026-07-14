@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Checkout | ChupaHub</title><link rel="stylesheet" href="assets/css/styles.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+</head>
+<body>
+<div class="topbar">Secure checkout</div>
+<header class="header"><a class="logo" href="index.html">CHUPA<span>HUB</span></a><a href="index.html">Continue shopping</a></header>
+<main class="checkout-layout section">
+  <section>
+    <h1>Checkout</h1>
+    <form id="checkoutForm" class="checkout-form">
+      <h3>Customer details</h3>
+      <div class="form-grid"><input name="name" placeholder="Full name" required><input name="phone" placeholder="Phone number" required><input name="email" type="email" placeholder="Email address"><input name="address" placeholder="Building / estate" required></div>
+      <h3>Choose delivery location</h3>
+      <p class="muted">Click the map to place the delivery pin.</p>
+      <div id="map"></div>
+      <div class="delivery-summary"><span>Distance</span><strong id="distanceText">Choose a location</strong><span>Delivery fee</span><strong id="deliveryFeeText">KSh 0</strong></div>
+      <h3>Payment method</h3>
+      <label class="payment-option"><input type="radio" name="payment_method" value="mpesa" checked> M-Pesa</label>
+      <label class="payment-option"><input type="radio" name="payment_method" value="cod"> Cash on delivery</label>
+      <button class="primary-btn full" type="submit">Place order</button>
+      <p id="checkoutMessage"></p>
+    </form>
+  </section>
+  <aside class="order-summary"><h2>Order summary</h2><div id="checkoutItems"></div><div class="cart-total"><span>Subtotal</span><strong id="checkoutSubtotal">KSh 0</strong></div><div class="cart-total"><span>Delivery</span><strong id="checkoutDelivery">KSh 0</strong></div><div class="cart-total grand"><span>Total</span><strong id="checkoutTotal">KSh 0</strong></div><h3>You may also like</h3><div id="checkoutSuggestions"></div></aside>
+</main>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="assets/js/config.js"></script><script src="assets/js/app.js"></script>
+</body></html>
