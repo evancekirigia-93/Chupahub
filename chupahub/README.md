@@ -13,3 +13,7 @@ Production-ready premium liquor e-commerce platform split into independent `fron
 ## Deployment
 Frontend: set `NEXT_PUBLIC_API_BASE_URL`, run `npm install && npm run build`, deploy `chupahub/frontend` to Vercel.
 Backend: upload `chupahub/backend` to hosting, point document root to `public/`, run Composer, import `database/schema.sql`, configure environment variables in cPanel.
+
+
+## Static preview
+The repository root HTML pages include the same premium orange-and-white theme via `assets/css/styles.css` and `assets/js/app.js` so simple static previews do not render unstyled.
