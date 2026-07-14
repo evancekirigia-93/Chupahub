@@ -7,20 +7,20 @@ import { categories, money, products } from '@/lib/data';
 export function Header() {
   return (
     <header className="bg-brand-deep text-white shadow-orange">
-      <div className="mx-auto flex max-w-6xl items-center justify-between px-4 pt-2 text-xs font-semibold sm:pt-3">
+      <div className="mx-auto flex max-w-6xl items-center justify-between px-4 pt-1 text-[11px] font-semibold sm:pt-3">
         <span>Delivery within Nairobi: <strong>10-50min</strong></span>
         <span className="rounded-full bg-white/15 px-2.5 py-0.5">18+</span>
       </div>
 
-      <nav className="mx-auto max-w-6xl px-4 py-3">
+      <nav className="mx-auto max-w-6xl px-4 py-2">
         <div className="flex items-center justify-between gap-3">
           <button className="flex items-center gap-2 rounded-xl px-1 py-2 text-sm uppercase tracking-wide focus-ring" aria-label="Open menu">
             <Menu size={32} />
             <span>Menu</span>
           </button>
 
-          <Link href="/" className="flex items-center gap-2 text-xl font-black tracking-tight" aria-label="ChupaHub home">
-            <span className="grid h-8 w-8 place-items-center rounded-full bg-white text-brand-deep shadow-card">🍾</span>
+          <Link href="/" className="flex items-center gap-2 text-lg font-black tracking-tight" aria-label="ChupaHub home">
+            <span className="grid h-7 w-7 place-items-center rounded-full bg-white text-brand-deep shadow-card">🍾</span>
             <span>ChupaHub</span>
           </Link>
 
@@ -34,7 +34,7 @@ export function Header() {
           </div>
         </div>
 
-        <label className="mt-3 flex items-center gap-2 rounded-full bg-white px-4 py-2.5 text-brand-ink shadow-card">
+        <label className="mt-2 flex items-center gap-2 rounded-full bg-white px-4 py-2 text-brand-ink shadow-card">
           <Search className="text-brand-orange" />
           <input className="w-full bg-transparent text-sm outline-none placeholder:text-neutral-500" placeholder="Search products..." aria-label="Search products" />
         </label>
@@ -67,7 +67,7 @@ export function CategoryGrid() {
           <img src={category.image} alt="" className="absolute inset-0 h-full w-full object-cover opacity-45 transition group-hover:scale-105" />
           <div className="tile-shade absolute inset-0" />
           <div className="absolute inset-x-0 bottom-0 p-3 text-center text-white">
-            <div className="mx-auto mb-2 grid h-8 w-8 place-items-center rounded-full bg-white/90 text-2xl shadow-card sm:h-14 sm:w-14 sm:text-3xl">{category.icon}</div>
+            <div className="mx-auto mb-2 grid h-7 w-7 place-items-center rounded-full bg-white/90 text-2xl shadow-card sm:h-14 sm:w-14 sm:text-3xl">{category.icon}</div>
             <h2 className="text-lg font-bold sm:text-xl">{category.name}</h2>
           </div>
         </Link>
@@ -83,17 +83,16 @@ export function ProductCard({ p }: { p: typeof products[number] }) {
     <Link href={`/product/${p.slug}`} className="block bg-transparent transition hover:-translate-y-1">
       <div className="relative flex h-36 items-end justify-center">
         <img src={p.images[0]} alt={p.name} className="h-32 w-full object-contain" />
-        <button className="absolute right-0 top-3 rounded-full bg-brand-deep px-3 py-1.5 text-xs font-black text-white shadow-orange">+ Add</button>
+        <button className="absolute right-0 top-3 rounded-full bg-brand-deep px-3 py-1.5 text-xs font-black text-white shadow-orange">+</button>
       </div>
       <div className="pt-2">
         <div className="flex items-center gap-2">
-          <b className="rounded-md bg-yellow-300 px-2 py-0.5 text-base leading-none text-brand-ink"><span className="text-[11px]">KSh</span> {p.price.toLocaleString('en-KE')}</b>
+          <b className="rounded-md bg-brand-deep px-2 py-0.5 text-base leading-none text-white"><span className="text-[11px] text-white">KSh</span> {p.price.toLocaleString('en-KE')}</b>
+          {discount > 0 && <span className="text-xs font-black text-brand-deep">{discount}% off</span>}
           {p.oldPrice && <s className="text-sm text-neutral-500">{money(p.oldPrice)}</s>}
         </div>
-        {discount > 0 && <p className="mt-1 text-sm font-black text-green-700">{discount}% off</p>}
         <h3 className="mt-1 text-[13px] font-medium leading-tight text-brand-ink">{p.name}</h3>
         <p className="mt-1 text-xs text-neutral-600">{p.country} · {p.bottleSize} · {p.abv}% ABV</p>
-        <p className="mt-1.5 text-xs font-bold text-green-700">▥ Many in stock</p>
       </div>
     </Link>
   );
