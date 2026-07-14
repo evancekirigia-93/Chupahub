@@ -1,1 +1,35 @@
-@tailwind base;@tailwind components;@tailwind utilities;:root{color-scheme:dark}body{background:#080808;color:#fff}.gold-gradient{background:linear-gradient(135deg,#f7e7a6,#d4af37,#8a6d1d)}.glass{background:rgba(255,255,255,.06);backdrop-filter:blur(16px);border:1px solid rgba(212,175,55,.18)}.animate-float{animation:float 6s ease-in-out infinite}@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: #fff7ed;
+  color: #21140f;
+}
+
+.app-shell {
+  background:
+    radial-gradient(circle at top left, rgba(255, 255, 255, .72), transparent 32rem),
+    linear-gradient(180deg, #d71910 0%, #f05a1a 13rem, #fff7ed 13rem, #ffffff 100%);
+}
+
+.orange-gradient {
+  background: linear-gradient(135deg, #ff8a3d 0%, #f05a1a 45%, #d71910 100%);
+}
+
+.tile-shade {
+  background: linear-gradient(180deg, transparent 35%, rgba(0, 0, 0, .58) 100%);
+}
+
+.focus-ring:focus-visible {
+  outline: 3px solid rgba(240, 90, 26, .42);
+  outline-offset: 3px;
+}

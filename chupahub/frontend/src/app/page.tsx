@@ -1,2 +1,40 @@
-import Link from 'next/link';import {CategoryGrid,ProductRail} from '@/components/Site';import {slides} from '@/lib/data';
-export default function Home(){return <main><section className="relative h-[520px] overflow-hidden"><img src={slides[0].image} alt="Premium bottles" className="absolute inset-0 h-full w-full object-cover opacity-60"/><div className="absolute inset-0 bg-gradient-to-r from-black via-black/65 to-transparent"/><div className="relative max-w-7xl mx-auto px-4 h-full flex items-center"><div className="max-w-2xl animate-float"><p className="text-gold font-bold">ADMIN-EDITABLE HERO CAROUSEL</p><h1 className="text-5xl md:text-7xl font-black">{slides[0].title}</h1><p className="text-xl text-white/80 mt-4">{slides[0].description}</p><Link href={slides[0].href} className="inline-block mt-8 gold-gradient text-black font-black px-8 py-4 rounded-2xl">{slides[0].cta}</Link></div></div></section><CategoryGrid/><ProductRail title="Top Sellers"/><ProductRail title="New Arrivals"/><ProductRail title="Featured Whisky"/><ProductRail title="Featured Wines"/><ProductRail title="Featured Gin"/><ProductRail title="Featured Beer"/><ProductRail title="Offers"/><section className="max-w-7xl mx-auto px-4 py-12 grid md:grid-cols-3 gap-5"><div className="glass p-6 rounded-3xl"><b>Brands</b><p>Jameson, Tanqueray, Moët, Schweppes and more.</p></div><div className="glass p-6 rounded-3xl"><b>Customer Reviews</b><p>“Fast, premium, reliable.”</p></div><div className="glass p-6 rounded-3xl"><b>SEO Articles</b><p>Admin-editable buying guides and FAQs.</p></div></section></main>}
+import Link from 'next/link';
+import { CategoryGrid, ProductRail } from '@/components/Site';
+import { slides } from '@/lib/data';
+
+export default function Home() {
+  const hero = slides[0];
+
+  return (
+    <main>
+      <section className="mx-auto max-w-6xl overflow-hidden bg-white shadow-card sm:mt-4 sm:rounded-3xl">
+        <div className="relative h-48 sm:h-80">
+          <img src={hero.image} alt="ChupaHub promotion" className="absolute inset-0 h-full w-full object-cover" />
+          <div className="absolute inset-0 bg-gradient-to-r from-black/55 via-black/15 to-transparent" />
+          <div className="absolute right-4 top-4 rotate-[-8deg] rounded-xl bg-yellow-300 px-4 py-3 text-center text-2xl font-black uppercase leading-none text-black shadow-card sm:text-5xl">
+            Buy 1<br />Get 1<br />Free
+          </div>
+          <div className="absolute bottom-5 left-5 max-w-md text-white">
+            <p className="font-bold uppercase tracking-wide">Orange deals every day</p>
+            <h1 className="text-3xl font-black sm:text-5xl">{hero.title}</h1>
+            <p className="mt-2 hidden text-white/90 sm:block">{hero.description}</p>
+            <Link href={hero.href} className="mt-4 inline-block rounded-lg bg-brand-deep px-5 py-3 font-black uppercase text-white shadow-card">{hero.cta}</Link>
+          </div>
+        </div>
+      </section>
+
+      <CategoryGrid />
+
+      <ProductRail title="Top Sellers" />
+      <ProductRail title="New Arrivals" />
+      <ProductRail title="Customers also bought" />
+      <ProductRail title="Party Offers" />
+
+      <section className="mx-auto grid max-w-6xl gap-4 px-4 py-8 md:grid-cols-3">
+        <article className="rounded-2xl bg-white p-6 shadow-card"><b className="text-brand-deep">WhatsApp ordering</b><p className="mt-2 text-neutral-600">Start an assisted order in one tap and complete checkout by M-Pesa.</p></article>
+        <article className="rounded-2xl bg-white p-6 shadow-card"><b className="text-brand-deep">Live tracking</b><p className="mt-2 text-neutral-600">Track packing, driver assignment and delivery ETA in real time.</p></article>
+        <article className="rounded-2xl bg-white p-6 shadow-card"><b className="text-brand-deep">Loyalty rewards</b><p className="mt-2 text-neutral-600">Earn points on every order and redeem vouchers on future purchases.</p></article>
+      </section>
+    </main>
+  );
+}
