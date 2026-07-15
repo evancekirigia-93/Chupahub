@@ -7,12 +7,12 @@ import { categories, money, products } from '@/lib/data';
 export function Header() {
   return (
     <header className="bg-brand-deep text-white shadow-orange">
-      <div className="mx-auto flex max-w-6xl items-center justify-between px-4 pt-1 text-[11px] font-semibold sm:pt-3">
+      <div className="mx-auto flex max-w-none items-center justify-between px-4 pt-1 text-[11px] font-semibold sm:pt-3">
         <span>Delivery within Nairobi: <strong>10-50min</strong></span>
         <span className="rounded-full bg-white/15 px-2.5 py-0.5">18+</span>
       </div>
 
-      <nav className="mx-auto max-w-6xl px-4 py-2">
+      <nav className="mx-auto max-w-none px-6 py-2">
         <div className="flex items-center justify-between gap-3">
           <button className="flex items-center gap-2 rounded-xl px-1 py-2 text-sm uppercase tracking-wide focus-ring" aria-label="Open menu">
             <Menu size={32} />
@@ -46,7 +46,7 @@ export function Header() {
 export function Footer() {
   return (
     <footer className="mt-16 bg-brand-ink text-white">
-      <div className="mx-auto grid max-w-6xl gap-8 px-4 py-12 md:grid-cols-4">
+      <div className="mx-auto grid max-w-none gap-8 px-4 py-12 md:grid-cols-4">
         <div className="md:col-span-2">
           <h3 className="text-3xl font-black text-brand-orange">ChupaHub</h3>
           <p className="mt-3 max-w-md text-white/75">Orange-and-white premium liquor delivery with loyalty points, AI recommendations, WhatsApp ordering and live tracking.</p>
@@ -61,7 +61,7 @@ export function Footer() {
 
 export function CategoryGrid() {
   return (
-    <section className="mx-auto grid max-w-6xl grid-cols-3 gap-2 px-3 py-4 sm:grid-cols-4 sm:gap-3 sm:px-4 lg:grid-cols-6">
+    <section className="mx-auto grid max-w-none grid-cols-3 gap-2 px-3 py-4 sm:grid-cols-4 sm:gap-3 sm:px-4 lg:grid-cols-6">
       {categories.map((category) => (
         <Link href={`/category/${category.slug}`} key={category.slug} className={`group relative h-28 overflow-hidden rounded-2xl bg-gradient-to-br ${category.color} shadow-card sm:h-36`}>
           <img src={category.image} alt="" className="absolute inset-0 h-full w-full object-cover opacity-45 transition group-hover:scale-105" />
@@ -100,7 +100,7 @@ export function ProductCard({ p }: { p: typeof products[number] }) {
 
 export function ProductRail({ title }: { title: string }) {
   return (
-    <section className="mx-auto max-w-6xl px-4 py-8">
+    <section className="mx-auto max-w-none px-6 py-8">
       <div className="mb-4 flex items-center justify-between">
         <h2 className="text-xl font-extrabold tracking-tight text-brand-ink">{title}</h2>
         <Link href="/category/whisky" className="font-bold text-brand-orange">View all</Link>
