@@ -18,3 +18,10 @@
 - Schedule backups for MySQL and uploaded images.
 - Rotate `JWT_SECRET` and M-Pesa credentials periodically.
 - Keep Composer dependencies updated and monitor audit logs.
+
+## Supabase setup
+1. In Supabase SQL Editor, run `supabase/migrations/20260715120000_chupahub_core.sql`.
+2. In Authentication, create an admin user, then insert that user's UUID into `public.admin_users`.
+3. In Storage, confirm the public buckets `product-images` and `homepage-banners` exist.
+4. In Vercel, set `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY` for the frontend project, then redeploy once.
+5. After deployment, content changes in `/admin` write to Supabase and appear on the live website automatically after the configured 30-second revalidation window.
