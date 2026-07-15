@@ -7,13 +7,13 @@ import { categories, money, products } from '@/lib/data';
 export function Header() {
   return (
     <header className="bg-brand-deep text-white shadow-orange">
-      <div className="mx-auto flex max-w-none items-center justify-between px-4 pt-1 text-[11px] font-semibold sm:pt-3">
+      <div className="mx-auto flex max-w-none items-center justify-between px-3 pt-1 text-[11px] font-semibold sm:px-6 sm:pt-3">
         <span>Delivery within Nairobi: <strong>10-50min</strong></span>
         <span className="rounded-full bg-white/15 px-2.5 py-0.5">18+</span>
       </div>
 
-      <nav className="mx-auto max-w-none px-6 py-2">
-        <div className="flex items-center justify-between gap-3">
+      <nav className="mx-auto max-w-none px-3 py-2 sm:px-6">
+        <div className="flex flex-wrap items-center justify-between gap-2 sm:gap-3">
           <button className="flex items-center gap-2 rounded-xl px-1 py-2 text-sm uppercase tracking-wide focus-ring" aria-label="Open menu">
             <Menu size={32} />
             <span>Menu</span>
@@ -24,7 +24,7 @@ export function Header() {
             <span>ChupaHub</span>
           </Link>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3">
             <Link className="focus-ring" href="/account" aria-label="Account"><UserCircle size={30} /></Link>
             <Heart className="hidden sm:block" aria-label="Wishlist" />
             <Link href="/checkout" className="relative rounded-xl border-2 border-white px-3 py-2 focus-ring" aria-label="Cart">
@@ -34,7 +34,7 @@ export function Header() {
           </div>
         </div>
 
-        <label className="mt-2 flex items-center gap-2 rounded-full bg-white px-4 py-2 text-brand-ink shadow-card">
+        <label className="mt-2 flex min-w-0 flex-1 basis-full items-center gap-2 rounded-full bg-white px-3 py-2 text-brand-ink shadow-card sm:px-4">
           <Search className="text-brand-orange" />
           <input className="w-full bg-transparent text-sm outline-none placeholder:text-neutral-500" placeholder="Search products..." aria-label="Search products" />
         </label>
@@ -61,7 +61,7 @@ export function Footer() {
 
 export function CategoryGrid() {
   return (
-    <section className="mx-auto grid max-w-none grid-cols-3 gap-2 px-3 py-4 sm:grid-cols-4 sm:gap-3 sm:px-4 lg:grid-cols-6">
+    <section className="mx-auto grid max-w-none grid-cols-3 gap-2 px-3 py-4 sm:grid-cols-4 sm:gap-3 sm:px-4 md:grid-cols-6 xl:grid-cols-8">
       {categories.map((category) => (
         <Link href={`/category/${category.slug}`} key={category.slug} className={`group relative h-28 overflow-hidden rounded-2xl bg-gradient-to-br ${category.color} shadow-card sm:h-36`}>
           <img src={category.image} alt="" className="absolute inset-0 h-full w-full object-cover opacity-45 transition group-hover:scale-105" />
@@ -105,7 +105,7 @@ export function ProductRail({ title }: { title: string }) {
         <h2 className="text-xl font-extrabold tracking-tight text-brand-ink">{title}</h2>
         <Link href="/category/whisky" className="font-bold text-brand-orange">View all</Link>
       </div>
-      <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
+      <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-5 xl:grid-cols-8">
         {products.map((product) => <ProductCard key={product.id} p={product} />)}
       </div>
     </section>
