@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>https://chupahub.com/</loc>
+  </url>
+  <url>
+    <loc>https://chupahub.com/category.html?slug=whisky</loc>
+  </url>
+  <url>
+    <loc>https://chupahub.com/category.html?slug=gin</loc>
+  </url>
+  <url>
+    <loc>https://chupahub.com/category.html?slug=wine</loc>
+  </url>
+  <url>
+    <loc>https://chupahub.com/category.html?slug=tequila</loc>
+  </url>
+  <url>
+    <loc>https://chupahub.com/category.html?slug=beer</loc>
+  </url>
+  <url>
+    <loc>https://chupahub.com/category.html?slug=extras</loc>
+  </url>
+  <url>
+    <loc>https://chupahub.com/blog.html</loc>
+  </url>
+</urlset>
