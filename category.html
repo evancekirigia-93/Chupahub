@@ -7,9 +7,11 @@
 <body>
 <div class="topbar">Fast Nairobi delivery • Call/WhatsApp: 0700 000 000</div>
 <header class="header"><a class="logo" href="index.html">CHUPA<span>HUB</span></a><a href="index.html">Home</a><button id="cartButton">Cart (<span id="cartCount">0</span>)</button></header>
-<main class="section">
-  <div class="breadcrumbs"><a href="index.html">Home</a> / <span id="categoryName">Category</span></div>
-  <div class="section-heading"><div><p class="eyebrow">Collection</p><h1 id="categoryTitle">Products</h1></div></div>
+<main class="section category-page">
+  <section class="collection-hero">
+    <div class="breadcrumbs"><a href="index.html">Home</a><span>/</span><span id="categoryName">Category</span></div>
+    <div class="collection-title-row"><span class="collection-mark"></span><div><p class="eyebrow">Collection</p><h1 id="categoryTitle">Products</h1></div></div>
+  </section>
   <div class="filters"><input id="categorySearch" placeholder="Search this category"><select id="sortSelect"><option value="">Sort</option><option value="price_asc">Price: Low to high</option><option value="price_desc">Price: High to low</option></select></div>
   <div class="product-grid" id="categoryProducts"></div>
 </main>
