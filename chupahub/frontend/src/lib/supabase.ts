@@ -1,3 +1,5 @@
+import { categories as fallbackCategories, products as fallbackProducts, slides as fallbackSlides } from './data';
+
 export const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://zoiafygddwqwjqvaahtb.supabase.co';
 export const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
 
@@ -22,25 +24,49 @@ async function supabaseFetch<T>(path: string, init?: RequestInit): Promise<T[]> 
 }
 
 export async function getCategories() {
-  return supabaseFetch<DbCategory>('categories?select=*&is_active=eq.true&order=sort_order.asc,name.asc');
+  const rows = await supabaseFetch<DbCategory>('categories?select=*&is_active=eq.true&order=sort_order.asc,name.asc');
+  return rows.length ? rows : fallbackCategories.map((category, index) => ({ id: String(index + 1), name: category.name, slug: category.slug, icon: category.icon, image_url: category.image, sort_order: index + 1 }));
 }
 
 export async function getBanners() {
-  return supabaseFetch<DbBanner>('homepage_banners?select=*&is_active=eq.true&order=sort_order.asc,created_at.desc');
+  const rows = await supabaseFetch<DbBanner>('homepage_banners?select=*&is_active=eq.true&order=sort_order.asc,created_at.desc');
+  return rows.length ? rows : fallbackSlides.map((slide, index) => ({ id: String(index + 1), title: slide.title, subtitle: slide.description, image_url: slide.image, button_label: slide.cta, button_url: slide.href, sort_order: index + 1 }));
 }
+
+const fallbackDbProducts = fallbackProducts.map((product) => ({
+  id: String(product.id),
+  name: product.name,
+  slug: product.slug,
+  description: product.description,
+  abv: product.abv,
+  country: product.country,
+  bottle_size: product.bottleSize,
+  price: product.price,
+  old_price: product.oldPrice,
+  stock: product.stock,
+  image_url: product.images[0],
+  gallery_urls: product.images,
+  is_top_seller: true,
+  is_new_arrival: true,
+  is_featured: true,
+  categories: { name: product.category, slug: product.category },
+  brands: { name: product.brand, country: product.country },
+}));
 
 export async function getProducts(filter = '') {
   const base = 'products?select=*,categories(name,slug),brands(name,country)&is_active=eq.true&order=created_at.desc';
-  return supabaseFetch<DbProduct>(`${base}${filter}`);
+  const rows = await supabaseFetch<DbProduct>(`${base}${filter}`);
+  return rows.length ? rows : fallbackDbProducts;
 }
 
 export async function getProductsByCategory(slug: string) {
-  return supabaseFetch<DbProduct>(`products?select=*,categories!inner(name,slug),brands(name,country)&is_active=eq.true&categories.slug=eq.${encodeURIComponent(slug)}&order=created_at.desc`);
+  const rows = await supabaseFetch<DbProduct>(`products?select=*,categories!inner(name,slug),brands(name,country)&is_active=eq.true&categories.slug=eq.${encodeURIComponent(slug)}&order=created_at.desc`);
+  return rows.length ? rows : fallbackDbProducts.filter((product) => product.categories?.slug === slug);
 }
 
 export async function getProduct(slug: string) {
   const rows = await supabaseFetch<DbProduct>(`products?select=*,categories(name,slug),brands(name,country)&slug=eq.${encodeURIComponent(slug)}&limit=1`);
-  return rows[0] || null;
+  return rows[0] || fallbackDbProducts.find((product) => product.slug === slug) || null;
 }
 
 export const money = (n: number) => `KES ${Number(n).toLocaleString('en-KE')}`;
