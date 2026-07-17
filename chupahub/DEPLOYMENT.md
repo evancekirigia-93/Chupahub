@@ -39,3 +39,9 @@ Do **not** add a Supabase service-role or secret key. Build with `npm run build`
 ## Legacy backend
 
 `chupahub/backend` is not part of the Vercel deployment and must not be configured as a second data source. It is retained only to avoid deleting historical repository files.
+
+## Commerce administration upgrade
+
+After the core recovery and seed migrations, run `supabase/migrations/20260717120000_commerce_admin.sql`. It adds product variants, hierarchical categories, inventory alerts and movements, order workflow history, audited settings, and Realtime subscriptions. The migration is non-destructive and safe to rerun.
+
+The `/admin` dashboard then provides live metrics, catalog bulk actions, drag-and-drop galleries, rich descriptions, variants, fulfillment workflows, inventory alerts, promotions, banners, delivery zones, reports, settings, and an audit log. All writes continue to use the signed-in Supabase user and RLS; no service-role key is needed in the browser.

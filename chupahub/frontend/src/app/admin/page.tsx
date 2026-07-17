@@ -2,215 +2,107 @@
 
 import { FormEvent, useCallback, useEffect, useMemo, useState } from 'react';
 import type { SupabaseClient, User } from '@supabase/supabase-js';
+import { BarChart3, Boxes, ChevronRight, LogOut, PackageSearch, RefreshCw, Settings, ShoppingCart, Store } from 'lucide-react';
 import { createBrowserSupabase } from '@/lib/supabase-browser';
+import { DashboardCards, EmptyState, GalleryPreview, ImageDropzone, RichTextEditor, type DashboardMetric } from '@/components/admin/AdminControls';
 
-type Row = Record<string, unknown> & { id: string };
+type Row = Record<string, unknown> & { id?: string; key?: string };
 type Option = { value: string; label: string };
-type Field = {
-  name: string;
-  label: string;
-  type?: 'text' | 'number' | 'checkbox' | 'textarea' | 'select' | 'datetime-local' | 'image';
-  options?: Option[];
-  bucket?: 'category-images' | 'product-images' | 'banner-images';
-  required?: boolean;
-};
-type Section = { label: string; table: string; readOnly?: boolean };
+type Field = { name: string; label: string; type?: 'text'|'number'|'checkbox'|'textarea'|'richtext'|'select'|'datetime-local'|'image'|'json'; options?: Option[]; bucket?: 'category-images'|'product-images'|'banner-images'; required?: boolean };
+type Section = { label: string; table: string; mode?: 'dashboard'|'inventory'|'reports'; readOnly?: boolean; icon: typeof Store };
 
 const sections: Section[] = [
-  { label: 'Products', table: 'products' },
-  { label: 'Categories', table: 'categories' },
-  { label: 'Brands', table: 'brands' },
-  { label: 'Homepage banners', table: 'homepage_banners' },
-  { label: 'Promotions', table: 'promotions' },
-  { label: 'Delivery settings', table: 'delivery_settings' },
-  { label: 'Orders', table: 'orders' },
-  { label: 'Order items', table: 'order_items', readOnly: true },
-  { label: 'Customers', table: 'customers', readOnly: true },
+  { label: 'Overview', table: '', mode: 'dashboard', icon: BarChart3 },
+  { label: 'Products', table: 'products', icon: Store }, { label: 'Variants', table: 'product_variants', icon: Boxes },
+  { label: 'Categories', table: 'categories', icon: PackageSearch }, { label: 'Brands', table: 'brands', icon: Store },
+  { label: 'Orders', table: 'orders', icon: ShoppingCart }, { label: 'Inventory alerts', table: 'products', mode: 'inventory', icon: Boxes },
+  { label: 'Promotions', table: 'promotions', icon: Store }, { label: 'Homepage banners', table: 'homepage_banners', icon: Store },
+  { label: 'Delivery zones', table: 'delivery_settings', icon: Store }, { label: 'Reports', table: 'orders', mode: 'reports', readOnly: true, icon: BarChart3 },
+  { label: 'Customers', table: 'customers', readOnly: true, icon: Store }, { label: 'Settings', table: 'store_settings', icon: Settings },
+  { label: 'Audit log', table: 'audit_log', readOnly: true, icon: Store },
 ];
-
-const baseFields: Record<string, Field[]> = {
+const orderStatuses = ['pending','paid','packing','out_for_delivery','completed','cancelled','refunded'];
+const fieldsByTable: Record<string, Field[]> = {
   categories: [
-    { name: 'name', label: 'Category name', required: true }, { name: 'slug', label: 'URL slug', required: true },
-    { name: 'description', label: 'Description', type: 'textarea' }, { name: 'icon', label: 'Icon / emoji' },
-    { name: 'image_url', label: 'Category image', type: 'image', bucket: 'category-images' }, { name: 'color', label: 'Color classes' },
-    { name: 'sort_order', label: 'Sort order', type: 'number' }, { name: 'is_active', label: 'Active', type: 'checkbox' },
+    { name:'name',label:'Category name',required:true },{ name:'slug',label:'URL slug',required:true },{ name:'parent_id',label:'Parent category',type:'select' },
+    { name:'description',label:'Description',type:'richtext' },{ name:'icon',label:'Icon / emoji' },{ name:'image_url',label:'Category image',type:'image',bucket:'category-images' },
+    { name:'seo_title',label:'SEO title' },{ name:'seo_description',label:'SEO description',type:'textarea' },{ name:'sort_order',label:'Sort order',type:'number' },{ name:'is_active',label:'Active',type:'checkbox' },
   ],
-  brands: [
-    { name: 'name', label: 'Brand name', required: true }, { name: 'slug', label: 'URL slug', required: true },
-    { name: 'country', label: 'Country' }, { name: 'logo_url', label: 'Logo URL' }, { name: 'is_active', label: 'Active', type: 'checkbox' },
-  ],
+  brands: [{ name:'name',label:'Brand name',required:true },{ name:'slug',label:'URL slug',required:true },{ name:'country',label:'Country' },{ name:'logo_url',label:'Logo URL' },{ name:'is_active',label:'Active',type:'checkbox' }],
   products: [
-    { name: 'name', label: 'Product name', required: true }, { name: 'slug', label: 'URL slug', required: true },
-    { name: 'category_id', label: 'Category', type: 'select' }, { name: 'brand_id', label: 'Brand', type: 'select' },
-    { name: 'description', label: 'Description', type: 'textarea' }, { name: 'short_description', label: 'Short description', type: 'textarea' },
-    { name: 'price', label: 'Price (KES)', type: 'number', required: true }, { name: 'old_price', label: 'Old price (KES)', type: 'number' },
-    { name: 'stock', label: 'Stock', type: 'number' }, { name: 'abv', label: 'ABV %', type: 'number' },
-    { name: 'country', label: 'Country' }, { name: 'bottle_size', label: 'Bottle size' },
-    { name: 'sku', label: 'SKU' }, { name: 'barcode', label: 'Barcode' },
-    { name: 'image_url', label: 'Product image', type: 'image', bucket: 'product-images' },
-    { name: 'sort_order', label: 'Sort order', type: 'number' }, { name: 'is_featured', label: 'Featured', type: 'checkbox' },
-    { name: 'is_top_seller', label: 'Top seller', type: 'checkbox' }, { name: 'is_new_arrival', label: 'New arrival', type: 'checkbox' },
-    { name: 'is_active', label: 'Active', type: 'checkbox' },
+    { name:'name',label:'Product name',required:true },{ name:'slug',label:'URL slug',required:true },{ name:'category_id',label:'Category',type:'select' },{ name:'brand_id',label:'Brand',type:'select' },
+    { name:'description',label:'Rich description',type:'richtext' },{ name:'short_description',label:'Short description',type:'textarea' },{ name:'price',label:'Price (KES)',type:'number',required:true },{ name:'old_price',label:'Compare-at price',type:'number' },
+    { name:'stock',label:'Stock',type:'number' },{ name:'low_stock_threshold',label:'Low-stock alert at',type:'number' },{ name:'track_inventory',label:'Track inventory',type:'checkbox' },{ name:'abv',label:'ABV %',type:'number' },
+    { name:'country',label:'Country' },{ name:'bottle_size',label:'Bottle size' },{ name:'weight_grams',label:'Weight (grams)',type:'number' },{ name:'sku',label:'SKU' },{ name:'barcode',label:'Barcode' },
+    { name:'image_url',label:'Primary product image',type:'image',bucket:'product-images' },{ name:'seo_title',label:'SEO title' },{ name:'seo_description',label:'SEO description',type:'textarea' },
+    { name:'sort_order',label:'Sort order',type:'number' },{ name:'is_featured',label:'Featured',type:'checkbox' },{ name:'is_top_seller',label:'Top seller',type:'checkbox' },{ name:'is_new_arrival',label:'New arrival',type:'checkbox' },{ name:'is_active',label:'Published',type:'checkbox' },
   ],
-  homepage_banners: [
-    { name: 'title', label: 'Banner title', required: true }, { name: 'subtitle', label: 'Subtitle', type: 'textarea' },
-    { name: 'badge_text', label: 'Badge text' }, { name: 'image_url', label: 'Banner image', type: 'image', bucket: 'banner-images' },
-    { name: 'button_label', label: 'Button label' }, { name: 'button_url', label: 'Button URL' },
-    { name: 'starts_at', label: 'Starts at', type: 'datetime-local' }, { name: 'ends_at', label: 'Ends at', type: 'datetime-local' },
-    { name: 'sort_order', label: 'Sort order', type: 'number' }, { name: 'is_active', label: 'Active', type: 'checkbox' },
+  product_variants: [
+    { name:'product_id',label:'Product',type:'select',required:true },{ name:'name',label:'Variant name',required:true },{ name:'sku',label:'SKU' },{ name:'barcode',label:'Barcode' },
+    { name:'option_values',label:'Options JSON',type:'json' },{ name:'price',label:'Price',type:'number',required:true },{ name:'old_price',label:'Compare-at price',type:'number' },{ name:'stock',label:'Stock',type:'number' },
+    { name:'low_stock_threshold',label:'Low-stock alert at',type:'number' },{ name:'image_url',label:'Variant image',type:'image',bucket:'product-images' },{ name:'sort_order',label:'Sort order',type:'number' },{ name:'is_active',label:'Active',type:'checkbox' },
   ],
-  promotions: [
-    { name: 'title', label: 'Promotion title', required: true }, { name: 'code', label: 'Code' },
-    { name: 'description', label: 'Description', type: 'textarea' }, { name: 'badge_text', label: 'Badge text' },
-    { name: 'discount_type', label: 'Discount type', type: 'select', required: true, options: [{ value: 'percent', label: 'Percent' }, { value: 'fixed', label: 'Fixed amount' }, { value: 'bundle', label: 'Bundle' }] },
-    { name: 'discount_value', label: 'Discount value', type: 'number' },
-    { name: 'image_url', label: 'Promotion image', type: 'image', bucket: 'banner-images' },
-    { name: 'button_label', label: 'Button label' }, { name: 'button_url', label: 'Button URL' },
-    { name: 'starts_at', label: 'Starts at', type: 'datetime-local' }, { name: 'ends_at', label: 'Ends at', type: 'datetime-local' },
-    { name: 'sort_order', label: 'Sort order', type: 'number' }, { name: 'is_active', label: 'Active', type: 'checkbox' },
-  ],
-  delivery_settings: [
-    { name: 'name', label: 'Zone name', required: true }, { name: 'min_distance_km', label: 'Minimum km', type: 'number' },
-    { name: 'max_distance_km', label: 'Maximum km', type: 'number' }, { name: 'fee', label: 'Fee (KES)', type: 'number' },
-    { name: 'estimated_minutes_min', label: 'Minimum minutes', type: 'number' }, { name: 'estimated_minutes_max', label: 'Maximum minutes', type: 'number' },
-    { name: 'sort_order', label: 'Sort order', type: 'number' }, { name: 'is_active', label: 'Active', type: 'checkbox' },
-  ],
-  orders: [
-    { name: 'status', label: 'Order status', type: 'select', options: ['pending','paid','packing','out_for_delivery','completed','cancelled','refunded'].map((value) => ({ value, label: value.replaceAll('_', ' ') })) },
-    { name: 'payment_status', label: 'Payment status', type: 'select', options: ['pending','paid','failed','refunded'].map((value) => ({ value, label: value })) },
-    { name: 'payment_reference', label: 'Payment reference' }, { name: 'admin_notes', label: 'Admin notes', type: 'textarea' },
-  ],
+  homepage_banners: [{ name:'title',label:'Title',required:true },{ name:'subtitle',label:'Subtitle',type:'richtext' },{ name:'badge_text',label:'Badge' },{ name:'image_url',label:'Desktop image',type:'image',bucket:'banner-images' },{ name:'mobile_image_url',label:'Mobile image URL' },{ name:'button_label',label:'Button label' },{ name:'button_url',label:'Button URL' },{ name:'starts_at',label:'Starts',type:'datetime-local' },{ name:'ends_at',label:'Ends',type:'datetime-local' },{ name:'sort_order',label:'Sort order',type:'number' },{ name:'is_active',label:'Active',type:'checkbox' }],
+  promotions: [{ name:'title',label:'Title',required:true },{ name:'code',label:'Coupon code' },{ name:'description',label:'Description',type:'richtext' },{ name:'discount_type',label:'Discount type',type:'select',options:['percent','fixed','bundle'].map(value=>({value,label:value})) },{ name:'discount_value',label:'Value',type:'number' },{ name:'image_url',label:'Image',type:'image',bucket:'banner-images' },{ name:'button_url',label:'Destination' },{ name:'starts_at',label:'Starts',type:'datetime-local' },{ name:'ends_at',label:'Ends',type:'datetime-local' },{ name:'is_active',label:'Active',type:'checkbox' }],
+  delivery_settings: [{ name:'name',label:'Zone name',required:true },{ name:'min_distance_km',label:'Min km',type:'number' },{ name:'max_distance_km',label:'Max km',type:'number' },{ name:'fee',label:'Fee',type:'number' },{ name:'estimated_minutes_min',label:'Min minutes',type:'number' },{ name:'estimated_minutes_max',label:'Max minutes',type:'number' },{ name:'sort_order',label:'Sort order',type:'number' },{ name:'is_active',label:'Active',type:'checkbox' }],
+  orders: [{ name:'status',label:'Order workflow',type:'select',options:orderStatuses.map(value=>({value,label:value.replaceAll('_',' ')})) },{ name:'payment_status',label:'Payment status',type:'select',options:['pending','paid','failed','refunded'].map(value=>({value,label:value})) },{ name:'tracking_code',label:'Tracking code' },{ name:'payment_reference',label:'Payment reference' },{ name:'admin_notes',label:'Private notes',type:'textarea' }],
+  store_settings: [{ name:'key',label:'Setting key',required:true },{ name:'value',label:'JSON value',type:'json',required:true },{ name:'description',label:'Description',type:'textarea' },{ name:'is_public',label:'Visible to storefront',type:'checkbox' }],
 };
 
-function emptyForm(fields: Field[]): Record<string, unknown> {
-  return Object.fromEntries(fields.map((field) => [field.name, field.type === 'checkbox' ? field.name === 'is_active' : '']));
-}
-
-function displayValue(row: Row, table: string) {
-  if (table === 'orders') return `${String(row.status || 'pending')} · ${String(row.payment_status || 'pending')}`;
-  return String(row.name || row.title || row.email || row.product_name || row.full_name || row.id);
-}
+const blank = (fields: Field[]) => Object.fromEntries(fields.map(field => [field.name, field.type === 'checkbox' ? field.name === 'is_active' || field.name === 'track_inventory' : field.type === 'json' ? '{}' : '']));
+const titleFor = (row: Row) => String(row.name || row.title || row.full_name || row.email || row.key || row.sku || row.id);
+const rowKey = (row: Row) => String(row.id || row.key);
+const number = (value: unknown) => Number(value || 0);
 
 export default function AdminPage() {
   const supabase = useMemo(() => createBrowserSupabase(), []);
-  const [user, setUser] = useState<User | null>(null);
-  const [authorized, setAuthorized] = useState(false);
-  const [authReady, setAuthReady] = useState(false);
-  const [section, setSection] = useState<Section>(sections[0]);
-  const [rows, setRows] = useState<Row[]>([]);
-  const [references, setReferences] = useState<{ categories: Option[]; brands: Option[] }>({ categories: [], brands: [] });
-  const [form, setForm] = useState<Record<string, unknown>>({});
-  const [busy, setBusy] = useState(false);
-  const [message, setMessage] = useState('');
-  const [error, setError] = useState('');
+  const [user,setUser]=useState<User|null>(null),[authorized,setAuthorized]=useState(false),[authReady,setAuthReady]=useState(false);
+  const [section,setSection]=useState<Section>(sections[0]),[rows,setRows]=useState<Row[]>([]),[form,setForm]=useState<Record<string,unknown>>({});
+  const [references,setReferences]=useState<{categories:Option[];brands:Option[];products:Option[]}>({categories:[],brands:[],products:[]});
+  const [selected,setSelected]=useState<Set<string>>(new Set()),[busy,setBusy]=useState(false),[message,setMessage]=useState(''),[error,setError]=useState('');
+  const [metrics,setMetrics]=useState<DashboardMetric[]>([]),[recentOrders,setRecentOrders]=useState<Row[]>([]);
+  const fields=useMemo(()=>(fieldsByTable[section.table]||[]).map(field=>field.name==='category_id'||field.name==='parent_id'?{...field,options:references.categories}:field.name==='brand_id'?{...field,options:references.brands}:field.name==='product_id'?{...field,options:references.products}:field),[section.table,references]);
 
-  const fields = useMemo(() => (baseFields[section.table] || []).map((field) => {
-    if (field.name === 'category_id') return { ...field, options: references.categories };
-    if (field.name === 'brand_id') return { ...field, options: references.brands };
-    return field;
-  }), [section.table, references]);
+  const verifyAdmin=useCallback(async(client:SupabaseClient,nextUser:User|null)=>{setUser(nextUser);if(!nextUser){setAuthorized(false);setAuthReady(true);return;}const {data}=await client.from('admin_users').select('id').eq('user_id',nextUser.id).eq('is_active',true).maybeSingle();setAuthorized(Boolean(data));setAuthReady(true);},[]);
+  useEffect(()=>{if(!supabase){setAuthReady(true);return;}void supabase.auth.getSession().then(({data})=>verifyAdmin(supabase,data.session?.user||null)).catch(()=>{setUser(null);setAuthReady(true);});const {data}=supabase.auth.onAuthStateChange((_event,session)=>{setTimeout(()=>void verifyAdmin(supabase,session?.user||null),0);});return()=>data.subscription.unsubscribe();},[supabase,verifyAdmin]);
 
-  const verifyAdmin = useCallback(async (client: SupabaseClient, nextUser: User | null) => {
-    setUser(nextUser);
-    if (!nextUser) { setAuthorized(false); setAuthReady(true); return; }
-    const { data, error: adminError } = await client.from('admin_users').select('id').eq('user_id', nextUser.id).eq('is_active', true).maybeSingle();
-    setAuthorized(Boolean(data) && !adminError);
-    setAuthReady(true);
-  }, []);
+  const loadDashboard=useCallback(async()=>{if(!supabase||!authorized)return;setBusy(true);const [products,orders,customers,lowStock,recent]=await Promise.all([
+    supabase.from('products').select('*',{count:'exact',head:true}),supabase.from('orders').select('total,status'),supabase.from('customers').select('*',{count:'exact',head:true}),
+    supabase.from('products').select('id,stock,low_stock_threshold').eq('is_active',true),supabase.from('orders').select('*').order('created_at',{ascending:false}).limit(8),
+  ]);const orderRows=orders.data||[],revenue=orderRows.filter(row=>!['cancelled','refunded'].includes(row.status)).reduce((sum,row)=>sum+number(row.total),0);const low=(lowStock.data||[]).filter(row=>number(row.stock)<=number(row.low_stock_threshold)).length;
+    setMetrics([{label:'Gross revenue',value:`KES ${revenue.toLocaleString('en-KE')}`,detail:`${orderRows.length} total orders`,tone:'green'},{label:'Products',value:products.count||0,detail:`${low} need attention`,tone:low?'red':'green'},{label:'Customers',value:customers.count||0,detail:'Supabase customer records',tone:'blue'},{label:'Open orders',value:orderRows.filter(row=>!['completed','cancelled','refunded'].includes(row.status)).length,detail:'Awaiting fulfillment',tone:'orange'}]);setRecentOrders((recent.data||[]) as Row[]);setBusy(false);},[supabase,authorized]);
+  const loadRows=useCallback(async()=>{if(!supabase||!authorized||!section.table)return;if(section.mode==='dashboard'){await loadDashboard();return;}setBusy(true);setError('');let query=supabase.from(section.table).select('*').order('created_at',{ascending:false}).limit(200);const {data,error:loadError}=await query;if(loadError)setError(loadError.message);else{let next=(data||[]) as Row[];if(section.mode==='inventory')next=next.filter(row=>number(row.stock)<=number(row.low_stock_threshold));setRows(next);}setSelected(new Set());setBusy(false);},[supabase,authorized,section,loadDashboard]);
+  useEffect(()=>{setForm(blank(fields));void(section.mode==='dashboard'?loadDashboard():loadRows());},[fields,section.mode,loadDashboard,loadRows]);
+  useEffect(()=>{if(!supabase||!authorized)return;void Promise.all([supabase.from('categories').select('id,name').order('name'),supabase.from('brands').select('id,name').order('name'),supabase.from('products').select('id,name').order('name')]).then(([a,b,c])=>setReferences({categories:(a.data||[]).map(row=>({value:row.id,label:row.name})),brands:(b.data||[]).map(row=>({value:row.id,label:row.name})),products:(c.data||[]).map(row=>({value:row.id,label:row.name}))}));},[supabase,authorized]);
+  useEffect(()=>{if(!supabase||!authorized||!section.table)return;const channel=supabase.channel(`admin-${section.table}`).on('postgres_changes',{event:'*',schema:'public',table:section.table},()=>void loadRows()).subscribe();return()=>{void supabase.removeChannel(channel);};},[supabase,authorized,section.table,loadRows]);
 
-  useEffect(() => {
-    if (!supabase) { setAuthReady(true); return; }
-    supabase.auth.getUser().then(({ data }) => verifyAdmin(supabase, data.user));
-    const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => { void verifyAdmin(supabase, session?.user || null); });
-    return () => listener.subscription.unsubscribe();
-  }, [supabase, verifyAdmin]);
+  async function login(event:FormEvent<HTMLFormElement>){event.preventDefault();if(!supabase)return;setBusy(true);setError('');const data=new FormData(event.currentTarget),{error:authError}=await supabase.auth.signInWithPassword({email:String(data.get('email')),password:String(data.get('password'))});if(authError)setError(authError.message);setBusy(false);}
+  function payload(){const data=Object.fromEntries(fields.map(field=>{let value=form[field.name];if(value==='')value=null;if(field.type==='json'&&typeof value==='string')value=JSON.parse(value);return[field.name,value];}));if(section.table==='products')data.gallery_urls=Array.isArray(form.gallery_urls)?form.gallery_urls:[];return data;}
+  async function save(event:FormEvent<HTMLFormElement>){event.preventDefault();if(!supabase||section.readOnly)return;setBusy(true);setError('');try{const editing=Boolean(form._editing||form.id);const keyColumn=section.table==='store_settings'?'key':'id',keyValue=section.table==='store_settings'?form.key:form.id;const query=editing?supabase.from(section.table).update(payload()).eq(keyColumn,keyValue):supabase.from(section.table).insert(payload());const {error:saveError}=await query;if(saveError)throw saveError;setMessage(editing?'Changes saved and published.':'Record created and published.');setForm(blank(fields));await loadRows();}catch(cause){setError(cause instanceof Error?cause.message:'Unable to save this record. Check JSON fields.');}finally{setBusy(false);}}
+  async function remove(row:Row){if(!supabase||section.readOnly||!confirm(`Permanently delete ${titleFor(row)}?`))return;const keyColumn=section.table==='store_settings'?'key':'id';const {error:deleteError}=await supabase.from(section.table).delete().eq(keyColumn,section.table==='store_settings'?row.key:row.id);if(deleteError)setError(deleteError.message);else{setMessage('Record deleted.');await loadRows();}}
+  async function uploadFiles(field:Field,files:File[]){if(!supabase||!field.bucket||!files.length)return;setBusy(true);const urls:string[]=[];for(const file of files){if(file.size>10*1024*1024){setError(`${file.name} exceeds 10 MB.`);continue;}const extension=file.name.split('.').pop()?.toLowerCase()||'jpg',path=`${section.table}/${crypto.randomUUID()}.${extension}`;const {error:uploadError}=await supabase.storage.from(field.bucket).upload(path,file,{cacheControl:'3600'});if(uploadError){setError(uploadError.message);continue;}urls.push(supabase.storage.from(field.bucket).getPublicUrl(path).data.publicUrl);}setForm(current=>{const gallery=Array.isArray(current.gallery_urls)?current.gallery_urls as string[]:[];return{...current,[field.name]:current[field.name]||urls[0]||'',...(section.table==='products'?{gallery_urls:[...gallery,...urls]}:{})};});setMessage(`${urls.length} image${urls.length===1?'':'s'} uploaded. Save to publish.`);setBusy(false);}
+  async function bulk(action:'activate'|'deactivate'|'delete'|'stock'){if(!supabase||!selected.size)return;if(action==='delete'&&!confirm(`Delete ${selected.size} records?`))return;setBusy(true);let query;if(action==='delete')query=supabase.from(section.table).delete().in('id',[...selected]);else if(action==='stock'){const value=Number(prompt('Set stock quantity to:'));if(!Number.isFinite(value)){setBusy(false);return;}query=supabase.from(section.table).update({stock:value}).in('id',[...selected]);}else query=supabase.from(section.table).update({is_active:action==='activate'}).in('id',[...selected]);const {error:bulkError}=await query;if(bulkError)setError(bulkError.message);else setMessage(`${selected.size} records updated.`);await loadRows();setBusy(false);}
 
-  const loadRows = useCallback(async () => {
-    if (!supabase || !authorized) return;
-    setBusy(true); setError('');
-    const { data, error: loadError } = await supabase.from(section.table).select('*').order('created_at', { ascending: false }).limit(100);
-    if (loadError) setError(loadError.message); else setRows((data || []) as Row[]);
-    setBusy(false);
-  }, [supabase, authorized, section.table]);
+  if(!supabase)return <AdminNotice title="Supabase configuration required" detail="Set the Supabase URL and publishable key in Vercel."/>;
+  if(!authReady)return <main className="p-16 text-center font-bold">Checking secure session…</main>;
+  if(!user)return <main className="mx-auto max-w-md px-4 py-16"><div className="rounded-3xl bg-white p-7 shadow-card"><div className="mb-5 grid h-12 w-12 place-items-center rounded-2xl bg-brand-deep text-white"><Store/></div><h1 className="text-3xl font-black">ChupaHub Commerce</h1><p className="mt-2 text-neutral-600">Secure operations dashboard</p><form onSubmit={login} className="mt-6 grid gap-3"><input name="email" type="email" placeholder="Admin email" className="rounded-xl border p-3" required/><input name="password" type="password" placeholder="Password" className="rounded-xl border p-3" required/><button disabled={busy} className="orange-gradient rounded-xl py-3 font-black text-white">{busy?'Signing in…':'Sign in securely'}</button>{error&&<p className="text-red-600">{error}</p>}</form></div></main>;
+  if(!authorized)return <AdminNotice title="Access denied" detail="This Supabase user is not an active ChupaHub administrator."/>;
 
-  useEffect(() => { setForm(emptyForm(fields)); void loadRows(); }, [fields, loadRows]);
-
-  useEffect(() => {
-    if (!supabase || !authorized) return;
-    Promise.all([
-      supabase.from('categories').select('id,name').order('name'),
-      supabase.from('brands').select('id,name').order('name'),
-    ]).then(([categoryResult, brandResult]) => setReferences({
-      categories: (categoryResult.data || []).map((row) => ({ value: row.id, label: row.name })),
-      brands: (brandResult.data || []).map((row) => ({ value: row.id, label: row.name })),
-    }));
-  }, [supabase, authorized]);
-
-  async function login(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault(); if (!supabase) return;
-    setBusy(true); setError('');
-    const data = new FormData(event.currentTarget);
-    const { error: signInError } = await supabase.auth.signInWithPassword({ email: String(data.get('email')), password: String(data.get('password')) });
-    if (signInError) setError(signInError.message);
-    setBusy(false);
-  }
-
-  async function save(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault(); if (!supabase || section.readOnly) return;
-    setBusy(true); setError(''); setMessage('');
-    const id = typeof form.id === 'string' ? form.id : undefined;
-    const payload = Object.fromEntries(fields.map((field) => [field.name, form[field.name] === '' ? null : form[field.name]]));
-    const query = id ? supabase.from(section.table).update(payload).eq('id', id) : supabase.from(section.table).insert(payload);
-    const { error: saveError } = await query;
-    if (saveError) setError(saveError.message);
-    else { setMessage(id ? 'Changes saved.' : 'Record created.'); setForm(emptyForm(fields)); await loadRows(); }
-    setBusy(false);
-  }
-
-  async function remove(row: Row) {
-    if (!supabase || section.readOnly || !window.confirm(`Delete ${displayValue(row, section.table)}?`)) return;
-    setBusy(true); setError('');
-    const { error: deleteError } = await supabase.from(section.table).delete().eq('id', row.id);
-    if (deleteError) setError(deleteError.message); else { setMessage('Record deleted.'); await loadRows(); }
-    setBusy(false);
-  }
-
-  async function upload(field: Field, file: File) {
-    if (!supabase || !field.bucket) return;
-    setBusy(true); setError('');
-    const extension = file.name.split('.').pop()?.toLowerCase() || 'jpg';
-    const path = `${section.table}/${crypto.randomUUID()}.${extension}`;
-    const { error: uploadError } = await supabase.storage.from(field.bucket).upload(path, file, { cacheControl: '3600', upsert: false });
-    if (uploadError) setError(uploadError.message);
-    else {
-      const { data } = supabase.storage.from(field.bucket).getPublicUrl(path);
-      setForm((current) => ({ ...current, [field.name]: data.publicUrl }));
-      setMessage('Image uploaded. Save the record to use it.');
-    }
-    setBusy(false);
-  }
-
-  if (!supabase) return <main className="mx-auto max-w-xl px-4 py-12"><div className="rounded-3xl bg-white p-6 shadow-card"><h1 className="text-3xl font-black">Supabase configuration required</h1><p className="mt-3">Set <code>NEXT_PUBLIC_SUPABASE_URL</code> and either the anon or publishable key in Vercel.</p></div></main>;
-  if (!authReady) return <main className="p-12 text-center font-bold">Checking admin session…</main>;
-  if (!user) return <main className="mx-auto max-w-md px-4 py-12"><h1 className="text-4xl font-black">Admin login</h1><p className="mt-2 text-neutral-600">Use a Supabase Auth account registered in <code>public.admin_users</code>.</p><form onSubmit={login} className="mt-6 grid gap-3 rounded-3xl bg-white p-6 shadow-card"><input name="email" type="email" placeholder="admin@email.com" className="rounded-xl border p-3" required /><input name="password" type="password" placeholder="Password" className="rounded-xl border p-3" required /><button disabled={busy} className="orange-gradient rounded-xl py-3 font-black text-white disabled:opacity-50">{busy ? 'Signing in…' : 'Sign in'}</button>{error && <p className="text-red-600">{error}</p>}</form></main>;
-  if (!authorized) return <main className="mx-auto max-w-xl px-4 py-12"><div className="rounded-3xl bg-white p-6 shadow-card"><h1 className="text-3xl font-black text-red-700">Access denied</h1><p className="mt-2">Your account is authenticated but is not an active ChupaHub administrator.</p><button onClick={() => supabase.auth.signOut()} className="mt-5 rounded-xl bg-brand-deep px-5 py-3 font-bold text-white">Sign out</button></div></main>;
-
-  return <main className="mx-auto max-w-none px-4 py-8">
-    <div className="flex flex-wrap items-center justify-between gap-4 rounded-3xl bg-white p-6 shadow-card"><div><p className="font-bold uppercase tracking-wide text-brand-orange">Authenticated Supabase admin</p><h1 className="text-4xl font-black text-brand-ink">ChupaHub Dashboard</h1><p className="mt-2 text-neutral-600">Signed in as {user.email}. Every action is enforced by Supabase RLS.</p></div><button onClick={() => supabase.auth.signOut()} className="rounded-xl border-2 border-brand-deep px-4 py-2 font-bold text-brand-deep">Sign out</button></div>
-    <div className="mt-6 grid gap-6 lg:grid-cols-[250px_1fr]">
-      <aside className="h-fit rounded-2xl bg-white p-4 shadow-card">{sections.map((item) => <button key={item.table} onClick={() => { setSection(item); setMessage(''); setError(''); }} className={`mb-2 block w-full rounded-xl px-3 py-2 text-left font-bold ${section.table === item.table ? 'bg-brand-deep text-white' : 'bg-brand-soft text-brand-ink'}`}>{item.label}</button>)}</aside>
-      <section className="min-w-0 rounded-2xl bg-white p-4 shadow-card">
-        <div className="flex items-center justify-between"><h2 className="text-2xl font-black">{section.label}</h2><button onClick={() => loadRows()} disabled={busy} className="rounded-lg bg-brand-soft px-3 py-2 font-bold text-brand-deep">Refresh</button></div>
-        {!section.readOnly && <form onSubmit={save} className="my-5 grid gap-3 md:grid-cols-2 xl:grid-cols-3">{fields.map((field) => <label key={field.name} className={`${field.type === 'textarea' ? 'md:col-span-2' : ''} text-sm font-bold text-brand-ink`}>{field.label}
-          {field.type === 'checkbox' ? <input type="checkbox" checked={Boolean(form[field.name])} onChange={(event) => setForm({ ...form, [field.name]: event.target.checked })} className="ml-3 h-5 w-5 rounded border" />
-            : field.type === 'textarea' ? <textarea value={String(form[field.name] ?? '')} onChange={(event) => setForm({ ...form, [field.name]: event.target.value })} className="mt-1 min-h-24 w-full rounded-xl border p-3 font-normal" />
-            : field.type === 'select' ? <select value={String(form[field.name] ?? '')} required={field.required} onChange={(event) => setForm({ ...form, [field.name]: event.target.value })} className="mt-1 w-full rounded-xl border bg-white p-3 font-normal"><option value="">Select…</option>{field.options?.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}</select>
-            : field.type === 'image' ? <span className="mt-1 block space-y-2"><input type="file" accept="image/jpeg,image/png,image/webp,image/gif" onChange={(event) => { const file = event.target.files?.[0]; if (file) void upload(field, file); }} className="w-full rounded-xl border p-2 font-normal" /><span className="flex items-center gap-2">{Boolean(form[field.name]) && <img src={String(form[field.name])} alt="Uploaded preview" className="h-16 w-16 rounded-lg object-cover" />}<input placeholder="Or paste an existing public image URL" value={String(form[field.name] ?? '')} onChange={(event) => setForm({ ...form, [field.name]: event.target.value })} className="min-w-0 flex-1 rounded-lg border p-2 font-normal" /></span></span>
-            : <input type={field.type || 'text'} step={field.type === 'number' ? 'any' : undefined} required={field.required} value={String(form[field.name] ?? '')} onChange={(event) => setForm({ ...form, [field.name]: field.type === 'number' && event.target.value !== '' ? Number(event.target.value) : event.target.value })} className="mt-1 w-full rounded-xl border p-3 font-normal" />}
-        </label>)}<div className="flex items-end gap-2"><button disabled={busy} className="rounded-xl bg-brand-deep px-5 py-3 font-black text-white disabled:opacity-50">{form.id ? 'Save changes' : 'Create'}</button>{Boolean(form.id) && <button type="button" onClick={() => setForm(emptyForm(fields))} className="rounded-xl border px-5 py-3 font-bold">Cancel</button>}</div></form>}
-        {message && <p className="my-3 rounded-xl bg-green-50 p-3 font-semibold text-green-800">{message}</p>}{error && <p className="my-3 rounded-xl bg-red-50 p-3 font-semibold text-red-700">{error}</p>}
-        <div className="overflow-auto"><table className="w-full min-w-[650px] text-sm"><thead><tr className="text-left"><th className="p-2">Record</th><th className="p-2">Status / details</th><th className="p-2">Created</th>{!section.readOnly && <th className="p-2">Actions</th>}</tr></thead><tbody>{rows.map((row) => <tr key={row.id} className="border-t"><td className="p-2 font-bold">{displayValue(row, section.table)}</td><td className="p-2">{String(row.slug || row.code || row.payment_method || row.order_id || row.email || (row.is_active ?? ''))}</td><td className="p-2">{row.created_at ? new Date(String(row.created_at)).toLocaleString() : '—'}</td>{!section.readOnly && <td className="flex gap-2 p-2"><button onClick={() => setForm({ ...emptyForm(fields), ...row })} className="rounded-lg bg-brand-orange px-3 py-1 font-bold text-white">Edit</button><button onClick={() => void remove(row)} className="rounded-lg bg-red-600 px-3 py-1 font-bold text-white">Delete</button></td>}</tr>)}</tbody></table>{!busy && rows.length === 0 && <p className="p-6 text-center text-neutral-500">No records found.</p>}</div>
-      </section>
-    </div>
-  </main>;
+  return <main className="min-h-screen bg-[#fffaf6] px-3 py-4 lg:px-6"><header className="mx-auto flex max-w-[1600px] items-center justify-between rounded-2xl bg-brand-ink px-5 py-4 text-white shadow-card"><div className="flex items-center gap-3"><div className="grid h-10 w-10 place-items-center rounded-xl bg-brand-orange"><Store/></div><div><h1 className="text-xl font-black">ChupaHub Commerce</h1><p className="text-xs text-white/60">Live Supabase operations</p></div></div><div className="flex items-center gap-3"><span className="hidden text-sm text-white/70 sm:block">{user.email}</span><button onClick={()=>supabase.auth.signOut()} className="rounded-xl bg-white/10 p-2" title="Sign out"><LogOut size={20}/></button></div></header>
+    <div className="mx-auto mt-4 grid max-w-[1600px] gap-4 lg:grid-cols-[245px_1fr]"><aside className="h-fit rounded-2xl border border-orange-100 bg-white p-3 shadow-card lg:sticky lg:top-4"><p className="px-3 py-2 text-[10px] font-black uppercase tracking-widest text-neutral-400">Manage store</p>{sections.map(item=><button key={`${item.label}-${item.mode||item.table}`} onClick={()=>{setSection(item);setError('');setMessage('');}} className={`mb-1 flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm font-bold transition ${section.label===item.label?'bg-brand-deep text-white':'text-neutral-600 hover:bg-orange-50 hover:text-brand-deep'}`}><item.icon size={18}/><span className="flex-1">{item.label}</span><ChevronRight size={14}/></button>)}</aside>
+      <section className="min-w-0"><div className="mb-4 flex flex-wrap items-end justify-between gap-3"><div><p className="text-xs font-black uppercase tracking-widest text-brand-orange">Commerce administration</p><h2 className="text-3xl font-black text-brand-ink">{section.label}</h2></div><button onClick={()=>section.mode==='dashboard'?loadDashboard():loadRows()} disabled={busy} className="flex items-center gap-2 rounded-xl border bg-white px-4 py-2 font-bold"><RefreshCw size={16} className={busy?'animate-spin':''}/>Refresh</button></div>
+        {section.mode==='dashboard'?<DashboardView metrics={metrics} orders={recentOrders}/>:<div className="rounded-2xl border border-orange-100 bg-white p-4 shadow-card">
+          {!section.readOnly&&section.mode!=='inventory'&&<form onSubmit={save} className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">{fields.map(field=><FieldControl key={field.name} field={field} value={form[field.name]} form={form} setForm={setForm} busy={busy} upload={(files)=>uploadFiles(field,files)}/>)}{section.table==='products'&&<div className="md:col-span-2 xl:col-span-3"><ImageDropzone busy={busy} onFiles={files=>void uploadFiles({name:'image_url',label:'Gallery',type:'image',bucket:'product-images'},files)}/><GalleryPreview urls={Array.isArray(form.gallery_urls)?form.gallery_urls as string[]:[]} onRemove={url=>setForm(current=>({...current,gallery_urls:(current.gallery_urls as string[]||[]).filter(item=>item!==url)}))}/></div>}<div className="flex gap-2 md:col-span-2 xl:col-span-3"><button disabled={busy} className="rounded-xl bg-brand-deep px-6 py-3 font-black text-white">{form.id?'Save changes':'Create record'}</button>{Boolean(form.id)&&<button type="button" onClick={()=>setForm(blank(fields))} className="rounded-xl border px-5 py-3 font-bold">Cancel</button>}</div></form>}
+          {message&&<p className="my-4 rounded-xl bg-green-50 p-3 font-bold text-green-700">{message}</p>}{error&&<p className="my-4 rounded-xl bg-red-50 p-3 font-bold text-red-700">{error}</p>}
+          {section.mode==='reports'&&<ReportsSummary rows={rows}/>}
+          {selected.size>0&&!section.readOnly&&<div className="my-4 flex flex-wrap items-center gap-2 rounded-xl bg-brand-ink p-3 text-white"><b>{selected.size} selected</b><button onClick={()=>void bulk('activate')} className="rounded-lg bg-white/10 px-3 py-1">Activate</button><button onClick={()=>void bulk('deactivate')} className="rounded-lg bg-white/10 px-3 py-1">Deactivate</button>{['products','product_variants'].includes(section.table)&&<button onClick={()=>void bulk('stock')} className="rounded-lg bg-white/10 px-3 py-1">Set stock</button>}<button onClick={()=>void bulk('delete')} className="rounded-lg bg-red-600 px-3 py-1">Delete</button></div>}
+          <DataTable rows={rows} selected={selected} setSelected={setSelected} selectable={!section.readOnly&&['products','product_variants','categories','brands','promotions','homepage_banners','delivery_settings'].includes(section.table)} readOnly={Boolean(section.readOnly||section.mode==='reports')} edit={row=>setForm({...blank(fields),...row,_editing:true,option_values:row.option_values?JSON.stringify(row.option_values,null,2):form.option_values,value:row.value?JSON.stringify(row.value,null,2):form.value})} remove={remove}/>
+        </div>}
+      </section></div></main>;
 }
+
+function FieldControl({field,value,form,setForm,busy,upload}:{field:Field;value:unknown;form:Record<string,unknown>;setForm:React.Dispatch<React.SetStateAction<Record<string,unknown>>>;busy:boolean;upload:(files:File[])=>void}){const change=(next:unknown)=>setForm({...form,[field.name]:next});return <label className={`${['textarea','richtext','json'].includes(field.type||'')?'md:col-span-2':''} text-sm font-bold`}>{field.label}{field.type==='checkbox'?<input type="checkbox" checked={Boolean(value)} onChange={event=>change(event.target.checked)} className="ml-3 h-5 w-5"/>:field.type==='richtext'?<RichTextEditor value={String(value||'')} onChange={change}/>:field.type==='textarea'||field.type==='json'?<textarea value={String(value??'')} onChange={event=>change(event.target.value)} className="mt-1 min-h-28 w-full rounded-xl border p-3 font-mono font-normal"/>:field.type==='select'?<select value={String(value??'')} required={field.required} onChange={event=>change(event.target.value)} className="mt-1 w-full rounded-xl border bg-white p-3 font-normal"><option value="">Select…</option>{field.options?.map(option=><option key={option.value} value={option.value}>{option.label}</option>)}</select>:field.type==='image'?<div className="mt-1"><ImageDropzone busy={busy} onFiles={upload}/>{Boolean(value)&&<img src={String(value)} alt="Preview" className="mt-2 h-20 w-20 rounded-lg object-cover"/>}</div>:<input type={field.type||'text'} step={field.type==='number'?'any':undefined} required={field.required} value={String(value??'')} onChange={event=>change(field.type==='number'&&event.target.value!==''?Number(event.target.value):event.target.value)} className="mt-1 w-full rounded-xl border p-3 font-normal"/>}</label>}
+function DataTable({rows,selected,setSelected,selectable=true,readOnly,edit,remove}:{rows:Row[];selected:Set<string>;setSelected:(value:Set<string>)=>void;selectable?:boolean;readOnly:boolean;edit:(row:Row)=>void;remove:(row:Row)=>void}){if(!rows.length)return <EmptyState title="No records found" detail="Create the first record or adjust your filters."/>;return <div className="mt-5 overflow-auto"><table className="w-full min-w-[760px] text-sm"><thead><tr className="border-b text-left text-xs uppercase tracking-wide text-neutral-400">{selectable&&<th className="p-3"><input type="checkbox" checked={selected.size===rows.length} onChange={event=>setSelected(event.target.checked?new Set(rows.map(rowKey)):new Set())}/></th>}<th className="p-3">Record</th><th className="p-3">Status</th><th className="p-3">Value / stock</th><th className="p-3">Updated</th>{!readOnly&&<th className="p-3">Actions</th>}</tr></thead><tbody>{rows.map(row=><tr key={rowKey(row)} className="border-b hover:bg-orange-50/50">{selectable&&<td className="p-3"><input type="checkbox" checked={selected.has(rowKey(row))} onChange={event=>{const next=new Set(selected);event.target.checked?next.add(rowKey(row)):next.delete(rowKey(row));setSelected(next);}}/></td>}<td className="p-3 font-bold">{titleFor(row)}</td><td className="p-3"><span className="rounded-full bg-brand-soft px-2 py-1 text-xs font-bold">{String(row.status||row.payment_status||(row.is_active===false?'Inactive':'Active'))}</span></td><td className="p-3">{row.total!=null?`KES ${number(row.total).toLocaleString()}`:row.price!=null?`KES ${number(row.price).toLocaleString()} · ${number(row.stock)} stock`:row.stock!=null?`${number(row.stock)} stock`:String(row.code||row.role||'—')}</td><td className="p-3 text-neutral-500">{row.updated_at||row.created_at?new Date(String(row.updated_at||row.created_at)).toLocaleString():'—'}</td>{!readOnly&&<td className="p-3"><button onClick={()=>edit(row)} className="mr-2 rounded-lg bg-brand-orange px-3 py-1 font-bold text-white">Edit</button><button onClick={()=>void remove(row)} className="rounded-lg border border-red-200 px-3 py-1 font-bold text-red-600">Delete</button></td>}</tr>)}</tbody></table></div>}
+function DashboardView({metrics,orders}:{metrics:DashboardMetric[];orders:Row[]}){return <div className="space-y-5"><DashboardCards metrics={metrics}/><div className="grid gap-5 xl:grid-cols-[1.5fr_1fr]"><div className="rounded-2xl border border-orange-100 bg-white p-5 shadow-card"><h3 className="text-xl font-black">Recent orders</h3><DataTable rows={orders} selected={new Set()} setSelected={()=>{}} readOnly edit={()=>{}} remove={()=>{}}/></div><div className="rounded-2xl bg-brand-ink p-6 text-white shadow-card"><BarChart3 className="text-brand-orange"/><h3 className="mt-4 text-2xl font-black">Live commerce</h3><p className="mt-2 text-white/70">Products, inventory, promotions and fulfillment update directly through Supabase with no content redeploy.</p><div className="mt-6 grid gap-3 text-sm"><p className="rounded-xl bg-white/10 p-3">✓ Row-level security enforced</p><p className="rounded-xl bg-white/10 p-3">✓ Real-time admin refresh</p><p className="rounded-xl bg-white/10 p-3">✓ Audited content changes</p></div></div></div></div>}
+function ReportsSummary({rows}:{rows:Row[]}){const completed=rows.filter(row=>row.status==='completed'),cancelled=rows.filter(row=>['cancelled','refunded'].includes(String(row.status))),revenue=rows.filter(row=>!['cancelled','refunded'].includes(String(row.status))).reduce((total,row)=>total+number(row.total),0),average=rows.length?revenue/rows.length:0;return <div className="my-5"><DashboardCards metrics={[{label:'Report revenue',value:`KES ${revenue.toLocaleString('en-KE')}`,detail:'Non-cancelled orders',tone:'green'},{label:'Average order',value:`KES ${Math.round(average).toLocaleString('en-KE')}`,detail:`Across ${rows.length} orders`,tone:'blue'},{label:'Completed',value:completed.length,detail:'Fulfilled orders',tone:'green'},{label:'Cancelled / refunded',value:cancelled.length,detail:'Review for trends',tone:cancelled.length?'red':'green'}]}/></div>}
+function AdminNotice({title,detail}:{title:string;detail:string}){return <main className="mx-auto max-w-xl px-4 py-16"><div className="rounded-3xl bg-white p-7 shadow-card"><h1 className="text-3xl font-black">{title}</h1><p className="mt-3 text-neutral-600">{detail}</p></div></main>}

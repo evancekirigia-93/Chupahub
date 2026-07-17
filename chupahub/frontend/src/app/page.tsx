@@ -30,7 +30,7 @@ export default async function Home() {
         <div className="ml-4 shrink-0 rounded-full bg-white px-4 py-3 text-center font-black text-brand-deep">{promotion.discount_type === 'percent' ? `${promotion.discount_value}%` : money(promotion.discount_value)}</div>
       </Link>)}
     </section>}
-    <CategoryGrid categories={categories} />
+    <CategoryGrid categories={categories.filter((category) => !category.parent_id)} />
     <ProductRail title="Top Sellers" products={topSellers} />
     <ProductRail title="New Arrivals" products={arrivals} />
     <ProductRail title="Featured Offers" products={featured} />
