@@ -4,13 +4,13 @@ export const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
 export const supabasePublicKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY || '';
 export const hasSupabaseConfig = Boolean(supabaseUrl && supabasePublicKey);
 
-export type DbCategory = { id: string; name: string; slug: string; parent_id?: string; icon?: string; image_url?: string; description?: string; color?: string; sort_order?: number; is_active?: boolean };
+export type DbCategory = { id: string; name: string; slug: string; parent_id?: string; icon?: string; image_url?: string; description?: string; color?: string; seo_title?: string; seo_description?: string; sort_order?: number; is_active?: boolean };
 export type DbVariant = { id: string; name: string; sku?: string; option_values?: Record<string, string>; price: number; old_price?: number; stock: number; image_url?: string; is_active?: boolean };
 export type DbBanner = { id: string; title: string; subtitle?: string | null; image_url: string; mobile_image_url?: string | null; badge_text?: string | null; button_label?: string | null; button_text?: string | null; button_url?: string | null; sort_order?: number | null; is_active?: boolean; starts_at?: string | null; ends_at?: string | null };
 export type DbPromotion = { id: string; title: string; code?: string; description?: string; image_url?: string; badge_text?: string; button_label?: string; button_url?: string; discount_type: string; discount_value: number; sort_order?: number };
 export type DbDeliverySetting = { id: string; name: string; min_distance_km: number; max_distance_km?: number; fee: number; estimated_minutes_min: number; estimated_minutes_max: number };
 export type DbProduct = {
-  id: string; name: string; slug: string; description?: string; short_description?: string; abv?: number; country?: string; bottle_size?: string;
+  id: string; name: string; slug: string; description?: string; short_description?: string; seo_title?: string; seo_description?: string; sku?: string; abv?: number; country?: string; bottle_size?: string;
   price: number; old_price?: number; currency?: string; stock?: number; image_url?: string; gallery_urls?: string[];
   is_top_seller?: boolean; is_new_arrival?: boolean; is_featured?: boolean; is_active?: boolean;
   categories?: { name: string; slug: string } | null; brands?: { name: string; country?: string } | null;
@@ -63,6 +63,12 @@ const fallbackDbProducts: DbProduct[] = fallbackProducts.map((product) => ({
 export async function getCategories(): Promise<DbCategory[]> {
   if (!hasSupabaseConfig) return fallbackDbCategories;
   return supabaseFetch<DbCategory>('categories?select=*&is_active=eq.true&order=sort_order.asc,name.asc');
+}
+
+export async function getCategory(slug: string): Promise<DbCategory | null> {
+  if (!hasSupabaseConfig) return fallbackDbCategories.find((category) => category.slug === slug) || null;
+  const rows = await supabaseFetch<DbCategory>(`categories?select=*&is_active=eq.true&slug=eq.${encodeURIComponent(slug)}&limit=1`);
+  return rows[0] || null;
 }
 
 export async function getBanners(): Promise<DbBanner[]> {

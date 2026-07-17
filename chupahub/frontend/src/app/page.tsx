@@ -1,9 +1,17 @@
 import Link from 'next/link';
+import type { Metadata } from 'next';
 import { CategoryGrid, ProductRail } from '@/components/Site';
 import { getBanners, getCategories, getProducts, getPromotions, money } from '@/lib/supabase';
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
+export const metadata: Metadata = {
+  title: 'Alcohol Delivery Nairobi – Wine, Whisky & Liquor',
+  description: 'Get fast alcohol delivery in Nairobi. Shop wine, whisky, gin, vodka, beer and mixers online from ChupaHub with convenient M-Pesa checkout.',
+  alternates: { canonical: '/' },
+  openGraph: { title: 'Alcohol Delivery Nairobi – Wine, Whisky & Liquor | ChupaHub', description: 'Shop premium drinks online with fast alcohol delivery across Nairobi.', url: '/', type: 'website' },
+  twitter: { card: 'summary', title: 'Alcohol Delivery Nairobi | ChupaHub', description: 'Wine, whisky, beer, gin and liquor delivered fast across Nairobi.' },
+};
 
 export default async function Home() {
   const [categories, banners, products, promotions] = await Promise.all([
