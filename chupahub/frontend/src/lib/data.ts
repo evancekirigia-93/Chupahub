@@ -1,7 +1,5 @@
 import { Category, HeroSlide, Product } from '@/types';
 
-export const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://api.chupahub.example/api';
-
 export const categories: Category[] = [
   { name: 'Wine', slug: 'wine', icon: '🍷', image: 'https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?auto=format&fit=crop&w=700&q=80', color: 'from-red-500 to-red-900' },
   { name: 'Gin', slug: 'gin', icon: '🍸', image: 'https://images.unsplash.com/photo-1551538827-9c037cb4f32a?auto=format&fit=crop&w=700&q=80', color: 'from-orange-300 to-orange-800' },
