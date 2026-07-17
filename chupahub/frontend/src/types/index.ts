@@ -23,12 +23,4 @@ export type Category = {
   color: string;
 };
 
-export type HeroSlide = {
-  title: string;
-  description: string;
-  image: string;
-  cta: string;
-  href: string;
-};
-
 export type OrderStatus = 'pending' | 'paid' | 'packing' | 'out_for_delivery' | 'completed' | 'cancelled' | 'refunded';

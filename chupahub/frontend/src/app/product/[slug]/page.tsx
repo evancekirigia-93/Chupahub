@@ -1,3 +1,4 @@
+import type { Metadata } from 'next';
 import { ProductRail } from '@/components/Site';
 import { getProduct, getProducts, imageFor, money } from '@/lib/supabase';
 import sanitizeHtml from 'sanitize-html';
