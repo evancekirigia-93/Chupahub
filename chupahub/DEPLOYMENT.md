@@ -1,27 +1,42 @@
-# ChupaHub Deployment Guide
+# ChupaHub deployment checklist
 
-## Frontend on Vercel
-1. Import the repository and set the project root to `chupahub/frontend`.
-2. Set `NEXT_PUBLIC_API_BASE_URL=https://api.yourdomain.com/api`.
-3. Build command: `npm run build`.
-4. Output is managed by Next.js for Vercel automatically.
+## 1. Apply Supabase migrations
 
-## Backend on Truehost, Hostinger or cPanel
-1. Upload `chupahub/backend` outside the public web root where possible.
-2. Point the domain or subdomain document root to `backend/public`.
-3. Run `composer install --no-dev --optimize-autoloader`.
-4. Create a MySQL database and import `backend/database/schema.sql` and optionally `seed.sql`.
-5. Configure `DB_HOST`, `DB_NAME`, `DB_USER`, `DB_PASS`, `JWT_SECRET`, `CORS_ORIGIN` and M-Pesa environment variables.
-6. Ensure PHP 8.3 is selected, HTTPS is enabled and file uploads are restricted to `storage/uploads`.
+In Supabase SQL Editor, run these files in order:
 
-## Operations
-- Schedule backups for MySQL and uploaded images.
-- Rotate `JWT_SECRET` and M-Pesa credentials periodically.
-- Keep Composer dependencies updated and monitor audit logs.
+1. `supabase/migrations/20260715120000_chupahub_core.sql` only if the original core schema is not already installed.
+2. `supabase/migrations/20260716160000_supabase_storefront_admin.sql`.
+3. `supabase/migrations/20260716161000_seed_existing_storefront.sql`.
 
-## Supabase setup
-1. In Supabase SQL Editor, run `supabase/migrations/20260715120000_chupahub_core.sql`.
-2. In Authentication, create an admin user, then insert that user's UUID into `public.admin_users`.
-3. In Storage, confirm the public buckets `product-images` and `homepage-banners` exist.
-4. In Vercel, set `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY` for the frontend project, then redeploy once.
-5. After deployment, content changes in `/admin` write to Supabase and appear on the live website automatically after the configured 30-second revalidation window.
+Do not reset the database. The new migrations preserve existing tables, rows, and stored objects and can safely be run again.
+
+## 2. Create the first administrator
+
+Create the user in **Authentication → Users**, then run:
+
+```sql
+insert into public.admin_users (user_id, email, role, is_active)
+select id, email, 'admin', true from auth.users where email = 'YOUR_EMAIL@example.com'
+on conflict (user_id) do update set email = excluded.email, role = 'admin', is_active = true;
+```
+
+## 3. Configure Vercel
+
+Import the repository and set the Vercel root directory to `chupahub/frontend`. Add:
+
+- `NEXT_PUBLIC_SUPABASE_URL`
+- `NEXT_PUBLIC_SUPABASE_ANON_KEY`, or `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`
+
+Do **not** add a Supabase service-role or secret key. Build with `npm run build` and deploy.
+
+## 4. Verify production
+
+1. Open `/` and confirm categories, banners, promotions, top sellers, new arrivals, and featured products appear.
+2. Open `/admin`, sign in, and confirm the account is recognized as an administrator.
+3. Upload one test category, product, or banner image and save the record.
+4. Edit its price/title/active status and allow up to 30 seconds for storefront revalidation.
+5. Confirm Customers, Orders, and Order items are readable and update a test order/payment status.
+
+## Legacy backend
+
+`chupahub/backend` is not part of the Vercel deployment and must not be configured as a second data source. It is retained only to avoid deleting historical repository files.
