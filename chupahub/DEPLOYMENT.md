@@ -4,10 +4,11 @@
 
 In Supabase SQL Editor, run these files in order:
 
-1. `supabase/migrations/20260716160000_supabase_storefront_admin.sql`.
-2. `supabase/migrations/20260716161000_seed_existing_storefront.sql`.
+1. `supabase/migrations/20260715120000_chupahub_core.sql` only if the original core schema is not already installed.
+2. `supabase/migrations/20260716160000_supabase_storefront_admin.sql`.
+3. `supabase/migrations/20260716161000_seed_existing_storefront.sql`.
 
-The storefront/admin migration is self-contained: it recreates any missing core table (including `categories`) and preserves every table, row, and stored object that still exists. Both new migrations can safely be run again. The older `20260715120000_chupahub_core.sql` is no longer required for recovery and should not be rerun.
+Do not reset the database. The new migrations preserve existing tables, rows, and stored objects and can safely be run again.
 
 ## 2. Create the first administrator
 
