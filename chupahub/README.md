@@ -1,19 +1,43 @@
 # ChupaHub
 
-Production-ready premium liquor e-commerce platform split into independent `frontend/` and `backend/` folders.
+ChupaHub is a Next.js storefront and authenticated admin dashboard backed exclusively by Supabase in production.
 
-## Phases delivered
-1. Folder structure: `frontend` Next.js app and `backend` pure PHP API.
-2. Frontend: responsive orange-and-white marketplace inspired by the former Oaks-style mobile category grid, SEO metadata, sitemap, product/category/checkout/admin pages.
-3. Backend: PHP 8.3 REST API, PDO prepared statements, JWT auth, security headers, order and M-Pesa-ready endpoints.
-4. Database: MySQL schema for products, users, orders, inventory, coupons, audit logs and delivery fees.
-5. Admin panel: modern route covering dashboard modules for content, orders, inventory, SEO and analytics.
-6. Deployment: Vercel for frontend; cPanel/Hostinger/Truehost for backend.
+## Production architecture
 
-## Deployment
-Frontend: set `NEXT_PUBLIC_API_BASE_URL`, run `npm install && npm run build`, deploy `chupahub/frontend` to Vercel.
-Backend: upload `chupahub/backend` to hosting, point document root to `public/`, run Composer, import `database/schema.sql`, configure environment variables in cPanel.
+- **Frontend and admin:** Next.js in `frontend/`, deployed to Vercel
+- **Database and authentication:** Supabase Postgres and Supabase Auth
+- **Images:** Supabase Storage (`category-images`, `product-images`, and `banner-images`)
+- **Source of truth:** Supabase. The legacy `backend/` PHP application is retained for history only and is not used by the Next.js application.
 
+The small dataset in `frontend/src/lib/data.ts` is only displayed when no Supabase environment variables are configured. Once Vercel has Supabase configuration, empty or deleted database records are not replaced with local data.
 
-## Static preview
-The repository root HTML pages include the same premium orange-and-white theme via `assets/css/styles.css` and `assets/js/app.js` so simple static previews do not render unstyled.
+## Local development
+
+```bash
+cd frontend
+cp .env.example .env.local
+npm ci
+npm run dev
+```
+
+Set `NEXT_PUBLIC_SUPABASE_URL` and either `NEXT_PUBLIC_SUPABASE_ANON_KEY` or `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`. Never add a service-role or secret key to Vercel's public variables.
+
+## Supabase setup
+
+Run the migrations in filename order using the Supabase SQL editor or CLI:
+
+1. `../supabase/migrations/20260716160000_supabase_storefront_admin.sql`
+2. `../supabase/migrations/20260716161000_seed_existing_storefront.sql`
+3. `../supabase/migrations/20260717120000_commerce_admin.sql`
+
+The migrations are non-destructive and idempotent. The schema migration first recreates any missing core tables, then restores fields, RLS, admin authorization, delivery settings, triggers, and storage buckets. The seed uses conflict checks so it never duplicates or overwrites existing storefront content. The commerce migration adds variants, category trees, inventory controls, fulfillment history, reports, settings, auditing, and Realtime subscriptions. Do not rerun the older core migration as a recovery step.
+
+Create the Auth user in **Supabase Dashboard → Authentication → Users**, then grant that existing user admin access in the SQL editor:
+
+```sql
+insert into public.admin_users (user_id, email, role, is_active)
+select id, email, 'admin', true from auth.users where email = 'YOUR_EMAIL@example.com'
+on conflict (user_id) do update set email = excluded.email, role = 'admin', is_active = true;
+```
+
+The dashboard is available at `/admin`. Authentication uses the public browser key to establish a user session; every read, write, delete, and Storage upload is authorized server-side by Supabase RLS. No service-role key is used by the application.
