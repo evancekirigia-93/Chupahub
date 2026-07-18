@@ -1,1 +1,10 @@
-export default function robots(){return{rules:{userAgent:'*',allow:'/'},sitemap:'https://chupahub.com/sitemap.xml'}}
+import type { MetadataRoute } from 'next';
+import { absoluteUrl } from '@/lib/seo';
+
+export default function robots(): MetadataRoute.Robots {
+  return {
+    rules: { userAgent: '*', allow: '/', disallow: ['/admin/', '/checkout/'] },
+    sitemap: absoluteUrl('/sitemap.xml'),
+    host: absoluteUrl('/'),
+  };
+}

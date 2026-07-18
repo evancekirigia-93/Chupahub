@@ -1,20 +1,25 @@
 import type { Metadata } from 'next';
 import './globals.css';
 import { Footer, Header } from '@/components/Site';
+import { businessGraph, DEFAULT_DESCRIPTION, JsonLd, SITE_NAME, SITE_URL } from '@/lib/seo';
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://chupahub.com'),
+  metadataBase: new URL(SITE_URL),
   title: {
-    default: 'ChupaHub | Fast Liquor Delivery Kenya',
+    default: 'Alcohol Delivery Nairobi | ChupaHub',
     template: '%s | ChupaHub',
   },
-  description: 'Orange-and-white liquor marketplace with instant search, M-Pesa checkout, loyalty points, WhatsApp ordering and live Nairobi delivery tracking.',
+  description: DEFAULT_DESCRIPTION,
+  applicationName: SITE_NAME,
+  keywords: ['Alcohol Delivery Nairobi', 'Wine Delivery Nairobi', 'Whisky Delivery Nairobi', 'Liquor Delivery Nairobi', 'Gin Delivery Nairobi', 'Beer Delivery Nairobi'],
+  alternates: { canonical: '/' },
   openGraph: {
-    title: 'ChupaHub',
-    description: 'Fast orange-and-white liquor marketplace for Nairobi delivery.',
-    type: 'website',
+    title: 'Alcohol Delivery Nairobi | ChupaHub',
+    description: DEFAULT_DESCRIPTION,
+    type: 'website', url: SITE_URL, siteName: SITE_NAME, locale: 'en_KE',
   },
-  robots: 'index, follow',
+  twitter: { card: 'summary', title: 'Alcohol Delivery Nairobi | ChupaHub', description: DEFAULT_DESCRIPTION },
+  robots: { index: true, follow: true, googleBot: { index: true, follow: true, 'max-image-preview': 'large', 'max-snippet': -1 } },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -22,6 +27,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en">
       <body className="app-shell min-h-screen">
         <Header />
+        <JsonLd data={businessGraph} />
         {children}
         <Footer />
       </body>
