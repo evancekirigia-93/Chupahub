@@ -4,9 +4,9 @@ export const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
 export const supabasePublicKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY || '';
 export const hasSupabaseConfig = Boolean(supabaseUrl && supabasePublicKey);
 
-export type DbCategory = { id: string; name: string; slug: string; parent_id?: string; icon?: string; image_url?: string; description?: string; color?: string; sort_order?: number; is_active?: boolean };
+export type DbCategory = { id: string; name: string; slug: string; parent_id?: string; icon?: string; image_url?: string; description?: string; color?: string; seo_title?: string; seo_description?: string; sort_order?: number; is_active?: boolean };
 export type DbVariant = { id: string; name: string; sku?: string; option_values?: Record<string, string>; price: number; old_price?: number; stock: number; image_url?: string; is_active?: boolean };
-export type DbBanner = { id: string; title: string; subtitle?: string; image_url: string; mobile_image_url?: string; badge_text?: string; button_label?: string; button_url?: string; sort_order?: number };
+export type DbBanner = { id: string; title: string; subtitle?: string | null; image_url: string; mobile_image_url?: string | null; badge_text?: string | null; button_label?: string | null; button_text?: string | null; button_url?: string | null; sort_order?: number | null; is_active?: boolean; starts_at?: string | null; ends_at?: string | null };
 export type DbPromotion = { id: string; title: string; code?: string; description?: string; image_url?: string; badge_text?: string; button_label?: string; button_url?: string; discount_type: string; discount_value: number; sort_order?: number };
 export type DbDeliverySetting = { id: string; name: string; min_distance_km: number; max_distance_km?: number; fee: number; estimated_minutes_min: number; estimated_minutes_max: number };
 export type DbProduct = {
@@ -28,7 +28,7 @@ async function supabaseFetch<T>(path: string, options: SupabaseFetchOptions = {}
   try {
     const response = await fetch(`${supabaseUrl}/rest/v1/${path}`, {
       headers: { apikey: supabasePublicKey, Authorization: `Bearer ${supabasePublicKey}` },
-      next: { revalidate: 5 },
+      ...(options.cache === 'no-store' ? { cache: 'no-store' as const } : { next: { revalidate: 5 } }),
     });
     if (!response.ok) {
       const details = (await response.text()).slice(0, 1000);
