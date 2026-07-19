@@ -1,21 +1,24 @@
 'use client';
 
 import Link from 'next/link';
+import { useEffect, useState } from 'react';
 import { Heart, Menu, Search, ShoppingBag, UserCircle } from 'lucide-react';
 import { DbCategory, DbProduct, imageFor, money } from '@/lib/supabase';
 
-export function Header() {
+export function Header({ content = {} }: { content?: { header_notice?: string; logo_text?: string } }) {
+  const [cartCount, setCartCount] = useState(0);
+  useEffect(() => { const refresh = () => { try { setCartCount(JSON.parse(localStorage.getItem('chupahub-cart') || '[]').reduce((total: number, item: { quantity?: number }) => total + Number(item.quantity || 0), 0)); } catch { setCartCount(0); } }; refresh(); window.addEventListener('chupahub-cart-updated', refresh); return () => window.removeEventListener('chupahub-cart-updated', refresh); }, []);
   return (
     <header className="bg-brand-deep text-white shadow-orange">
       <div className="mx-auto flex max-w-none items-center justify-between px-3 pt-1 text-[11px] font-semibold sm:px-6 sm:pt-3">
-        <span>Delivery within Nairobi: <strong>10-50min</strong></span>
+        <span>{content.header_notice || 'Delivery within Nairobi: 10-50min'}</span>
         <span className="rounded-full bg-white/15 px-2.5 py-0.5">18+</span>
       </div>
       <nav className="mx-auto max-w-none px-3 py-2 sm:px-6">
         <div className="flex flex-wrap items-center justify-between gap-2 sm:gap-3">
           <button className="flex items-center gap-2 rounded-xl px-1 py-2 text-sm uppercase tracking-wide focus-ring" aria-label="Open menu"><Menu size={32} /><span>Menu</span></button>
-          <Link href="/" className="flex items-center gap-2 text-lg font-black tracking-tight" aria-label="ChupaHub home"><span className="grid h-7 w-7 place-items-center rounded-full bg-white text-brand-deep shadow-card">🍾</span><span>ChupaHub</span></Link>
-          <div className="flex items-center gap-2 sm:gap-3"><Link className="focus-ring" href="/account" aria-label="Account"><UserCircle size={30} /></Link><Heart className="hidden sm:block" aria-label="Wishlist" /><Link href="/checkout" className="relative rounded-xl border-2 border-white px-3 py-2 focus-ring" aria-label="Cart"><ShoppingBag /><span className="absolute -right-2 -top-2 grid h-6 w-6 place-items-center rounded-full bg-white text-xs font-black text-brand-deep">0</span></Link></div>
+          <Link href="/" className="flex items-center gap-2 text-lg font-black tracking-tight" aria-label="ChupaHub home"><span className="grid h-7 w-7 place-items-center rounded-full bg-white text-brand-deep shadow-card">🍾</span><span>{content.logo_text || 'ChupaHub'}</span></Link>
+          <div className="flex items-center gap-2 sm:gap-3"><Link className="focus-ring" href="/account" aria-label="Account"><UserCircle size={30} /></Link><Heart className="hidden sm:block" aria-label="Wishlist" /><Link href="/checkout" className="relative rounded-xl border-2 border-white px-3 py-2 focus-ring" aria-label="Cart"><ShoppingBag /><span className="absolute -right-2 -top-2 grid h-6 w-6 place-items-center rounded-full bg-white text-xs font-black text-brand-deep">{cartCount}</span></Link></div>
         </div>
         <label className="mt-2 flex min-w-0 flex-1 basis-full items-center gap-2 rounded-full bg-white px-3 py-2 text-brand-ink shadow-card sm:px-4"><Search className="text-brand-orange" /><input className="w-full bg-transparent text-sm outline-none placeholder:text-neutral-500" placeholder="Search products..." aria-label="Search products" /></label>
       </nav>
@@ -23,8 +26,8 @@ export function Header() {
   );
 }
 
-export function Footer() {
-  return <footer className="mt-16 bg-brand-ink text-white"><div className="mx-auto grid max-w-none gap-8 px-4 py-12 md:grid-cols-4"><div className="md:col-span-2"><h3 className="text-3xl font-black text-brand-orange">ChupaHub</h3><p className="mt-3 max-w-md text-white/75">Orange-and-white premium liquor delivery with loyalty points, AI recommendations, WhatsApp ordering and live tracking.</p></div>{['About', 'Privacy', 'Terms', 'Contact'].map((item) => <Link className="text-white/75 hover:text-white" href={`/${item.toLowerCase()}`} key={item}>{item}</Link>)}</div></footer>;
+export function Footer({ content = {} }: { content?: { footer_text?: string; contact_phone?: string; contact_email?: string; logo_text?: string } }) {
+  return <footer className="mt-16 bg-brand-ink text-white"><div className="mx-auto grid max-w-none gap-8 px-4 py-12 md:grid-cols-4"><div className="md:col-span-2"><h3 className="text-3xl font-black text-brand-orange">{content.logo_text || 'ChupaHub'}</h3><p className="mt-3 max-w-md text-white/75">{content.footer_text || 'Premium drinks delivered across Nairobi.'}</p>{(content.contact_phone || content.contact_email) && <p className="mt-3 text-sm text-white/75">{content.contact_phone}{content.contact_phone && content.contact_email ? ' · ' : ''}{content.contact_email}</p>}</div>{['About', 'Privacy', 'Terms', 'Contact'].map((item) => <Link className="text-white/75 hover:text-white" href={`/${item.toLowerCase()}`} key={item}>{item}</Link>)}</div></footer>;
 }
 
 export function CategoryGrid({ categories }: { categories: DbCategory[] }) {
