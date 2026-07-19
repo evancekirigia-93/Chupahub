@@ -5,6 +5,10 @@ The production admin dashboard lives inside the existing Next.js storefront, not
 - Production URL: `https://www.chupahub.com/admin`
 - Local URL: `http://localhost:3000/admin`
 
+## Vercel project routing
+
+This repository includes a root `vercel.json` so the existing Vercel project deploys the Next.js app from `chupahub/frontend` instead of serving the old static root HTML files. That routing is what makes `/admin` resolve on `www.chupahub.com`.
+
 ## Required Vercel environment variables
 
 Set these variables on the existing Vercel project connected to `www.chupahub.com`:
