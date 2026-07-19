@@ -52,3 +52,9 @@ After signing in, `/admin` manages live Supabase data for:
 - Orders, payment statuses, order workflow statuses, customers, audit logs and reports.
 
 All writes are protected by Supabase Auth plus RLS policies. The browser uses the public anon/publishable key and never bypasses RLS.
+
+## Simplified catalog update
+
+Run `supabase/migrations/20260719120000_simplified_storefront_admin.sql` once in the Supabase SQL Editor before deploying this version. It is additive and safe to rerun: it preserves existing products, customers, orders and categories, links order items to optional product sizes, creates the editable public website-content settings, and adds the automatic-slug safeguard.
+
+No Vercel project or routing change is required for this update. Keep the existing project rooted at this repository with the committed root `vercel.json`, and ensure `NEXT_PUBLIC_SUPABASE_URL` plus `NEXT_PUBLIC_SUPABASE_ANON_KEY` are present in its Production environment.

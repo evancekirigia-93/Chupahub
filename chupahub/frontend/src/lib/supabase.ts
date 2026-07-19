@@ -109,5 +109,13 @@ export async function getProduct(slug: string): Promise<DbProduct | null> {
   return rows[0] || null;
 }
 
+
+export type SiteContent = { about?: string; contact_phone?: string; contact_email?: string; header_notice?: string; footer_text?: string; logo_text?: string };
+export async function getSiteContent(): Promise<SiteContent> {
+  if (!hasSupabaseConfig) return {};
+  const rows = await supabaseFetch<{ value: SiteContent }>('store_settings?select=value&key=eq.site_content&is_public=eq.true&limit=1');
+  return rows[0]?.value || {};
+}
+
 export const money = (value: number) => `KES ${Number(value).toLocaleString('en-KE')}`;
 export const imageFor = (product: DbProduct) => product.image_url || product.gallery_urls?.[0] || '/placeholder-product.png';

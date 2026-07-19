@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import './globals.css';
 import { Footer, Header } from '@/components/Site';
+import { getSiteContent } from '@/lib/supabase';
 import { businessGraph, DEFAULT_DESCRIPTION, JsonLd, SITE_NAME, SITE_URL } from '@/lib/seo';
 
 export const metadata: Metadata = {
@@ -22,14 +23,15 @@ export const metadata: Metadata = {
   robots: { index: true, follow: true, googleBot: { index: true, follow: true, 'max-image-preview': 'large', 'max-snippet': -1 } },
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  const content = await getSiteContent();
   return (
     <html lang="en">
       <body className="app-shell min-h-screen">
-        <Header />
+        <Header content={content} />
         <JsonLd data={businessGraph} />
         {children}
-        <Footer />
+        <Footer content={content} />
       </body>
     </html>
   );
