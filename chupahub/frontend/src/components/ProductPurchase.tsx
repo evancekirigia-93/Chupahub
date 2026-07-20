@@ -23,7 +23,6 @@ export function ProductPurchase({ product }: { product: DbProduct }) {
     else cart.push({ productId: product.id, variantId: selected?.id, name: product.name, size: selected?.name, price, image, quantity: 1 });
     localStorage.setItem('chupahub-cart', JSON.stringify(cart));
     window.dispatchEvent(new Event('chupahub-cart-updated'));
-    window.location.href = '/checkout';
   }
 
   return <div className="mt-6">

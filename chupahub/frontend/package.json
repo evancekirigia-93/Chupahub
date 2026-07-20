@@ -6,6 +6,7 @@
     "lint": "tsc --noEmit"
   },
   "dependencies": {
+    "@supabase/server": "^1.4.0",
     "@supabase/supabase-js": "^2.110.7",
     "lucide-react": "latest",
     "next": "latest",
