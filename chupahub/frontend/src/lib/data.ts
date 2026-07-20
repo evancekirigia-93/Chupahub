@@ -1,6 +1,4 @@
-import { Category, HeroSlide, Product } from '@/types';
-
-export const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://api.chupahub.example/api';
+import { Category, Product } from '@/types';
 
 export const categories: Category[] = [
   { name: 'Wine', slug: 'wine', icon: '🍷', image: 'https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?auto=format&fit=crop&w=700&q=80', color: 'from-red-500 to-red-900' },
@@ -15,23 +13,6 @@ export const categories: Category[] = [
   { name: 'Sparkling', slug: 'sparkling', icon: '🍾', image: 'https://images.unsplash.com/photo-1567696911980-2eed69a46042?auto=format&fit=crop&w=700&q=80', color: 'from-yellow-300 to-stone-700' },
   { name: 'Mixers', slug: 'mixers', icon: '🍸', image: 'https://images.unsplash.com/photo-1622483767028-3f66f32aef97?auto=format&fit=crop&w=700&q=80', color: 'from-teal-200 to-teal-800' },
   { name: 'Snacks', slug: 'snacks', icon: '🍿', image: 'https://images.unsplash.com/photo-1621939514649-280e2ee25f60?auto=format&fit=crop&w=700&q=80', color: 'from-yellow-100 to-orange-700' },
-];
-
-export const slides: HeroSlide[] = [
-  {
-    title: 'Buy more, chill faster',
-    description: 'Orange-hot deals, 10–50 minute Nairobi delivery and WhatsApp ordering for parties, gifting and restocking.',
-    image: 'https://images.unsplash.com/photo-1608270586620-248524c67de9?auto=format&fit=crop&w=1600&q=80',
-    cta: 'Buy now',
-    href: '/category/beer',
-  },
-  {
-    title: 'Oaks-style browsing, ChupaHub speed',
-    description: 'Large category tiles, instant search, live GPS delivery fees and secure M-Pesa checkout.',
-    image: 'https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?auto=format&fit=crop&w=1600&q=80',
-    cta: 'Shop offers',
-    href: '/category/wine',
-  },
 ];
 
 export const products: Product[] = [
