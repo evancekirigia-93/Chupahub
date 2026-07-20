@@ -1,0 +1,6 @@
+<svg width="760" height="170" viewBox="0 0 760 170" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="ChupaHub">
+  <path d="M66 12h42v21l11 16v63c0 14-11 25-25 25H80c-14 0-25-11-25-25V49l11-16V12Z" fill="white"/>
+  <path d="M60 59h54M68 78h38M72 96h30v30H72z" stroke="#092946" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M87 102v19M79 111h16" stroke="white" stroke-width="4" stroke-linecap="round"/>
+  <text x="142" y="116" fill="white" font-family="Arial Black, Arial, Helvetica, sans-serif" font-size="82" font-weight="900" letter-spacing="-4">CHUPAHUB</text>
+</svg>
