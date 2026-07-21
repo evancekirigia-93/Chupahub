@@ -110,7 +110,11 @@ export async function getProduct(slug: string): Promise<DbProduct | null> {
 }
 
 
-export type SiteContent = { about?: string; contact_phone?: string; contact_email?: string; header_notice?: string; footer_text?: string; logo_text?: string };
+export type SiteContent = {
+  about?: string; contact_phone?: string; contact_email?: string; header_notice?: string; footer_text?: string; logo_text?: string;
+  instagram_url?: string; facebook_url?: string; tiktok_url?: string; whatsapp_url?: string;
+  journal_title?: string; journal_intro?: string;
+};
 export async function getSiteContent(): Promise<SiteContent> {
   if (!hasSupabaseConfig) return {};
   const rows = await supabaseFetch<{ value: SiteContent }>('store_settings?select=value&key=eq.site_content&is_public=eq.true&limit=1');

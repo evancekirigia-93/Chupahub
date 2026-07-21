@@ -12,17 +12,17 @@ html {
 
 body {
   background: #fff7ed;
-  color: #21140f;
+  color: #0B1F3A;
 }
 
 .app-shell {
   background:
     radial-gradient(circle at top left, rgba(255, 255, 255, .72), transparent 32rem),
-    linear-gradient(180deg, #f97821 0%, #ffab5d 11rem, #fff7ed 11rem, #ffffff 100%);
+    linear-gradient(180deg, #F97316 0%, #fb923c 11rem, #fff7ed 11rem, #ffffff 100%);
 }
 
 .orange-gradient {
-  background: linear-gradient(135deg, #ffad63 0%, #f97821 52%, #e76512 100%);
+  background: linear-gradient(135deg, #fb923c 0%, #F97316 52%, #ea580c 100%);
 }
 
 .tile-shade {
@@ -30,6 +30,6 @@ body {
 }
 
 .focus-ring:focus-visible {
-  outline: 3px solid rgba(240, 90, 26, .42);
+  outline: 3px solid rgba(249, 115, 22, .42);
   outline-offset: 3px;
 }
