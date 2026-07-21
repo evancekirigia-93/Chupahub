@@ -29,7 +29,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
     <html lang="en">
       <body className="app-shell min-h-screen">
         <Header content={content} />
-        <JsonLd data={businessGraph} />
+        <JsonLd data={businessGraph([content.instagram_url || '', content.facebook_url || '', content.tiktok_url || ''])} />
         {children}
         <Footer content={content} />
       </body>
