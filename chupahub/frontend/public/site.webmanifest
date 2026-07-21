@@ -1,0 +1,15 @@
+{
+  "name": "ChupaHub",
+  "short_name": "ChupaHub",
+  "icons": [
+    {
+      "src": "/chupahub-logo.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ],
+  "theme_color": "#F97316",
+  "background_color": "#FFFFFF",
+  "display": "standalone"
+}

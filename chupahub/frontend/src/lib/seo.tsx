@@ -28,6 +28,7 @@ export function businessGraph(socialLinks: string[] = []) {
       '@id': `${SITE_URL}/#organization`,
       name: SITE_NAME,
       url: SITE_URL,
+      logo: absoluteUrl('/chupahub-logo.svg'),
       description: DEFAULT_DESCRIPTION,
       sameAs: socialLinks.filter(Boolean),
     },
