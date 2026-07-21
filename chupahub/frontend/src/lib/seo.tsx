@@ -19,7 +19,8 @@ export function JsonLd({ data }: { data: Record<string, unknown> | Array<Record<
   return <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: json }} />;
 }
 
-export const businessGraph = {
+export function businessGraph(socialLinks: string[] = []) {
+  return {
   '@context': 'https://schema.org',
   '@graph': [
     {
@@ -27,8 +28,9 @@ export const businessGraph = {
       '@id': `${SITE_URL}/#organization`,
       name: SITE_NAME,
       url: SITE_URL,
+      logo: absoluteUrl('/chupahub-logo.svg'),
       description: DEFAULT_DESCRIPTION,
-      sameAs: [],
+      sameAs: socialLinks.filter(Boolean),
     },
     {
       '@type': ['LocalBusiness', 'LiquorStore'],
@@ -50,7 +52,8 @@ export const businessGraph = {
       inLanguage: 'en-KE',
     },
   ],
-};
+  };
+}
 
 export function breadcrumbSchema(items: Array<{ name: string; url: string }>) {
   return {
