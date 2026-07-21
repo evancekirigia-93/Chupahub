@@ -42,6 +42,7 @@ The repository order is the filename order below:
 7. `20260719120000_simplified_storefront_admin.sql`
 8. `20260720120000_add_editable_social_journal_content.sql`
 9. `20260721120000_import_requested_spirits.sql`
+10. `20260722120000_homepage_sections_and_stock_controls.sql`
 
 For an **existing production project**, first run `supabase migration list
 --linked` and preserve its output with the deployment record. If its history
