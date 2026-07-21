@@ -1,13 +1,11 @@
 # ChupaHub deployment checklist
 
-## 1. Apply Supabase migrations
+## 1. Audit and apply Supabase migrations
 
-In Supabase SQL Editor, run these files in order:
-
-1. `supabase/migrations/20260716160000_supabase_storefront_admin.sql`.
-2. `supabase/migrations/20260716161000_seed_existing_storefront.sql`.
-
-The storefront/admin migration is self-contained: it recreates any missing core table (including `categories`) and preserves every table, row, and stored object that still exists. Both new migrations can safely be run again. The older `20260715120000_chupahub_core.sql` is no longer required for recovery and should not be rerun.
+Follow the single source of truth in [`../supabase/MIGRATIONS.md`](../supabase/MIGRATIONS.md).
+Use `supabase migration list --linked` to audit production migration history
+before applying pending migrations with `supabase db push`; do not manually
+rerun historical SQL files.
 
 ## 2. Create the first administrator
 
@@ -40,16 +38,9 @@ Do **not** add a Supabase service-role or secret key. Build with `npm run build`
 
 `chupahub/backend` is not part of the Vercel deployment and must not be configured as a second data source. It is retained only to avoid deleting historical repository files.
 
-## Commerce administration upgrade
+## Admin and checkout scope
 
-After the core recovery and seed migrations, run `supabase/migrations/20260717120000_commerce_admin.sql`. It adds product variants, hierarchical categories, inventory alerts and movements, order workflow history, audited settings, and Realtime subscriptions. The migration is non-destructive and safe to rerun.
-
-The `/admin` dashboard then provides live metrics, catalog bulk actions, drag-and-drop galleries, rich descriptions, variants, fulfillment workflows, inventory alerts, promotions, banners, delivery zones, reports, settings, and an audit log. All writes continue to use the signed-in Supabase user and RLS; no service-role key is needed in the browser.
-
-## Live homepage banners
-
-The homepage is dynamically rendered and reads `public.homepage_banners` with `cache: 'no-store'`; it does not use a coded banner fallback. Apply `supabase/migrations/20260717130000_homepage_banner_public_read.sql` to explicitly grant `anon` and `authenticated` SELECT access to active banners.
-
-In Vercel, check **Settings → Environment Variables → Production** and confirm that the project reference in `NEXT_PUBLIC_SUPABASE_URL` exactly matches **Supabase Dashboard → Project Settings → API → Project URL**. Update `NEXT_PUBLIC_SUPABASE_ANON_KEY` from the same Supabase project's API page, then redeploy once so the environment correction takes effect. Later banner edits do not require redeployment.
-
-Production server logs include `[ChupaHub banners]` with the non-secret Supabase project reference and fetched/visible row counts. Query failures include the HTTP status and Supabase response without logging the anon key.
+The supported admin is the simple catalog/content administration interface. The
+checkout page is not yet connected to an order-creation transaction, so do not
+enable payment collection until the order persistence work described in
+`supabase/MIGRATIONS.md` is complete.
