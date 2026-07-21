@@ -21,6 +21,7 @@ export const metadata: Metadata = {
   },
   twitter: { card: 'summary', title: 'Alcohol Delivery Nairobi | ChupaHub', description: DEFAULT_DESCRIPTION },
   icons: { icon: [{ url: '/chupahub-logo.svg', type: 'image/svg+xml' }], apple: [{ url: '/chupahub-logo.svg', type: 'image/svg+xml' }], shortcut: ['/chupahub-logo.svg'] },
+  manifest: '/site.webmanifest',
   robots: { index: true, follow: true, googleBot: { index: true, follow: true, 'max-image-preview': 'large', 'max-snippet': -1 } },
 };
 

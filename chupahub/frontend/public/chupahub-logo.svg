@@ -1,9 +1,9 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 215 241" role="img" aria-labelledby="title desc">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 328 541" role="img" aria-labelledby="title desc">
   <title id="title">ChupaHub</title>
-  <desc id="desc">ChupaHub white CH monogram on deep navy</desc>
-  <rect width="215" height="241" rx="5" fill="#0B1F3A"/>
-  <!-- Vector recreation of the supplied ChupaHub mark: white monogram and vessel loop. -->
-  <path fill="#fff" d="M30 22c15-11 99-11 116 0 9 6 13 16 10 28-5 22-18 38-34 51 8 11 13 23 14 36-5-10-12-19-21-26-7 5-15 8-24 8s-17-3-24-8c-9 7-16 16-21 26 1-13 6-25 14-36C44 88 31 72 26 50c-3-12-2-22 4-28Zm13 12c-3 2-4 6-3 12 4 19 16 34 31 46 7-4 13-6 20-6s13 2 20 6c15-12 27-27 31-46 1-6 0-10-3-12-13-8-83-8-96 0Z"/>
-  <path fill="#fff" d="M84 104h15l3 10h-21l3-10Zm-42 48c0-38 20-59 50-59 15 0 28 5 37 14l-10 14c-7-6-16-10-25-10-18 0-31 15-31 40s12 40 31 40c10 0 20-5 27-12l10 14c-10 11-24 17-39 17-30 0-50-21-50-59Z"/>
-  <path fill="#fff" d="M112 95h21v42h37V95h21v109h-21v-48h-37v48h-21V95Z"/>
+  <desc id="desc">Orange ChupaHub vessel and CH monogram logo</desc>
+  <rect width="328" height="541" fill="#fff"/>
+  <!-- Text-only vector recreation of the supplied ChupaHub logo. -->
+  <path fill="#F97316" d="M26 15C73-3 252-8 302 14c22 10 31 27 24 55-8 33-31 76-59 112-12 15-28 32-45 50 8 17 17 36 22 57-13-18-27-32-43-41-15 8-30 12-45 12s-30-4-45-12c-16 9-30 23-43 41 5-21 14-40 22-57-17-18-33-35-45-50C38 146 15 103 7 70 0 42 5 25 26 15Zm20 36c-8 4-11 10-8 22 8 33 32 74 65 111 16-8 34-12 53-12s37 4 53 12c33-37 57-78 65-111 3-12 0-18-8-22-40-15-181-15-220 0Z"/>
+  <path fill="#F97316" d="M51 311c19-34 57-55 105-55s86 21 105 55c23 40 25 88 6 128-17 36-50 61-91 69l-3-31c27-7 49-23 60-47 13-28 12-61-4-88-13-23-39-37-73-37s-60 14-73 37c-16 27-17 60-4 88 11 24 33 40 60 47l-3 31c-41-8-74-33-91-69-19-40-17-88 6-128Z"/>
+  <text x="155" y="528" text-anchor="middle" fill="#1f1f1f" font-family="Georgia, 'Times New Roman', serif" font-size="278" font-weight="700" letter-spacing="-35">CH</text>
 </svg>
