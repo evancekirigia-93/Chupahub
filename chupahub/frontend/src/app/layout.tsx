@@ -20,6 +20,7 @@ export const metadata: Metadata = {
     type: 'website', url: SITE_URL, siteName: SITE_NAME, locale: 'en_KE',
   },
   twitter: { card: 'summary', title: 'Alcohol Delivery Nairobi | ChupaHub', description: DEFAULT_DESCRIPTION },
+  icons: { icon: [{ url: '/chupahub-logo.svg', type: 'image/svg+xml' }], apple: [{ url: '/chupahub-logo.svg', type: 'image/svg+xml' }], shortcut: ['/chupahub-logo.svg'] },
   robots: { index: true, follow: true, googleBot: { index: true, follow: true, 'max-image-preview': 'large', 'max-snippet': -1 } },
 };
 
@@ -29,7 +30,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
     <html lang="en">
       <body className="app-shell min-h-screen">
         <Header content={content} />
-        <JsonLd data={businessGraph} />
+        <JsonLd data={businessGraph([content.instagram_url || '', content.facebook_url || '', content.tiktok_url || ''])} />
         {children}
         <Footer content={content} />
       </body>

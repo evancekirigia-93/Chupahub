@@ -1,1 +1,6 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="14" fill="#f97821"/><path d="M23 9h18v10l6 9v21c0 4-3 7-7 7H24c-4 0-7-3-7-7V28l6-9V9Z" fill="#092946"/><path d="M21 29h22M25 37h14" stroke="#fff" stroke-width="4" stroke-linecap="round"/><path d="M32 36v12" stroke="#f97821" stroke-width="4" stroke-linecap="round"/></svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 215 241" role="img" aria-label="ChupaHub">
+  <rect width="215" height="241" rx="5" fill="#0B1F3A"/>
+  <path fill="#fff" d="M30 22c15-11 99-11 116 0 9 6 13 16 10 28-5 22-18 38-34 51 8 11 13 23 14 36-5-10-12-19-21-26-7 5-15 8-24 8s-17-3-24-8c-9 7-16 16-21 26 1-13 6-25 14-36C44 88 31 72 26 50c-3-12-2-22 4-28Zm13 12c-3 2-4 6-3 12 4 19 16 34 31 46 7-4 13-6 20-6s13 2 20 6c15-12 27-27 31-46 1-6 0-10-3-12-13-8-83-8-96 0Z"/>
+  <path fill="#fff" d="M84 104h15l3 10h-21l3-10Zm-42 48c0-38 20-59 50-59 15 0 28 5 37 14l-10 14c-7-6-16-10-25-10-18 0-31 15-31 40s12 40 31 40c10 0 20-5 27-12l10 14c-10 11-24 17-39 17-30 0-50-21-50-59Z"/>
+  <path fill="#fff" d="M112 95h21v42h37V95h21v109h-21v-48h-37v48h-21V95Z"/>
+</svg>

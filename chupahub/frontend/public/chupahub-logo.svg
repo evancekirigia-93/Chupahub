@@ -1,6 +1,9 @@
-<svg width="760" height="170" viewBox="0 0 760 170" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="ChupaHub">
-  <path d="M66 12h42v21l11 16v63c0 14-11 25-25 25H80c-14 0-25-11-25-25V49l11-16V12Z" fill="white"/>
-  <path d="M60 59h54M68 78h38M72 96h30v30H72z" stroke="#092946" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
-  <path d="M87 102v19M79 111h16" stroke="white" stroke-width="4" stroke-linecap="round"/>
-  <text x="142" y="116" fill="white" font-family="Arial Black, Arial, Helvetica, sans-serif" font-size="82" font-weight="900" letter-spacing="-4">CHUPAHUB</text>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 215 241" role="img" aria-labelledby="title desc">
+  <title id="title">ChupaHub</title>
+  <desc id="desc">ChupaHub white CH monogram on deep navy</desc>
+  <rect width="215" height="241" rx="5" fill="#0B1F3A"/>
+  <!-- Vector recreation of the supplied ChupaHub mark: white monogram and vessel loop. -->
+  <path fill="#fff" d="M30 22c15-11 99-11 116 0 9 6 13 16 10 28-5 22-18 38-34 51 8 11 13 23 14 36-5-10-12-19-21-26-7 5-15 8-24 8s-17-3-24-8c-9 7-16 16-21 26 1-13 6-25 14-36C44 88 31 72 26 50c-3-12-2-22 4-28Zm13 12c-3 2-4 6-3 12 4 19 16 34 31 46 7-4 13-6 20-6s13 2 20 6c15-12 27-27 31-46 1-6 0-10-3-12-13-8-83-8-96 0Z"/>
+  <path fill="#fff" d="M84 104h15l3 10h-21l3-10Zm-42 48c0-38 20-59 50-59 15 0 28 5 37 14l-10 14c-7-6-16-10-25-10-18 0-31 15-31 40s12 40 31 40c10 0 20-5 27-12l10 14c-10 11-24 17-39 17-30 0-50-21-50-59Z"/>
+  <path fill="#fff" d="M112 95h21v42h37V95h21v109h-21v-48h-37v48h-21V95Z"/>
 </svg>
