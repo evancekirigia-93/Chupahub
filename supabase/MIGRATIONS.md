@@ -40,6 +40,7 @@ The repository order is the filename order below:
 5. `20260717130000_homepage_banner_public_read.sql`
 6. `20260718120000_admin_dashboard_access.sql`
 7. `20260719120000_simplified_storefront_admin.sql`
+8. `20260720120000_add_editable_social_journal_content.sql`
 
 For an **existing production project**, first run `supabase migration list
 --linked` and preserve its output with the deployment record. If its history
