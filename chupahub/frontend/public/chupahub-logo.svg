@@ -1,9 +1,6 @@
-<svg width="640" height="180" viewBox="0 0 640 180" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title">
-  <title>ChupaHub</title>
-  <rect width="640" height="180" rx="32" fill="#092946"/>
-  <path d="M71 30h42v25l13 18v62c0 12-10 22-22 22H80c-12 0-22-10-22-22V73l13-18V30Z" fill="#fff"/>
-  <path d="M79 42h26M72 87h40M80 100h24v39H80z" stroke="#F97821" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
-  <path d="M92 108v22M85 119h14" stroke="#fff" stroke-width="5" stroke-linecap="round"/>
-  <text x="150" y="116" fill="#fff" font-family="Arial, Helvetica, sans-serif" font-size="78" font-weight="800" letter-spacing="-3">CHUPA</text>
-  <text x="414" y="116" fill="#F97821" font-family="Arial, Helvetica, sans-serif" font-size="78" font-weight="800" letter-spacing="-3">HUB</text>
+<svg width="760" height="170" viewBox="0 0 760 170" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="ChupaHub">
+  <path d="M66 12h42v21l11 16v63c0 14-11 25-25 25H80c-14 0-25-11-25-25V49l11-16V12Z" fill="white"/>
+  <path d="M60 59h54M68 78h38M72 96h30v30H72z" stroke="#092946" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M87 102v19M79 111h16" stroke="white" stroke-width="4" stroke-linecap="round"/>
+  <text x="142" y="116" fill="white" font-family="Arial Black, Arial, Helvetica, sans-serif" font-size="82" font-weight="900" letter-spacing="-4">CHUPAHUB</text>
 </svg>
