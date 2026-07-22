@@ -5,13 +5,14 @@ export const supabasePublicKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || pr
 export const hasSupabaseConfig = Boolean(supabaseUrl && supabasePublicKey);
 
 export type DbCategory = { id: string; name: string; slug: string; parent_id?: string; icon?: string; image_url?: string; description?: string; color?: string; seo_title?: string; seo_description?: string; sort_order?: number; is_active?: boolean };
-export type DbVariant = { id: string; name: string; sku?: string; option_values?: Record<string, string>; price: number; old_price?: number; stock: number; image_url?: string; is_active?: boolean };
+export type DbVariant = { id: string; name: string; sku?: string; option_values?: Record<string, string>; price: number; old_price?: number; stock: number; low_stock_threshold?: number; image_url?: string; is_active?: boolean };
 export type DbBanner = { id: string; title: string; subtitle?: string | null; image_url: string; mobile_image_url?: string | null; badge_text?: string | null; button_label?: string | null; button_text?: string | null; button_url?: string | null; sort_order?: number | null; is_active?: boolean; starts_at?: string | null; ends_at?: string | null };
 export type DbPromotion = { id: string; title: string; code?: string; description?: string; image_url?: string; badge_text?: string; button_label?: string; button_url?: string; discount_type: string; discount_value: number; sort_order?: number };
 export type DbDeliverySetting = { id: string; name: string; min_distance_km: number; max_distance_km?: number; fee: number; estimated_minutes_min: number; estimated_minutes_max: number };
 export type DbProduct = {
   id: string; name: string; slug: string; description?: string; short_description?: string; seo_title?: string; seo_description?: string; sku?: string; abv?: number; country?: string; bottle_size?: string;
-  price: number; old_price?: number; currency?: string; stock?: number; image_url?: string; gallery_urls?: string[];
+  price: number; old_price?: number; currency?: string; stock?: number; low_stock_threshold?: number; image_url?: string; gallery_urls?: string[];
+  tasting_notes?: string; pairing_suggestions?: string;
   is_top_seller?: boolean; is_new_arrival?: boolean; is_featured?: boolean; is_active?: boolean;
   categories?: { name: string; slug: string } | null; brands?: { name: string; country?: string } | null;
   product_variants?: DbVariant[];
@@ -91,6 +92,17 @@ export async function getPromotions(): Promise<DbPromotion[]> {
 export async function getDeliverySettings(): Promise<DbDeliverySetting[]> {
   if (!hasSupabaseConfig) return [];
   return supabaseFetch<DbDeliverySetting>('delivery_settings?select=*&is_active=eq.true&order=sort_order.asc');
+}
+
+export type CheckoutSettings = {
+  allow_cash?: boolean; allow_mpesa?: boolean; allow_card?: boolean; minimum_order?: number;
+  store_latitude?: number; store_longitude?: number; checkout_heading?: string;
+  delivery_address_label?: string; gift_notes_enabled?: boolean; coupons_enabled?: boolean; contact_phone?: string;
+};
+export async function getCheckoutSettings(): Promise<CheckoutSettings> {
+  if (!hasSupabaseConfig) return {};
+  const rows = await supabaseFetch<{ value: CheckoutSettings }>('store_settings?select=value&key=eq.checkout&is_public=eq.true&limit=1');
+  return rows[0]?.value || {};
 }
 
 export async function getProducts(): Promise<DbProduct[]> {
