@@ -45,6 +45,24 @@ export function ProductCard({ p }: { p: DbProduct }) {
   return <Link href={`/product/${p.slug}`} className="block min-w-0 rounded-2xl bg-white p-2 transition hover:-translate-y-1 hover:shadow-card"><div className="relative flex h-[clamp(10rem,18vw,17.5rem)] items-center justify-center overflow-hidden rounded-xl bg-white p-3"><img src={imageFor(p)} alt={p.name} className="h-[90%] w-[90%] object-contain object-center" /><span className="absolute right-2 top-2 rounded-full bg-brand-deep px-3 py-1.5 text-xs font-black text-white shadow-orange">View</span>{variants.length > 1 && <span className="absolute bottom-2 left-2 rounded-full bg-white/95 px-2 py-1 text-[10px] font-black text-brand-deep shadow-sm">{variants.length} sizes</span>}</div><div className="pt-3"><div className="flex flex-wrap items-center gap-2"><b className="rounded-md bg-brand-deep px-2 py-1 text-base leading-none text-white"><span className="text-[11px] text-white">KSh</span> {Number(price).toLocaleString('en-KE')}</b>{variants.length > 1 && <span className="text-[10px] font-bold text-neutral-500">from</span>}{discount > 0 && <span className="text-xs font-black text-brand-deep">{discount}% off</span>}{oldPrice && <s className="text-sm text-neutral-500">{money(oldPrice)}</s>}</div><h3 className="mt-2 min-h-9 text-[13px] font-medium leading-tight text-brand-ink">{p.name}</h3><p className={`mt-0.5 text-[10px] uppercase tracking-wide ${available ? 'text-green-700' : 'text-red-600'}`}>{variants.length > 1 ? 'Choose a size on product page' : (p.bottle_size || firstVariant?.name || 'Select size')} · {available ? 'Available' : 'Out of stock'}</p></div></Link>;
 }
 
+/** A sellable bottle size is shown as its own catalog card while retaining the
+ * parent product record for shared editorial information and inventory links. */
+export function ProductVariantCard({ product, variant }: { product: DbProduct; variant: NonNullable<DbProduct['product_variants']>[number] }) {
+  const oldPrice = variant.old_price;
+  const discount = oldPrice ? Math.round((1 - variant.price / oldPrice) * 100) : 0;
+  const available = Number(variant.stock) > 0;
+  return <Link href={`/product/${product.slug}?variant=${encodeURIComponent(variant.id)}`} className="block min-w-0 rounded-2xl bg-white p-2 transition hover:-translate-y-1 hover:shadow-card"><div className="relative flex h-[clamp(10rem,18vw,17.5rem)] items-center justify-center overflow-hidden rounded-xl bg-white p-3"><img src={variant.image_url || imageFor(product)} alt={`${product.name} ${variant.name}`} className="h-[90%] w-[90%] object-contain object-center" /><span className="absolute right-2 top-2 rounded-full bg-brand-deep px-3 py-1.5 text-xs font-black text-white shadow-orange">View</span></div><div className="pt-3"><div className="flex flex-wrap items-center gap-2"><b className="rounded-md bg-brand-deep px-2 py-1 text-base leading-none text-white"><span className="text-[11px] text-white">KSh</span> {Number(variant.price).toLocaleString('en-KE')}</b>{discount > 0 && <span className="text-xs font-black text-brand-deep">{discount}% off</span>}{oldPrice && <s className="text-sm text-neutral-500">{money(oldPrice)}</s>}</div><h3 className="mt-2 min-h-9 text-[13px] font-medium leading-tight text-brand-ink">{product.name}</h3><p className={`mt-0.5 text-[10px] uppercase tracking-wide ${available ? 'text-green-700' : 'text-red-600'}`}>{variant.name} · {available ? 'Available' : 'Out of stock'}</p></div></Link>;
+}
+
+function CatalogCards({ products }: { products: DbProduct[] }) {
+  return <>{products.flatMap((product) => {
+    const activeVariants = (product.product_variants || []).filter((variant) => variant.is_active !== false);
+    // Keep the parent card for the first/default offering, and surface every
+    // additional bottle size as a separately clickable catalog product.
+    return [<ProductCard key={product.id} p={product} />, ...activeVariants.slice(1).map((variant) => <ProductVariantCard key={variant.id} product={product} variant={variant} />)];
+  })}</>;
+}
+
 export function ProductRail({ title, products }: { title: string; products: DbProduct[] }) {
-  return <section className="mx-auto max-w-none px-6 py-8"><div className="mb-4 flex items-center justify-between"><h2 className="text-xl font-extrabold tracking-tight text-brand-ink">{title}</h2><Link href="/category/whisky" className="font-bold text-brand-orange">View all</Link></div><div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-5 xl:grid-cols-8">{products.map((product) => <ProductCard key={product.id} p={product} />)}</div></section>;
+  return <section className="mx-auto max-w-none px-6 py-8"><div className="mb-4 flex items-center justify-between"><h2 className="text-xl font-extrabold tracking-tight text-brand-ink">{title}</h2><Link href="/category/whisky" className="font-bold text-brand-orange">View all</Link></div><div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-5 xl:grid-cols-8"><CatalogCards products={products} /></div></section>;
 }

@@ -7,9 +7,9 @@ type CartItem = { productId: string; variantId?: string; name: string; size?: st
 
 function readCart(): CartItem[] { try { return JSON.parse(localStorage.getItem('chupahub-cart') || '[]'); } catch { return []; } }
 
-export function ProductPurchase({ product }: { product: DbProduct }) {
+export function ProductPurchase({ product, initialVariantId }: { product: DbProduct; initialVariantId?: string }) {
   const variants = useMemo(() => (product.product_variants || []).filter((variant) => variant.is_active !== false), [product.product_variants]);
-  const [selectedId, setSelectedId] = useState(variants[0]?.id || '');
+  const [selectedId, setSelectedId] = useState(variants.some((variant) => variant.id === initialVariantId) ? initialVariantId || '' : variants[0]?.id || '');
   const [quantity, setQuantity] = useState(1);
   const selected = variants.find((variant) => variant.id === selectedId) as DbVariant | undefined;
   const price = selected?.price ?? product.price;
