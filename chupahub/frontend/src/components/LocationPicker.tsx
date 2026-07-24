@@ -1,0 +1,14 @@
+'use client';
+
+import dynamic from 'next/dynamic';
+import { useEffect, useRef, useState } from 'react';
+import { MapPin, Search } from 'lucide-react';
+
+type Place = { display_name: string; lat: string; lon: string };
+const LeafletMap = dynamic(() => import('./OpenStreetMap').then((mod) => mod.OpenStreetMap), { ssr: false, loading: () => <div className="mt-3 h-64 animate-pulse rounded-xl bg-orange-50" /> });
+export function LocationPicker({ address, onAddress, value, onChange }: { address: string; onAddress: (value: string) => void; value: { latitude: number; longitude: number } | null; onChange: (value: { latitude: number; longitude: number }) => void }) {
+  const [results, setResults] = useState<Place[]>([]), cache = useRef(new Map<string, Place[]>());
+  useEffect(() => { const query = address.trim(); if (query.length < 3) { setResults([]); return; } const timer = window.setTimeout(async () => { if (cache.current.has(query)) { setResults(cache.current.get(query) || []); return; } try { const response = await fetch(`https://nominatim.openstreetmap.org/search?format=jsonv2&countrycodes=ke&limit=5&q=${encodeURIComponent(`${query}, Kenya`)}`, { headers: { Accept: 'application/json' } }); const places = await response.json() as Place[]; cache.current.set(query, places); setResults(places); } catch { setResults([]); } }, 500); return () => window.clearTimeout(timer); }, [address]);
+  function select(place: Place) { onAddress(place.display_name); onChange({ latitude: Number(place.lat), longitude: Number(place.lon) }); setResults([]); localStorage.setItem('chupahub-delivery-label', place.display_name.split(',')[0]); window.dispatchEvent(new Event('chupahub-location-updated')); }
+  return <div className="relative"><label className="block font-black">Delivery address<div className="relative mt-2"><Search className="absolute left-3 top-3 text-brand-orange" size={18}/><input value={address} onChange={e=>onAddress(e.target.value)} className="w-full rounded-xl border border-orange-200 py-3 pl-10 pr-3 font-normal" placeholder="Search Nairobi area, building or estate" autoComplete="off"/></div></label>{results.length > 0 && <div className="absolute z-30 mt-1 w-full overflow-hidden rounded-xl border border-orange-100 bg-white shadow-card">{results.map(place => <button type="button" key={`${place.lat}-${place.lon}`} onClick={() => select(place)} className="flex w-full gap-2 p-3 text-left hover:bg-orange-50"><MapPin className="mt-0.5 shrink-0 text-brand-orange" size={16}/><span><b className="block text-sm">{place.display_name.split(',')[0]}</b><small className="text-neutral-600">{place.display_name}</small></span></button>)}</div>}{value && <><LeafletMap value={value} onChange={onChange}/><a className="mt-2 inline-block text-sm font-bold text-brand-orange" target="_blank" rel="noreferrer" href={`https://www.google.com/maps/search/?api=1&query=${value.latitude},${value.longitude}`}>Open selected pin in Google Maps</a></>}</div>;
+}
