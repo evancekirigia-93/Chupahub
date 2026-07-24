@@ -6,7 +6,7 @@ export function ProductGallery({ images, name }: { images: string[]; name: strin
   const [active, setActive] = useState(0);
   const current = images[active] || '/placeholder-product.png';
   return <div className="min-w-0">
-    <div className="flex h-[clamp(28rem,48vw,37.5rem)] items-center justify-center rounded-3xl bg-white p-[clamp(1.25rem,4vw,3rem)] ring-1 ring-orange-100">
+    <div className="flex h-[clamp(20rem,34vw,30rem)] items-center justify-center rounded-3xl bg-white p-[clamp(1rem,3vw,2rem)] ring-1 ring-orange-100">
       <img src={current} alt={name} className="h-[92%] w-[92%] object-contain object-center" />
     </div>
     {images.length > 1 && <div className="mt-3 flex gap-3 overflow-x-auto pb-1" aria-label="Product images">
