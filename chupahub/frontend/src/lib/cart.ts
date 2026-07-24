@@ -1,0 +1,4 @@
+export type CartItem = { productId: string; variantId?: string; name: string; size?: string; price: number; image?: string; quantity: number; stock?: number };
+export function readCart(): CartItem[] { try { return JSON.parse(localStorage.getItem('chupahub-cart') || '[]'); } catch { return []; } }
+export function writeCart(items: CartItem[]) { localStorage.setItem('chupahub-cart', JSON.stringify(items.filter((item) => item.quantity > 0))); window.dispatchEvent(new Event('chupahub-cart-updated')); }
+export function updateCartQuantity(productId: string, variantId: string | undefined, quantity: number) { const items = readCart(); const index = items.findIndex((item) => item.productId === productId && item.variantId === variantId); if (index >= 0) { if (quantity <= 0) items.splice(index, 1); else items[index].quantity = Math.min(quantity, items[index].stock ?? quantity); writeCart(items); } }

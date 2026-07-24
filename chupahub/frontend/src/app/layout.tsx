@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import './globals.css';
 import { Footer, Header } from '@/components/Site';
-import { getSiteContent } from '@/lib/supabase';
+import { getProducts, getSiteContent } from '@/lib/supabase';
 import { businessGraph, DEFAULT_DESCRIPTION, JsonLd, SITE_NAME, SITE_URL } from '@/lib/seo';
 
 export const metadata: Metadata = {
@@ -26,11 +26,11 @@ export const metadata: Metadata = {
 };
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
-  const content = await getSiteContent();
+  const [content, products] = await Promise.all([getSiteContent(), getProducts()]);
   return (
     <html lang="en">
       <body className="app-shell min-h-screen">
-        <Header content={content} />
+        <Header content={content} products={products} />
         <JsonLd data={businessGraph([content.instagram_url || '', content.facebook_url || '', content.tiktok_url || ''])} />
         {children}
         <Footer content={content} />
