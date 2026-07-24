@@ -1,0 +1,8 @@
+'use client';
+import { useEffect } from 'react';
+import { MapContainer, Marker, TileLayer, useMapEvents } from 'react-leaflet';
+import L from 'leaflet';
+import 'leaflet/dist/leaflet.css';
+const icon = L.divIcon({ className: 'chupahub-pin', html: '<div style="background:#FF5A00;width:18px;height:18px;border:3px solid white;border-radius:50%;box-shadow:0 1px 4px #002653"></div>', iconSize: [18, 18], iconAnchor: [9, 9] });
+function Pin({ value, onChange }: { value: { latitude: number; longitude: number }; onChange: (value: { latitude: number; longitude: number }) => void }) { const map = useMapEvents({ click(event) { onChange({ latitude: event.latlng.lat, longitude: event.latlng.lng }); } }); useEffect(() => { map.setView([value.latitude, value.longitude]); }, [map, value.latitude, value.longitude]); return <Marker draggable icon={icon} position={[value.latitude, value.longitude]} eventHandlers={{ dragend: event => { const marker = event.target as L.Marker; const point = marker.getLatLng(); onChange({ latitude: point.lat, longitude: point.lng }); } }} />; }
+export function OpenStreetMap({ value, onChange }: { value: { latitude: number; longitude: number }; onChange: (value: { latitude: number; longitude: number }) => void }) { return <div className="mt-3 h-64 overflow-hidden rounded-xl border border-orange-100"><MapContainer center={[value.latitude, value.longitude]} zoom={15} className="h-full w-full"><TileLayer attribution="&copy; OpenStreetMap contributors" url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"/><Pin value={value} onChange={onChange}/></MapContainer></div>; }
