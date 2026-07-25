@@ -47,6 +47,7 @@ The repository order is the filename order below:
 12. `20260724120000_product_details_and_checkout_settings.sql`
 13. `20260724130000_secure_checkout_payments_notifications.sql`
 14. `20260724140000_admin_order_management.sql`
+15. `20260724150000_simplify_admin_order_statuses.sql`
 
 For an **existing production project**, first run `supabase migration list
 --linked` and preserve its output with the deployment record. If its history
