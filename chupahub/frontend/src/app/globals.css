@@ -11,18 +11,18 @@ html {
 }
 
 body {
-  background: #fff7ed;
-  color: #21140f;
+  background: #FFF5EC;
+  color: #002653;
 }
 
 .app-shell {
   background:
     radial-gradient(circle at top left, rgba(255, 255, 255, .72), transparent 32rem),
-    linear-gradient(180deg, #f97821 0%, #ffab5d 11rem, #fff7ed 11rem, #ffffff 100%);
+    linear-gradient(180deg, #FF5A00 0%, #FF5A00 11rem, #FFF5EC 11rem, #ffffff 100%);
 }
 
 .orange-gradient {
-  background: linear-gradient(135deg, #ffad63 0%, #f97821 52%, #e76512 100%);
+  background: linear-gradient(135deg, #FF5A00 0%, #FF5A00 52%, #E64F00 100%);
 }
 
 .tile-shade {
@@ -30,6 +30,6 @@ body {
 }
 
 .focus-ring:focus-visible {
-  outline: 3px solid rgba(240, 90, 26, .42);
+  outline: 3px solid rgba(255, 131, 31, .42);
   outline-offset: 3px;
 }
