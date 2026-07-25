@@ -35,3 +35,7 @@ Create the Google OAuth client in Google Cloud Console, add the Supabase callbac
 `admin_notifications` always records new-order and confirmed-payment events for the secure admin dashboard. Configure an email provider such as Resend (`RESEND_API_KEY`, `EMAIL_FROM`, `ADMIN_NOTIFICATION_EMAIL`) before enabling email sends. Configure Africa's Talking or another approved provider only after valid credentials are available. WhatsApp requires a Meta Cloud API access token, phone-number ID, and approved templates where Meta requires them.
 
 No SMS, WhatsApp, or email credentials are included in this repository. Until a provider integration and verified credentials are configured, use the in-dashboard notification record and do not claim external messages were sent.
+
+## Google Maps delivery search
+
+Create a browser API key in Google Cloud Console and enable **Maps JavaScript API**, **Places API**, and **Geocoding API**. Set `NEXT_PUBLIC_GOOGLE_MAPS_API_KEY` in Vercel. Restrict the key to HTTP referrers for the exact ChupaHub production domain, approved Vercel preview domains, and `http://localhost:3000/*` only when developing. Apply API restrictions so the key can call only those three APIs. The key is intentionally browser-visible; its referrer and API restrictions are mandatory. Checkout stores the selected Google Place ID, place name, formatted address, coordinates, and verification state. Manual fallback orders are visibly stored as unverified.
