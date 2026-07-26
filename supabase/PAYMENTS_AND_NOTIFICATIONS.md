@@ -9,7 +9,7 @@ supabase migration list --linked
 supabase db push
 ```
 
-Set the variables in `chupahub/frontend/.env.example` in **Vercel → Project → Settings → Environment Variables**. Only the `NEXT_PUBLIC_SUPABASE_*` values may be exposed to the browser. `SUPABASE_SERVICE_ROLE_KEY`, Daraja, email, SMS, WhatsApp, and Google secrets are server-only values.
+Set the variables in the root `.env.example` in **Vercel → Project → Settings → Environment Variables**. Only the `NEXT_PUBLIC_SUPABASE_*` values may be exposed to the browser. `SUPABASE_SERVICE_ROLE_KEY`, Daraja, email, SMS, WhatsApp, and Google secrets are server-only values.
 
 ## M-Pesa Daraja
 

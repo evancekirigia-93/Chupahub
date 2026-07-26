@@ -21,8 +21,8 @@ Then compare the output with `catalog-assets/requested-products.json`. If a prod
 ## Apply and upload
 
 1. Apply `20260721120000_import_requested_spirits.sql` with the normal Supabase migration history process.
-2. Download and independently verify official manufacturer packshots; put them in `chupahub/frontend/catalog-assets/images/` as `<slug>.jpg`, `.png`, or `.webp`.
-3. Run the safe filename/preflight check, then the upload command from `chupahub/frontend`:
+2. Download and independently verify official manufacturer packshots; put them in `catalog-assets/images/` as `<slug>.jpg`, `.png`, or `.webp`.
+3. Run the safe filename/preflight check, then the upload command from the repository root:
 
 ```bash
 SUPABASE_URL=... SUPABASE_SERVICE_ROLE_KEY=... node scripts/import-product-images.mjs

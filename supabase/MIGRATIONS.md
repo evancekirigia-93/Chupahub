@@ -76,7 +76,7 @@ assert the state of the live project. The SQL output is the required evidence.
 
 ## Production deployment checks
 
-Vercel must use `chupahub/frontend` as its root directory (or the root
+Vercel must use the repository root as its root directory (the root
 `vercel.json` routing configuration) and have the following Production
 environment variables from the same Supabase project:
 
