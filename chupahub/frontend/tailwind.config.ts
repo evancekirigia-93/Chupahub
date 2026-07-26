@@ -6,10 +6,10 @@ const config: Config = {
     extend: {
       colors: {
         brand: {
-          orange: '#f97821',
-          deep: '#f97821',
-          soft: '#fff7ed',
-          ink: '#092946',
+          orange: '#FF5A00',
+          deep: '#002653',
+          soft: '#FFF5EC',
+          ink: '#002653',
         },
       },
       boxShadow: {
