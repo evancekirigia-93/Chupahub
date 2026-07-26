@@ -3,7 +3,7 @@
   "short_name": "ChupaHub",
   "icons": [
     {
-      "src": "/chupahub-logo.svg",
+      "src": "/chupahub-official-logo.svg",
       "sizes": "any",
       "type": "image/svg+xml",
       "purpose": "any"
