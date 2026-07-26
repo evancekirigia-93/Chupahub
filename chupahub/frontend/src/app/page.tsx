@@ -1,7 +1,8 @@
 import Link from 'next/link';
 import type { Metadata } from 'next';
-import { CategoryGrid, ProductRail } from '@/components/Site';
-import { getBanners, getCategories, getProducts, getPromotions, money } from '@/lib/supabase';
+import { CategoryGrid, Journal, ProductRail, SeoArticle } from '@/components/Site';
+import { HeroCarousel } from '@/components/HeroCarousel';
+import { getBanners, getCategories, getHomepageSections, getProducts, getPromotions, getSiteContent, money } from '@/lib/supabase';
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
@@ -14,27 +15,19 @@ export const metadata: Metadata = {
 };
 
 export default async function Home() {
-  const [categories, banners, products, promotions] = await Promise.all([
-    getCategories(), getBanners(), getProducts(), getPromotions(),
+  const [categories, banners, products, promotions, content, configuredSections] = await Promise.all([
+    getCategories(), getBanners(), getProducts(), getPromotions(), getSiteContent(), getHomepageSections(),
   ]);
-  const hero = banners[0];
-  const topSellers = products.filter((product) => product.is_top_seller).slice(0, 8);
-  const arrivals = products.filter((product) => product.is_new_arrival).slice(0, 8);
-  const featured = products.filter((product) => product.is_featured).slice(0, 8);
+  const topSellers = products.filter((product) => product.is_top_seller);
+  const arrivals = products.filter((product) => product.is_new_arrival);
+  const featured = products.filter((product) => product.is_featured);
+  const sections = configuredSections.length ? configuredSections.map(section => {
+    const selected = section.product_ids?.length ? section.product_ids.map(id => products.find(product => product.id === id)).filter((product): product is typeof products[number] => Boolean(product)) : section.use_best_sellers ? topSellers : section.category_id ? products.filter(product => product.categories?.slug === section.categories?.slug) : products;
+    return { title: section.heading, products: selected, href: section.categories?.slug ? `/category/${section.categories.slug}` : section.use_best_sellers ? '/collections/top-sellers' : '/category/all', limit: section.item_limit };
+  }) : [{ title: 'Top Sellers', products: topSellers, href: '/collections/top-sellers', limit: 8 }, { title: 'New Arrivals', products: arrivals, href: '/collections/new-arrivals', limit: 8 }, { title: 'Featured Offers', products: featured, href: '/collections/featured', limit: 8 }];
 
   return <main>
-    {hero ? <section className="mx-auto max-w-none overflow-hidden bg-white shadow-card sm:mt-4 sm:rounded-3xl">
-      <div className="relative h-48 sm:h-80">
-        <picture><source media="(max-width: 640px)" srcSet={hero.mobile_image_url || hero.image_url} /><img src={hero.image_url} alt={hero.title} className="absolute inset-0 h-full w-full object-cover" /></picture>
-        <div className="absolute inset-0 bg-gradient-to-r from-black/55 via-black/15 to-transparent" />
-        <div className="absolute bottom-5 left-5 max-w-md text-white">
-          {hero.badge_text && <p className="font-bold uppercase tracking-wide">{hero.badge_text}</p>}
-          <h1 className="text-3xl font-black sm:text-5xl">{hero.title}</h1>
-          {hero.subtitle && <p className="mt-2 hidden text-white/90 sm:block">{hero.subtitle}</p>}
-          {hero.button_url && (hero.button_label || hero.button_text) && <Link href={hero.button_url} className="mt-4 inline-block rounded-lg bg-brand-deep px-5 py-3 font-black uppercase text-white shadow-card">{hero.button_label || hero.button_text}</Link>}
-        </div>
-      </div>
-    </section> : <section className="mx-auto mt-4 rounded-3xl border border-dashed border-orange-200 bg-white p-10 text-center shadow-card"><h1 className="text-2xl font-black text-brand-ink">No active homepage banner</h1><p className="mt-2 text-neutral-600">Publish a banner in Supabase to display it here.</p></section>}
+    <HeroCarousel banners={banners} />
     {promotions.length > 0 && <section className="mx-auto grid max-w-none gap-3 px-4 pt-5 md:grid-cols-2">
       {promotions.map((promotion) => <Link key={promotion.id} href={promotion.button_url || '/'} className="orange-gradient flex items-center justify-between rounded-2xl p-5 text-white shadow-orange">
         <div><p className="text-xs font-black uppercase tracking-widest">{promotion.badge_text || promotion.code || 'Promotion'}</p><h2 className="text-2xl font-black">{promotion.title}</h2><p className="mt-1 text-sm text-white/85">{promotion.description}</p></div>
@@ -42,8 +35,8 @@ export default async function Home() {
       </Link>)}
     </section>}
     <CategoryGrid categories={categories.filter((category) => !category.parent_id)} />
-    <ProductRail title="Top Sellers" products={topSellers} />
-    <ProductRail title="New Arrivals" products={arrivals} />
-    <ProductRail title="Featured Offers" products={featured} />
+    {sections.map((section, index) => <ProductRail key={`${section.title}-${index}`} {...section} />)}
+    <Journal content={content} />
+    <SeoArticle content={content} />
   </main>;
 }
