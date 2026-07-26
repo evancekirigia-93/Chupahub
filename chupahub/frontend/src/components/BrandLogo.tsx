@@ -23,15 +23,15 @@ export function BrandLogo({ logoUrl, mobileLogoUrl, siteName, footer = false }: 
   siteName: string;
   footer?: boolean;
 }) {
-  if (footer) return <div className="relative h-14 w-40 max-w-[180px] shrink-0 overflow-hidden">
+  if (footer) return <div className="relative h-16 w-[180px] shrink-0 overflow-hidden">
     <SafeLogoImage src={logoUrl} siteName={siteName} />
   </div>;
 
   return <>
-    <div className="relative hidden h-16 w-44 max-w-[180px] shrink-0 overflow-hidden sm:block">
+    <div className="relative hidden h-16 w-[180px] shrink-0 overflow-hidden sm:block">
       <SafeLogoImage src={logoUrl} siteName={siteName} />
     </div>
-    <div className="relative h-12 w-28 max-w-[120px] shrink-0 overflow-hidden sm:hidden">
+    <div className="relative h-12 w-[120px] shrink-0 overflow-hidden sm:hidden">
       <SafeLogoImage src={mobileLogoUrl || logoUrl} siteName={siteName} />
     </div>
   </>;
