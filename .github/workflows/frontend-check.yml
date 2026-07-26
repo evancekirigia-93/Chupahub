@@ -16,6 +16,13 @@ jobs:
           cache: npm
           cache-dependency-path: package-lock.json
       - run: npm ci
+      - name: Confirm legacy map is not tracked
+        run: |
+          if git ls-files --error-unmatch src/components/OpenStreetMap.tsx >/dev/null 2>&1; then
+            echo "::error file=src/components/OpenStreetMap.tsx::Delete the legacy Leaflet map component from this branch."
+            exit 1
+          fi
+      - run: npm run check:no-legacy-map
       - run: npm run typecheck
       - run: npm run lint
       - run: npm run build
