@@ -24,13 +24,10 @@ Set `NEXT_PUBLIC_SUPABASE_URL` and either `NEXT_PUBLIC_SUPABASE_ANON_KEY` or `NE
 
 ## Supabase setup
 
-Run the migrations in filename order using the Supabase SQL editor or CLI:
-
-1. `../supabase/migrations/20260716160000_supabase_storefront_admin.sql`
-2. `../supabase/migrations/20260716161000_seed_existing_storefront.sql`
-3. `../supabase/migrations/20260717120000_commerce_admin.sql`
-
-The migrations are non-destructive and idempotent. The schema migration first recreates any missing core tables, then restores fields, RLS, admin authorization, delivery settings, triggers, and storage buckets. The seed uses conflict checks so it never duplicates or overwrites existing storefront content. The commerce migration adds variants, category trees, inventory controls, fulfillment history, reports, settings, auditing, and Realtime subscriptions. Do not rerun the older core migration as a recovery step.
+See [`../supabase/MIGRATIONS.md`](../supabase/MIGRATIONS.md) for the only
+authoritative migration order, the production migration-history audit, and the
+required live-schema checks. Use the Supabase CLI to inspect history and apply
+only pending migrations; never use old SQL files as a blind recovery procedure.
 
 Create the Auth user in **Supabase Dashboard → Authentication → Users**, then grant that existing user admin access in the SQL editor:
 
