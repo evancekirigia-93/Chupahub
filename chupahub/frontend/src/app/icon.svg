@@ -1,1 +1,9 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="14" fill="#f97821"/><path d="M23 9h18v10l6 9v21c0 4-3 7-7 7H24c-4 0-7-3-7-7V28l6-9V9Z" fill="#092946"/><path d="M21 29h22M25 37h14" stroke="#fff" stroke-width="4" stroke-linecap="round"/><path d="M32 36v12" stroke="#f97821" stroke-width="4" stroke-linecap="round"/></svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 328 541" role="img" aria-labelledby="title desc">
+  <title id="title">ChupaHub</title>
+  <desc id="desc">Orange ChupaHub vessel and CH monogram logo</desc>
+  <rect width="328" height="541" fill="#fff"/>
+  <!-- Text-only vector recreation of the supplied ChupaHub logo. -->
+  <path fill="#F97316" d="M26 15C73-3 252-8 302 14c22 10 31 27 24 55-8 33-31 76-59 112-12 15-28 32-45 50 8 17 17 36 22 57-13-18-27-32-43-41-15 8-30 12-45 12s-30-4-45-12c-16 9-30 23-43 41 5-21 14-40 22-57-17-18-33-35-45-50C38 146 15 103 7 70 0 42 5 25 26 15Zm20 36c-8 4-11 10-8 22 8 33 32 74 65 111 16-8 34-12 53-12s37 4 53 12c33-37 57-78 65-111 3-12 0-18-8-22-40-15-181-15-220 0Z"/>
+  <path fill="#F97316" d="M51 311c19-34 57-55 105-55s86 21 105 55c23 40 25 88 6 128-17 36-50 61-91 69l-3-31c27-7 49-23 60-47 13-28 12-61-4-88-13-23-39-37-73-37s-60 14-73 37c-16 27-17 60-4 88 11 24 33 40 60 47l-3 31c-41-8-74-33-91-69-19-40-17-88 6-128Z"/>
+  <text x="155" y="528" text-anchor="middle" fill="#1f1f1f" font-family="Georgia, 'Times New Roman', serif" font-size="278" font-weight="700" letter-spacing="-35">CH</text>
+</svg>
