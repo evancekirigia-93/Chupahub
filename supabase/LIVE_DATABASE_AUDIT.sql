@@ -18,6 +18,9 @@ select required.object_name,
        end as present
 from (values
   ('current_admin', 'function'),
+  ('categories', 'table'),
+  ('homepage_banners', 'table'),
+  ('products', 'table'),
   ('product_variants', 'table'),
   ('store_settings', 'table'),
   ('orders', 'table'),
@@ -38,7 +41,7 @@ from pg_class c
 join pg_namespace n on n.oid = c.relnamespace
 left join pg_policies p on p.schemaname = n.nspname and p.tablename = c.relname
 where n.nspname = 'public'
-  and c.relname in ('admin_users', 'product_variants', 'store_settings', 'orders', 'order_items')
+  and c.relname in ('admin_users', 'categories', 'homepage_banners', 'products', 'product_variants', 'store_settings', 'orders', 'order_items')
 group by c.relname, c.relrowsecurity
 order by c.relname;
 
@@ -53,6 +56,6 @@ order by id;
 -- bypass RLS.
 select schemaname, tablename, policyname, cmd, roles
 from pg_policies
-where (schemaname = 'public' and tablename in ('admin_users', 'product_variants', 'store_settings', 'orders', 'order_items'))
+where (schemaname = 'public' and tablename in ('admin_users', 'categories', 'homepage_banners', 'products', 'product_variants', 'store_settings', 'orders', 'order_items'))
    or (schemaname = 'storage' and tablename = 'objects')
 order by schemaname, tablename, policyname;

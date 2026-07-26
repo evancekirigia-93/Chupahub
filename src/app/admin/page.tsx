@@ -25,25 +25,42 @@ export default function AdminPage() {
 
   const check = useCallback(async () => {
     if (!supabase) { setReady(true); return; }
-    const { data: { session } } = await supabase.auth.getSession();
-    setSignedIn(Boolean(session));
-    if (!session) { setAllowed(false); setReady(true); return; }
-    const { data, error: accessError } = await supabase.rpc('current_admin');
-    setAllowed(!accessError && Boolean(Array.isArray(data) ? data[0] : data));
-    if (accessError) setError(`Admin access could not be verified: ${accessError.message}`);
-    setReady(true);
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      setSignedIn(Boolean(session));
+      if (!session) { setAllowed(false); return; }
+      const { data, error: accessError } = await supabase.rpc('current_admin');
+      setAllowed(!accessError && Boolean(Array.isArray(data) ? data[0] : data));
+      if (accessError) setError(`Admin access could not be verified: ${accessError.message}`);
+    } catch (cause) {
+      setAllowed(false);
+      setError(`Supabase connection error: ${cause instanceof Error ? cause.message : 'Unable to contact the configured project.'}`);
+    } finally {
+      setReady(true);
+    }
   }, [supabase]);
   const load = useCallback(async () => {
     if (!supabase || !allowed) return;
-    const [p, c, b, content, homeSections] = await Promise.all([
-      supabase.from('products').select('id,name,slug,description,tasting_notes,pairing_suggestions,country,bottle_size,abv,stock,low_stock_threshold,image_url,gallery_urls,price,category_id,is_active,categories(name)').order('name'),
-      supabase.from('categories').select('id,name,slug,is_active').order('name'),
-      supabase.from('homepage_banners').select('id,title,subtitle,image_url,is_active,sort_order').order('sort_order'),
-      supabase.from('store_settings').select('value').eq('key', 'site_content').maybeSingle(),
-      supabase.from('homepage_product_sections').select('id,heading,category_id,product_ids,use_best_sellers,item_limit,sort_order,is_active').order('sort_order'),
-    ]);
-    if (p.error || c.error || b.error || homeSections.error) setError(p.error?.message || c.error?.message || b.error?.message || homeSections.error?.message || 'Could not load store content.');
-    setProducts((p.data || []) as unknown as Product[]); setSiteContent((content.data?.value || {}) as Record<string, string>); setCategories((c.data || []) as Category[]); setBanners((b.data || []) as Banner[]); setSections((homeSections.data || []) as HomepageSection[]);
+    try {
+      const [p, c, b, content, homeSections] = await Promise.all([
+        supabase.from('products').select('id,name,slug,description,tasting_notes,pairing_suggestions,country,bottle_size,abv,stock,low_stock_threshold,image_url,gallery_urls,price,category_id,is_active,categories(name)').order('name'),
+        supabase.from('categories').select('id,name,slug,is_active').order('name'),
+        supabase.from('homepage_banners').select('id,title,subtitle,image_url,is_active,sort_order').order('sort_order'),
+        supabase.from('store_settings').select('value').eq('key', 'site_content').maybeSingle(),
+        supabase.from('homepage_product_sections').select('id,heading,category_id,product_ids,use_best_sellers,item_limit,sort_order,is_active').order('sort_order'),
+      ]);
+      const failures = [
+        ['products (including categories relationship)', p.error],
+        ['categories', c.error],
+        ['homepage_banners', b.error],
+        ['store_settings.site_content', content.error],
+        ['homepage_product_sections', homeSections.error],
+      ].filter((entry) => entry[1]);
+      setError(failures.length ? `Some Supabase admin data could not be loaded: ${failures.map(([resource, failure]) => `${resource}: ${(failure as { message: string }).message}`).join(' | ')}` : '');
+      setProducts((p.data || []) as unknown as Product[]); setSiteContent((content.data?.value || {}) as Record<string, string>); setCategories((c.data || []) as Category[]); setBanners((b.data || []) as Banner[]); setSections((homeSections.data || []) as HomepageSection[]);
+    } catch (cause) {
+      setError(`Supabase admin data could not be loaded: ${cause instanceof Error ? cause.message : 'Unexpected connection failure.'}`);
+    }
   }, [supabase, allowed]);
   useEffect(() => { void check(); }, [check]);
   useEffect(() => { void load(); }, [load]);

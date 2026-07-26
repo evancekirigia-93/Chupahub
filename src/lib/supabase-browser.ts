@@ -9,8 +9,13 @@ let browserClient: SupabaseClient<any> | null | undefined;
 export function createBrowserSupabase() {
   if (!supabaseUrl || !supabasePublicKey) return null;
   if (browserClient !== undefined) return browserClient;
-  browserClient = createClient(supabaseUrl, supabasePublicKey, {
-    auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true },
-  });
+  try {
+    browserClient = createClient(supabaseUrl, supabasePublicKey, {
+      auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true },
+    });
+  } catch (error) {
+    console.error('[ChupaHub Supabase] Browser client configuration is invalid.', error);
+    browserClient = null;
+  }
   return browserClient;
 }
