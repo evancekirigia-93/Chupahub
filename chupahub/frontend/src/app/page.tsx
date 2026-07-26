@@ -18,9 +18,9 @@ export default async function Home() {
     getCategories(), getBanners(), getProducts(), getPromotions(), getSiteContent(),
   ]);
   const hero = banners[0];
-  const topSellers = products.filter((product) => product.is_top_seller).slice(0, 8);
-  const arrivals = products.filter((product) => product.is_new_arrival).slice(0, 8);
-  const featured = products.filter((product) => product.is_featured).slice(0, 8);
+  const topSellers = products.filter((product) => product.is_top_seller);
+  const arrivals = products.filter((product) => product.is_new_arrival);
+  const featured = products.filter((product) => product.is_featured);
 
   return <main>
     {hero ? <section className="mx-auto max-w-none overflow-hidden bg-white shadow-card sm:mt-4 sm:rounded-3xl">
@@ -42,9 +42,9 @@ export default async function Home() {
       </Link>)}
     </section>}
     <CategoryGrid categories={categories.filter((category) => !category.parent_id)} />
-    <ProductRail title="Top Sellers" products={topSellers} />
-    <ProductRail title="New Arrivals" products={arrivals} />
-    <ProductRail title="Featured Offers" products={featured} />
+    <ProductRail title="Top Sellers" products={topSellers} href="/collections/top-sellers" />
+    <ProductRail title="New Arrivals" products={arrivals} href="/collections/new-arrivals" />
+    <ProductRail title="Featured Offers" products={featured} href="/collections/featured" />
     <Journal content={content} />
   </main>;
 }

@@ -16,9 +16,7 @@ body {
 }
 
 .app-shell {
-  background:
-    radial-gradient(circle at top left, rgba(255, 255, 255, .72), transparent 32rem),
-    linear-gradient(180deg, #FF5A00 0%, #FF5A00 11rem, #FFF5EC 11rem, #ffffff 100%);
+  background: linear-gradient(180deg, #FFF5EC 0%, #ffffff 34rem);
 }
 
 .orange-gradient {
