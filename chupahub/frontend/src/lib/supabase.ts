@@ -5,14 +5,14 @@ export const supabasePublicKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || pr
 export const hasSupabaseConfig = Boolean(supabaseUrl && supabasePublicKey);
 
 export type DbCategory = { id: string; name: string; slug: string; parent_id?: string; icon?: string; image_url?: string; description?: string; color?: string; seo_title?: string; seo_description?: string; sort_order?: number; is_active?: boolean };
-export type DbVariant = { id: string; name: string; sku?: string; option_values?: Record<string, string>; price: number; old_price?: number; stock: number; low_stock_threshold?: number; image_url?: string; is_active?: boolean };
+export type DbVariant = { id: string; name: string; sku?: string; option_values?: Record<string, string>; price: number; old_price?: number; discount_starts_at?: string; discount_ends_at?: string; discount_label?: string; stock: number; low_stock_threshold?: number; image_url?: string; is_active?: boolean };
 export type DbBanner = { id: string; title: string; subtitle?: string | null; image_url: string; mobile_image_url?: string | null; badge_text?: string | null; button_label?: string | null; button_text?: string | null; button_url?: string | null; sort_order?: number | null; is_active?: boolean; starts_at?: string | null; ends_at?: string | null };
 export type DbPromotion = { id: string; title: string; code?: string; description?: string; image_url?: string; badge_text?: string; button_label?: string; button_url?: string; discount_type: string; discount_value: number; sort_order?: number };
 export type DbHomepageSection = { id: string; heading: string; category_id?: string | null; product_ids: string[]; use_best_sellers: boolean; item_limit: number; sort_order: number; is_active: boolean; categories?: { slug: string } | null };
 export type DbDeliverySetting = { id: string; name: string; min_distance_km: number; max_distance_km?: number; fee: number; estimated_minutes_min: number; estimated_minutes_max: number };
 export type DbProduct = {
   id: string; name: string; slug: string; description?: string; short_description?: string; seo_title?: string; seo_description?: string; sku?: string; abv?: number; country?: string; bottle_size?: string;
-  price: number; old_price?: number; currency?: string; stock?: number; low_stock_threshold?: number; image_url?: string; gallery_urls?: string[];
+  price: number; old_price?: number; discount_starts_at?: string; discount_ends_at?: string; discount_label?: string; currency?: string; stock?: number; low_stock_threshold?: number; image_url?: string; gallery_urls?: string[];
   tasting_notes?: string; pairing_suggestions?: string;
   is_top_seller?: boolean; is_new_arrival?: boolean; is_featured?: boolean; is_active?: boolean;
   categories?: { name: string; slug: string } | null; brands?: { name: string; country?: string } | null;
@@ -74,6 +74,7 @@ export async function getCategory(slug: string): Promise<DbCategory | null> {
 }
 
 export async function getBanners(): Promise<DbBanner[]> {
+  if (!hasSupabaseConfig) return [];
   const rows = await supabaseFetch<DbBanner>('homepage_banners?select=*&is_active=eq.true&order=sort_order.asc,created_at.desc', {
     cache: 'no-store', throwOnError: true, resource: 'homepage_banners query',
   });
@@ -141,4 +142,5 @@ export async function getSiteContent(): Promise<SiteContent> {
 }
 
 export const money = (value: number) => `KES ${Number(value).toLocaleString('en-KE')}`;
+export function effectivePrice(item: { price: number; old_price?: number; discount_starts_at?: string; discount_ends_at?: string }) { const now = Date.now(), active = Boolean(item.old_price && item.old_price > item.price && (!item.discount_starts_at || Date.parse(item.discount_starts_at) <= now) && (!item.discount_ends_at || Date.parse(item.discount_ends_at) > now)); return { price: active ? item.price : item.old_price || item.price, oldPrice: active ? item.old_price : undefined, active }; }
 export const imageFor = (product: DbProduct) => product.image_url || product.gallery_urls?.[0] || '/placeholder-product.png';

@@ -1,7 +1,5 @@
 'use client';
 
-import heic2any from 'heic2any';
-
 const MAX_BYTES = 15 * 1024 * 1024;
 const RASTER_TYPES = new Set(['image/jpeg', 'image/png', 'image/webp', 'image/avif', 'image/gif']);
 const HEIC_TYPES = new Set(['image/heic', 'image/heif']);
@@ -51,6 +49,7 @@ export async function processAdminImage(file: File): Promise<ProcessedImage> {
   let source: Blob = file;
   if (actualType === 'image/svg+xml') source = await sanitizeSvg(file);
   if (HEIC_TYPES.has(actualType)) {
+    const { default: heic2any } = await import('heic2any');
     const converted = await heic2any({ blob: file, toType: 'image/webp', quality: 0.9 });
     source = Array.isArray(converted) ? converted[0] : converted;
   }
