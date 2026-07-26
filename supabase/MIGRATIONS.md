@@ -50,6 +50,12 @@ The repository order is the filename order below:
 15. `20260724150000_simplify_admin_order_statuses.sql`
 16. `20260725120000_google_delivery_locations.sql`
 17. `20260726120000_live_admin_orders.sql`
+18. `20260727120000_reconcile_current_storefront_schema.sql`
+
+The first two schema uploads overlap. Read
+[`MIGRATION_CONFLICT_AUDIT.md`](MIGRATION_CONFLICT_AUDIT.md) before applying
+the reconciliation migration. Never manually rerun either core upload or the
+legacy storefront seed.
 
 For an **existing production project**, first run `supabase migration list
 --linked` and preserve its output with the deployment record. If its history
