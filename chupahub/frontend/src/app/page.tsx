@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import type { Metadata } from 'next';
-import { CategoryGrid, ProductRail } from '@/components/Site';
-import { getBanners, getCategories, getProducts, getPromotions, money } from '@/lib/supabase';
+import { CategoryGrid, Journal, ProductRail } from '@/components/Site';
+import { getBanners, getCategories, getProducts, getPromotions, getSiteContent, money } from '@/lib/supabase';
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
@@ -14,8 +14,8 @@ export const metadata: Metadata = {
 };
 
 export default async function Home() {
-  const [categories, banners, products, promotions] = await Promise.all([
-    getCategories(), getBanners(), getProducts(), getPromotions(),
+  const [categories, banners, products, promotions, content] = await Promise.all([
+    getCategories(), getBanners(), getProducts(), getPromotions(), getSiteContent(),
   ]);
   const hero = banners[0];
   const topSellers = products.filter((product) => product.is_top_seller).slice(0, 8);
@@ -45,5 +45,6 @@ export default async function Home() {
     <ProductRail title="Top Sellers" products={topSellers} />
     <ProductRail title="New Arrivals" products={arrivals} />
     <ProductRail title="Featured Offers" products={featured} />
+    <Journal content={content} />
   </main>;
 }
