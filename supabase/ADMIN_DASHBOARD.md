@@ -7,9 +7,8 @@ The production admin dashboard lives inside the existing Next.js storefront, not
 
 ## Vercel project routing
 
-The Next.js application and `package.json` live at the repository root. The root
-`vercel.json` selects Vercel's native Next.js framework detection without custom
-rewrites, so `/admin` and `/_next/static` assets resolve normally.
+The Next.js application lives at the repository root and uses Vercel's native
+Next.js framework detection without custom routing for `/_next/static` assets.
 
 ## Required Vercel environment variables
 

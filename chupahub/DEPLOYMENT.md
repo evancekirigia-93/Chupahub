@@ -19,8 +19,7 @@ on conflict (user_id) do update set email = excluded.email, role = 'admin', is_a
 
 ## 3. Configure Vercel
 
-Import the repository with the Vercel root directory set to the repository root. The
-Next.js application and its `package.json` now live at that root. Add:
+Import the repository with the Vercel root directory set to the repository root. Add:
 
 - `NEXT_PUBLIC_SUPABASE_URL`
 - `NEXT_PUBLIC_SUPABASE_ANON_KEY`, or `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`
