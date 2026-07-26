@@ -20,7 +20,11 @@ body {
 }
 
 .orange-gradient {
-  background: linear-gradient(135deg, #FF5A00 0%, #FF5A00 52%, #E64F00 100%);
+  background: linear-gradient(180deg, #D81C10 0%, #E62E12 35%, #F45A16 70%, #FF6A1A 100%);
+}
+
+.brand-gradient {
+  background: linear-gradient(180deg, #D81C10 0%, #E62E12 35%, #F45A16 70%, #FF6A1A 100%);
 }
 
 .tile-shade {
@@ -54,15 +58,15 @@ body {
 .product-rail-grid > :nth-child(n + 3) { display: none; }
 @media (min-width: 640px) {
   .product-rail-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-  .product-rail-grid > * { display: block; }
+  .product-rail-grid > :nth-child(-n + 3) { display: block; }
   .product-rail-grid > :nth-child(n + 4) { display: none; }
 }
 @media (min-width: 768px) {
   .product-rail-grid { grid-template-columns: repeat(5, minmax(0, 1fr)); }
-  .product-rail-grid > * { display: block; }
+  .product-rail-grid > :nth-child(-n + 5) { display: block; }
   .product-rail-grid > :nth-child(n + 6) { display: none; }
 }
 @media (min-width: 1280px) {
   .product-rail-grid { grid-template-columns: repeat(8, minmax(0, 1fr)); }
-  .product-rail-grid > * { display: block; }
+  .product-rail-grid > :nth-child(n) { display: block; }
 }
