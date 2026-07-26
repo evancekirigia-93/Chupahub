@@ -1,6 +1,5 @@
 # Dependencies
 node_modules/
-chupahub/frontend/node_modules/
 
 # Next.js
 .next/
@@ -25,3 +24,6 @@ pnpm-debug.log*
 
 # TypeScript
 *.tsbuildinfo
+
+# Removed architecture: checkout uses Google Places Autocomplete, not Leaflet.
+src/components/OpenStreetMap.tsx
