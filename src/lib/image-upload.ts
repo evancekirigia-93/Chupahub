@@ -64,18 +64,3 @@ export async function processAdminImage(file: File): Promise<ProcessedImage> {
     return { full, thumbnail, previewUrl: URL.createObjectURL(fullBlob) };
   } finally { bitmap.close(); }
 }
-
-export async function validateLogoImage(file: File) {
-  const processed = await processAdminImage(file);
-  let bitmap: ImageBitmap | undefined;
-  try {
-    bitmap = await createImageBitmap(processed.full);
-    if (bitmap.width < 32 || bitmap.height < 32) throw new Error('Choose a logo that is at least 32 × 32 pixels.');
-    const aspectRatio = Math.max(bitmap.width / bitmap.height, bitmap.height / bitmap.width);
-    if (aspectRatio > 12) throw new Error('Choose a logo with a practical width-to-height ratio (maximum 12:1).');
-    return { width: bitmap.width, height: bitmap.height };
-  } finally {
-    bitmap?.close();
-    URL.revokeObjectURL(processed.previewUrl);
-  }
-}

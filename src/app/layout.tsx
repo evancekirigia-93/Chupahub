@@ -30,7 +30,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   const [content, products] = await Promise.all([getSiteContent(), getProducts()]);
   return (
     <html lang="en">
-      <head>{content.favicon_url && <link rel="icon" href={content.favicon_url} />}</head>
+      <head />
       <body className="app-shell min-h-screen">
         <Header content={content} products={products} />
         <CartFeedback />

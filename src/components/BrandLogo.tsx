@@ -1,38 +1,15 @@
-'use client';
+const LOGO_SRC = '/chupahub-logo.svg';
 
-import { useEffect, useState } from 'react';
-
-const FALLBACK_LOGO = '/chupahub-logo.svg';
-
-function SafeLogoImage({ src, siteName }: { src?: string; siteName: string }) {
-  const [resolvedSrc, setResolvedSrc] = useState(src || FALLBACK_LOGO);
-
-  useEffect(() => setResolvedSrc(src || FALLBACK_LOGO), [src]);
-
-  return <img
-    src={resolvedSrc}
-    alt={`${siteName} logo`}
-    onError={() => setResolvedSrc(FALLBACK_LOGO)}
-    className="h-full w-full object-contain object-left"
-  />;
-}
-
-export function BrandLogo({ logoUrl, mobileLogoUrl, siteName, footer = false }: {
-  logoUrl?: string;
-  mobileLogoUrl?: string;
-  siteName: string;
-  footer?: boolean;
-}) {
-  if (footer) return <div className="relative h-16 w-[180px] shrink-0 overflow-hidden">
-    <SafeLogoImage src={logoUrl} siteName={siteName} />
-  </div>;
-
-  return <>
-    <div className="relative hidden h-16 w-[180px] shrink-0 overflow-hidden sm:block">
-      <SafeLogoImage src={logoUrl} siteName={siteName} />
+export function BrandLogo({ footer = false }: { footer?: boolean }) {
+  return (
+    <div className={footer
+      ? 'relative h-16 w-[180px] shrink-0 overflow-hidden'
+      : 'relative h-12 w-[120px] shrink-0 overflow-hidden sm:h-16 sm:w-[180px]'}>
+      <img
+        src={LOGO_SRC}
+        alt="ChupaHub logo"
+        className="h-full w-full object-contain object-left"
+      />
     </div>
-    <div className="relative h-12 w-[120px] shrink-0 overflow-hidden sm:hidden">
-      <SafeLogoImage src={mobileLogoUrl || logoUrl} siteName={siteName} />
-    </div>
-  </>;
+  );
 }
