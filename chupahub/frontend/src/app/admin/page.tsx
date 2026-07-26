@@ -1,7 +1,7 @@
 'use client';
 
 import { FormEvent, useCallback, useEffect, useMemo, useState } from 'react';
-import { ImagePlus, LayoutDashboard, Package, PanelTop, Tag, Truck, LogOut, Save, Eye, Plus, Pencil, Trash2 } from 'lucide-react';
+import { ImagePlus, LayoutDashboard, Package, PanelTop, Tag, Truck, LogOut, Save, Eye, Plus, Pencil, Trash2, ClipboardList } from 'lucide-react';
 import { createBrowserSupabase } from '@/lib/supabase-browser';
 import { processAdminImage, validateLogoImage } from '@/lib/image-upload';
 import { LiveOrdersNav } from '@/components/admin/LiveOrdersNav';
