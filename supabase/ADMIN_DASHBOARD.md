@@ -7,7 +7,8 @@ The production admin dashboard lives inside the existing Next.js storefront, not
 
 ## Vercel project routing
 
-This repository includes a root `vercel.json` so the existing Vercel project deploys the Next.js app from `chupahub/frontend` instead of serving the old static root HTML files. That routing is what makes `/admin` resolve on `www.chupahub.com`.
+The Next.js application lives at the repository root and uses Vercel's native
+Next.js framework detection without custom routing for `/_next/static` assets.
 
 ## Required Vercel environment variables
 
