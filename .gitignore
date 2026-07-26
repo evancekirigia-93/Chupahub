@@ -1,6 +1,5 @@
 # Dependencies
 node_modules/
-chupahub/frontend/node_modules/
 
 # Next.js
 .next/
