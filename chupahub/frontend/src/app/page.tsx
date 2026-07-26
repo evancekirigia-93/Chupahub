@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import type { Metadata } from 'next';
-import { CategoryGrid, Journal, ProductRail } from '@/components/Site';
-import { getBanners, getCategories, getProducts, getPromotions, getSiteContent, money } from '@/lib/supabase';
+import { CategoryGrid, Journal, ProductRail, SeoArticle } from '@/components/Site';
+import { getBanners, getCategories, getHomepageSections, getProducts, getPromotions, getSiteContent, money } from '@/lib/supabase';
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
@@ -14,13 +14,17 @@ export const metadata: Metadata = {
 };
 
 export default async function Home() {
-  const [categories, banners, products, promotions, content] = await Promise.all([
-    getCategories(), getBanners(), getProducts(), getPromotions(), getSiteContent(),
+  const [categories, banners, products, promotions, content, configuredSections] = await Promise.all([
+    getCategories(), getBanners(), getProducts(), getPromotions(), getSiteContent(), getHomepageSections(),
   ]);
   const hero = banners[0];
   const topSellers = products.filter((product) => product.is_top_seller);
   const arrivals = products.filter((product) => product.is_new_arrival);
   const featured = products.filter((product) => product.is_featured);
+  const sections = configuredSections.length ? configuredSections.map(section => {
+    const selected = section.product_ids?.length ? section.product_ids.map(id => products.find(product => product.id === id)).filter((product): product is typeof products[number] => Boolean(product)) : section.use_best_sellers ? topSellers : section.category_id ? products.filter(product => product.categories?.slug === section.categories?.slug) : products;
+    return { title: section.heading, products: selected, href: section.categories?.slug ? `/category/${section.categories.slug}` : section.use_best_sellers ? '/collections/top-sellers' : '/category/all', limit: section.item_limit };
+  }) : [{ title: 'Top Sellers', products: topSellers, href: '/collections/top-sellers', limit: 8 }, { title: 'New Arrivals', products: arrivals, href: '/collections/new-arrivals', limit: 8 }, { title: 'Featured Offers', products: featured, href: '/collections/featured', limit: 8 }];
 
   return <main>
     {hero ? <section className="mx-auto max-w-none overflow-hidden bg-white shadow-card sm:mt-4 sm:rounded-3xl">
@@ -42,9 +46,8 @@ export default async function Home() {
       </Link>)}
     </section>}
     <CategoryGrid categories={categories.filter((category) => !category.parent_id)} />
-    <ProductRail title="Top Sellers" products={topSellers} href="/collections/top-sellers" />
-    <ProductRail title="New Arrivals" products={arrivals} href="/collections/new-arrivals" />
-    <ProductRail title="Featured Offers" products={featured} href="/collections/featured" />
+    {sections.map((section, index) => <ProductRail key={`${section.title}-${index}`} {...section} />)}
     <Journal content={content} />
+    <SeoArticle content={content} />
   </main>;
 }

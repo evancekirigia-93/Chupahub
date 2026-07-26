@@ -8,6 +8,7 @@ export type DbCategory = { id: string; name: string; slug: string; parent_id?: s
 export type DbVariant = { id: string; name: string; sku?: string; option_values?: Record<string, string>; price: number; old_price?: number; stock: number; low_stock_threshold?: number; image_url?: string; is_active?: boolean };
 export type DbBanner = { id: string; title: string; subtitle?: string | null; image_url: string; mobile_image_url?: string | null; badge_text?: string | null; button_label?: string | null; button_text?: string | null; button_url?: string | null; sort_order?: number | null; is_active?: boolean; starts_at?: string | null; ends_at?: string | null };
 export type DbPromotion = { id: string; title: string; code?: string; description?: string; image_url?: string; badge_text?: string; button_label?: string; button_url?: string; discount_type: string; discount_value: number; sort_order?: number };
+export type DbHomepageSection = { id: string; heading: string; category_id?: string | null; product_ids: string[]; use_best_sellers: boolean; item_limit: number; sort_order: number; is_active: boolean; categories?: { slug: string } | null };
 export type DbDeliverySetting = { id: string; name: string; min_distance_km: number; max_distance_km?: number; fee: number; estimated_minutes_min: number; estimated_minutes_max: number };
 export type DbProduct = {
   id: string; name: string; slug: string; description?: string; short_description?: string; seo_title?: string; seo_description?: string; sku?: string; abv?: number; country?: string; bottle_size?: string;
@@ -110,6 +111,11 @@ export async function getProducts(): Promise<DbProduct[]> {
   return supabaseFetch<DbProduct>('products?select=*,categories(name,slug),brands(name,country),product_variants(*)&is_active=eq.true&order=sort_order.asc,created_at.desc');
 }
 
+export async function getHomepageSections(): Promise<DbHomepageSection[]> {
+  if (!hasSupabaseConfig) return [];
+  return supabaseFetch<DbHomepageSection>('homepage_product_sections?select=*,categories(slug)&is_active=eq.true&order=sort_order.asc,created_at.asc', { cache: 'no-store' });
+}
+
 export async function getProductsByCategory(slug: string): Promise<DbProduct[]> {
   if (!hasSupabaseConfig) return fallbackDbProducts.filter((product) => product.categories?.slug === slug);
   return supabaseFetch<DbProduct>(`products?select=*,categories!inner(name,slug),brands(name,country),product_variants(*)&is_active=eq.true&categories.slug=eq.${encodeURIComponent(slug)}&order=sort_order.asc,created_at.desc`);
@@ -124,8 +130,9 @@ export async function getProduct(slug: string): Promise<DbProduct | null> {
 
 export type SiteContent = {
   about?: string; contact_phone?: string; contact_email?: string; header_notice?: string; footer_text?: string; logo_text?: string;
+  logo_url?: string; mobile_logo_url?: string; favicon_url?: string; footer_shop_title?: string; footer_help_title?: string; footer_contact_title?: string; copyright_text?: string;
   instagram_url?: string; facebook_url?: string; tiktok_url?: string; whatsapp_url?: string;
-  journal_title?: string; journal_intro?: string;
+  journal_title?: string; journal_intro?: string; article_title?: string; article_summary?: string; article_body?: string;
 };
 export async function getSiteContent(): Promise<SiteContent> {
   if (!hasSupabaseConfig) return {};
