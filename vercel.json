@@ -1,16 +1,7 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "version": 2,
-  "builds": [
-    {
-      "src": "chupahub/frontend/package.json",
-      "use": "@vercel/next"
-    }
-  ],
-  "routes": [
-    {
-      "src": "/(.*)",
-      "dest": "chupahub/frontend/$1"
-    }
-  ]
+  "framework": "nextjs",
+  "installCommand": "npm ci --prefix chupahub/frontend",
+  "buildCommand": "npm run build --prefix chupahub/frontend",
+  "outputDirectory": "chupahub/frontend/.next"
 }
