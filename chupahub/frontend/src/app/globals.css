@@ -33,3 +33,17 @@ body {
   outline: 3px solid rgba(255, 131, 31, .42);
   outline-offset: 3px;
 }
+
+@keyframes cart-pulse {
+  0%, 100% { transform: scale(1); }
+  35% { transform: scale(1.18) translateY(-2px); }
+  65% { transform: scale(.96); }
+}
+
+.cart-pulse {
+  animation: cart-pulse 520ms ease-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cart-pulse { animation: none; }
+}

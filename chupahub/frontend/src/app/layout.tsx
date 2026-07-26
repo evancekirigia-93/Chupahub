@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import './globals.css';
 import { Footer, Header } from '@/components/Site';
+import { CartFeedback } from '@/components/CartFeedback';
 import { getProducts, getSiteContent } from '@/lib/supabase';
 import { businessGraph, DEFAULT_DESCRIPTION, JsonLd, SITE_NAME, SITE_URL } from '@/lib/seo';
 
@@ -31,6 +32,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
     <html lang="en">
       <body className="app-shell min-h-screen">
         <Header content={content} products={products} />
+        <CartFeedback />
         <JsonLd data={businessGraph([content.instagram_url || '', content.facebook_url || '', content.tiktok_url || ''])} />
         {children}
         <Footer content={content} />
