@@ -4,8 +4,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "tsc --noEmit",
-    "typecheck": "tsc --noEmit",
-    "test:production-assets": "node scripts/test-production-assets.mjs"
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@googlemaps/js-api-loader": "^2.1.1",
