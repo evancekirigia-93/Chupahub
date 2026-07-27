@@ -79,5 +79,5 @@ function CatalogCards({ products, limit }: { products: DbProduct[]; limit?: numb
 }
 
 export function ProductRail({ title, products, href, limit = 8 }: { title: string; products: DbProduct[]; href: string; limit?: number }) {
-  return <section className="mx-auto max-w-none overflow-hidden px-6 py-8"><div className="mb-4 flex items-center justify-between"><h2 className="text-xl font-extrabold tracking-tight text-brand-ink">{title}</h2><Link href={href} className="font-bold text-brand-orange">View all</Link></div><div className="product-rail-grid"><CatalogCards products={products} limit={8} /></div></section>;
+  return <section className="mx-auto max-w-none overflow-hidden px-6 py-8"><div className="mb-4 flex items-center justify-between"><h2 className="text-xl font-extrabold tracking-tight text-brand-ink">{title}</h2><Link href={href} className="font-bold text-brand-orange">View all {title}</Link></div><div className="product-rail-grid"><CatalogCards products={products} limit={limit} /></div></section>;
 }
