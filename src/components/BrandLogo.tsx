@@ -1,17 +1,13 @@
-const LOGO_SRC = '/chupahub-logo.svg';
+const LOGO_SRC = '/chupahub-official-logo.svg';
 
 export function BrandLogo({ footer = false }: { footer?: boolean }) {
   return (
-    <div className="flex shrink-0 items-center gap-2.5 text-left">
+    <div className="flex shrink-0 items-center text-left">
       <img
         src={LOGO_SRC}
-        alt=""
-        aria-hidden="true"
-        className={footer ? 'h-16 w-10 object-contain' : 'h-12 w-8 object-contain sm:h-14 sm:w-9'}
+        alt="ChupaHub"
+        className={footer ? 'h-24 w-40 object-contain' : 'h-16 w-28 object-contain sm:h-20 sm:w-36'}
       />
-      <span className={footer ? 'text-2xl font-black text-white' : 'text-xl font-black text-white sm:text-2xl'}>
-        ChupaHub
-      </span>
     </div>
   );
 }
