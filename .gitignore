@@ -24,6 +24,3 @@ pnpm-debug.log*
 
 # TypeScript
 *.tsbuildinfo
-
-# Removed architecture: checkout uses Google Places Autocomplete, not Leaflet.
-src/components/OpenStreetMap.tsx
