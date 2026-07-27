@@ -25,14 +25,14 @@ function logMapsError(error: GoogleMapsLoadError) {
 
   if (error.code === 'authentication') {
     console.error(
-      '[Google Maps] Authentication failed. Check that the API key is valid, billing is enabled, Maps JavaScript API and Places API are enabled, and HTTP referer restrictions allow localhost, the Vercel preview URL, chupahub.com, and www.chupahub.com.',
+      '[Google Maps] Authentication failed. Check that the API key is valid, billing is enabled, Maps JavaScript API and Places API (New) are enabled, and HTTP referer restrictions allow localhost, the Vercel preview URL, chupahub.com, and www.chupahub.com.',
       error,
     );
     return;
   }
 
   if (error.code === 'places-unavailable') {
-    console.error('[Google Maps] Places library is unavailable. Enable Places API for the key/project and confirm its API restrictions permit Places API.', error);
+    console.error('[Google Maps] Places library is unavailable. Enable Places API (New) for the key/project and confirm its API restrictions permit Places API (New).', error);
     return;
   }
 
@@ -75,8 +75,8 @@ export function loadGoogleMaps(): Promise<void> {
       if (authenticationFailed) {
         throw new GoogleMapsLoadError('authentication', 'Google Maps rejected the configured API key.');
       }
-      if (!window.google?.maps?.places?.Autocomplete) {
-        throw new GoogleMapsLoadError('places-unavailable', 'Google Maps loaded without Places Autocomplete.');
+      if (!window.google?.maps?.places?.AutocompleteSuggestion?.fetchAutocompleteSuggestions || !window.google.maps.places.AutocompleteSessionToken) {
+        throw new GoogleMapsLoadError('places-unavailable', 'Google Maps loaded without the Place Autocomplete Data API.');
       }
     } catch (cause) {
       if (cause instanceof GoogleMapsLoadError) throw cause;
