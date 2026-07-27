@@ -1,17 +1,19 @@
 'use client';
 
-import { importLibrary, setOptions } from '@googlemaps/js-api-loader';
 import { CheckCircle2, LocateFixed, MapPin, Search } from 'lucide-react';
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { loadGoogleMaps } from '@/lib/google-maps';
 
 export type DeliveryLocation = { latitude: number; longitude: number; placeId?: string; placeName?: string; verified: boolean };
-type Props = { address: string; onAddress: (value: string) => void; value: DeliveryLocation | null; onChange: (value: DeliveryLocation | null) => void };
+export type MapsLoadState = 'loading' | 'ready' | 'error';
+type Props = { address: string; onAddress: (value: string) => void; value: DeliveryLocation | null; onChange: (value: DeliveryLocation | null) => void; onLoadState?: (state: MapsLoadState) => void };
 
-export function LocationPicker({ address, onAddress, value, onChange }: Props) {
+export function LocationPicker({ address, onAddress, value, onChange, onLoadState }: Props) {
   const input = useRef<HTMLInputElement>(null), mapHost = useRef<HTMLDivElement>(null);
   const autocomplete = useRef<google.maps.places.Autocomplete | null>(null), map = useRef<google.maps.Map | null>(null), marker = useRef<google.maps.Marker | null>(null);
   const callbacks = useRef({ onAddress, onChange });
-  const [ready, setReady] = useState(false), [error, setError] = useState(''), [locating, setLocating] = useState(false);
+  const [loadState, setLoadState] = useState<MapsLoadState>('loading'), [error, setError] = useState(''), [locating, setLocating] = useState(false);
+  const ready = loadState === 'ready';
 
   useEffect(() => { callbacks.current = { onAddress, onChange }; }, [onAddress, onChange]);
 
@@ -47,11 +49,10 @@ export function LocationPicker({ address, onAddress, value, onChange }: Props) {
   }, []);
 
   useEffect(() => {
-    const key = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
-    if (!key) { setError('Google Maps is temporarily unavailable. Enter the address manually; the order will be marked Location not verified.'); return; }
     let active = true;
-    setOptions({ key, v: 'weekly' });
-    void Promise.all([importLibrary('places'), importLibrary('maps'), importLibrary('marker'), importLibrary('geocoding')]).then(() => {
+    setLoadState('loading');
+    onLoadState?.('loading');
+    void loadGoogleMaps().then(() => {
       if (!active || !input.current) return;
       autocomplete.current = new google.maps.places.Autocomplete(input.current, { componentRestrictions: { country: 'ke' }, fields: ['place_id', 'name', 'formatted_address', 'geometry'] });
       autocomplete.current.addListener('place_changed', () => {
@@ -62,10 +63,14 @@ export function LocationPicker({ address, onAddress, value, onChange }: Props) {
         localStorage.setItem('chupahub-delivery-label', place.name || formatted.split(',')[0]);
         window.dispatchEvent(new Event('chupahub-location-updated'));
       });
-      setReady(true);
-    }).catch(() => setError('Google Maps is temporarily unavailable. Enter the address manually; the order will be marked Location not verified.'));
-    return () => { active = false; if (autocomplete.current) google.maps.event.clearInstanceListeners(autocomplete.current); if (marker.current) google.maps.event.clearInstanceListeners(marker.current); };
-  }, [positionPin]);
+      setLoadState('ready'); onLoadState?.('ready'); setError('');
+    }).catch(() => {
+      if (!active) return;
+      setLoadState('error'); onLoadState?.('error');
+      setError('Google Maps is temporarily unavailable. Enter the address manually; the order will be marked Location not verified.');
+    });
+    return () => { active = false; if (window.google?.maps) { if (autocomplete.current) google.maps.event.clearInstanceListeners(autocomplete.current); if (marker.current) google.maps.event.clearInstanceListeners(marker.current); } };
+  }, [positionPin, onLoadState]);
 
   useEffect(() => { if (ready && value?.verified) positionPin({ lat: value.latitude, lng: value.longitude }); }, [positionPin, ready, value]);
 
@@ -85,5 +90,5 @@ export function LocationPicker({ address, onAddress, value, onChange }: Props) {
     }, () => { setError('Location permission was not granted. Search for your delivery location instead.'); setLocating(false); }, { enableHighAccuracy: true, timeout: 10000 });
   }
 
-  return <div><label className="block font-black">Search your delivery location<div className="relative mt-2"><Search className="absolute left-3 top-3 text-brand-orange" size={18}/><input ref={input} value={address} onChange={(event) => changed(event.target.value)} className="w-full rounded-xl border border-orange-200 py-3 pl-10 pr-3 font-normal" placeholder="Building, estate, road, business or landmark" autoComplete="off"/></div></label><button type="button" onClick={currentLocation} disabled={locating || !ready} className="mt-3 inline-flex items-center gap-2 rounded-xl border border-orange-200 px-4 py-2 text-sm font-bold disabled:opacity-50"><LocateFixed size={17}/>{locating ? 'Finding address…' : 'Use my current location'}</button><div className={value?.verified ? 'mt-4' : 'hidden'}><div ref={mapHost} className="h-56 w-full overflow-hidden rounded-2xl border border-orange-200" aria-label="Adjust delivery location on Google Map"/><p className="mt-2 flex items-center gap-2 text-xs font-bold text-neutral-600"><MapPin size={15} className="text-brand-orange"/>Drag the pin to adjust the exact delivery point.</p></div>{value?.verified && <p className="mt-3 inline-flex items-center gap-2 rounded-lg bg-green-50 px-3 py-2 text-sm font-bold text-green-700"><CheckCircle2 size={17}/> Location confirmed</p>}{error && <p className="mt-3 text-sm font-bold text-red-600">{error}</p>}</div>;
+  return <div><label className="block font-black">Search your delivery location<div className="relative mt-2"><Search className="absolute left-3 top-3 text-brand-orange" size={18}/><input ref={input} value={address} onChange={(event) => changed(event.target.value)} className="w-full rounded-xl border border-orange-200 py-3 pl-10 pr-3 font-normal" placeholder="Building, estate, road, business or landmark" autoComplete="off"/></div></label>{loadState === 'loading' && <p className="mt-3 text-sm font-bold text-neutral-500" role="status">Loading Google Maps and address suggestions…</p>}{loadState === 'ready' && !value?.verified && <p className="mt-3 text-sm font-bold text-green-700" role="status">Google Maps is ready. Choose an address suggestion to confirm your location.</p>}<button type="button" onClick={currentLocation} disabled={locating || !ready} className="mt-3 inline-flex items-center gap-2 rounded-xl border border-orange-200 px-4 py-2 text-sm font-bold disabled:opacity-50"><LocateFixed size={17}/>{locating ? 'Finding address…' : 'Use my current location'}</button><div className={value?.verified ? 'mt-4' : 'hidden'}><div ref={mapHost} className="h-56 w-full overflow-hidden rounded-2xl border border-orange-200" aria-label="Adjust delivery location on Google Map"/><p className="mt-2 flex items-center gap-2 text-xs font-bold text-neutral-600"><MapPin size={15} className="text-brand-orange"/>Drag the pin to adjust the exact delivery point.</p></div>{value?.verified && <p className="mt-3 inline-flex items-center gap-2 rounded-lg bg-green-50 px-3 py-2 text-sm font-bold text-green-700"><CheckCircle2 size={17}/> Location confirmed</p>}{error && <p className="mt-3 text-sm font-bold text-red-600" role="alert">{error}</p>}</div>;
 }
