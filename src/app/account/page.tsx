@@ -1,13 +1,11 @@
 import type { Metadata } from 'next';
-import Image from 'next/image';
 import { redirect } from 'next/navigation';
-import { SignOutButton } from '@/components/account/SignOutButton';
+import { AccountDashboard } from '@/components/account/AccountDashboard';
 import { createServerSupabase } from '@/lib/supabase-server';
-import { breadcrumbSchema, JsonLd } from '@/lib/seo';
 
 export const dynamic = 'force-dynamic';
-const title = 'Your ChupaHub Customer Account';
-const description = 'Sign in to your ChupaHub customer account to reuse your available details for Nairobi drinks delivery.';
+const title = 'Your ChupaHub Customer Dashboard';
+const description = 'Manage ChupaHub orders, rewards, saved addresses, favourites and customer account details.';
 export const metadata: Metadata = { title, description, alternates: { canonical: '/account' }, openGraph: { title: `${title} | ChupaHub`, description, url: '/account', type: 'website' }, twitter: { card: 'summary', title: `${title} | ChupaHub`, description }, robots: { index: false, follow: false } };
 
 export default async function AccountPage() {
@@ -15,7 +13,15 @@ export default async function AccountPage() {
   if (!supabase) redirect('/login?error=Customer%20login%20is%20not%20configured.');
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect('/login');
-  const name = String(user.user_metadata.full_name || user.user_metadata.name || 'Customer');
-  const avatar = typeof user.user_metadata.avatar_url === 'string' ? user.user_metadata.avatar_url : typeof user.user_metadata.picture === 'string' ? user.user_metadata.picture : '';
-  return <main className="mx-auto max-w-lg px-4 py-16"><JsonLd data={[{ '@context': 'https://schema.org', '@type': 'ProfilePage', name: title, description, url: 'https://chupahub.com/account' }, breadcrumbSchema([{ name: 'Home', url: '/' }, { name: 'Account', url: '/account' }])]}/><section className="rounded-3xl bg-white p-7 text-center shadow-card">{avatar && <Image src={avatar} alt={`${name} profile`} width={96} height={96} unoptimized className="mx-auto h-24 w-24 rounded-full object-cover"/>}<p className="mt-5 font-bold uppercase tracking-wide text-brand-orange">Your ChupaHub account</p><h1 className="mt-2 text-3xl font-black text-brand-ink">Welcome, {name}</h1><p className="mt-2 text-neutral-600">{user.email}</p><p className="mt-5 rounded-xl bg-green-50 p-3 text-sm font-bold text-green-800">You are signed in. Your available account details will fill checkout automatically.</p><SignOutButton/></section></main>;
+  const metadata=user.user_metadata||{}, name=String(metadata.full_name||metadata.name||'Customer'), phone=String(metadata.phone||metadata.phone_number||'');
+  const { data: customer, error: customerError } = await supabase.from('customers').upsert({user_id:user.id,full_name:name,email:user.email||null,phone:phone||null},{onConflict:'user_id'}).select('id,full_name,email,phone,created_at').single();
+  if (customerError || !customer) return <main className="mx-auto max-w-2xl p-8"><div className="rounded-3xl bg-white p-7 shadow-card"><h1 className="text-3xl font-black">Account setup required</h1><p className="mt-3 text-neutral-600">{customerError?.message||'Your customer profile could not be created.'} Apply the latest customer rewards migration, then refresh this page.</p></div></main>;
+  const [ordersResult,addressesResult,rewardResult]=await Promise.all([
+    supabase.from('orders').select('id,order_number,created_at,total,discount_total,delivery_fee,payment_status,status,rider_name,delivered_at,tracking_url,order_items(id,product_id,variant_id,product_name,quantity,unit_price,line_total,products(name,categories(name)))').eq('customer_id',customer.id).order('created_at',{ascending:false}),
+    supabase.from('delivery_locations').select('id,label,address,apartment,building,delivery_instructions,is_default').eq('customer_id',customer.id).order('is_default',{ascending:false}),
+    supabase.from('reward_accounts').select('id,points_balance,lifetime_points,points_redeemed').eq('customer_id',customer.id).maybeSingle(),
+  ]);
+  const reward=rewardResult.data||{points_balance:0,lifetime_points:0,points_redeemed:0};
+  const { data: activity }=rewardResult.data?.id?await supabase.from('reward_transactions').select('id,points,description,transaction_type,created_at').eq('reward_account_id',rewardResult.data.id).order('created_at',{ascending:false}).limit(20):{data:[]};
+  return <AccountDashboard data={{customerId:customer.id,name:customer.full_name||name,email:customer.email||user.email||'',phone:customer.phone||phone,avatar:String(metadata.avatar_url||metadata.picture||''),memberSince:user.created_at||customer.created_at,orders:(ordersResult.data||[]) as never[],addresses:(addressesResult.data||[]) as never[],rewards:reward,activity:(activity||[]) as never[]}}/>;
 }
