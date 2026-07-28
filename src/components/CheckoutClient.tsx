@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { money, type CheckoutSettings, type DbDeliverySetting } from '@/lib/supabase';
 import { LocationPicker, type DeliveryLocation, type MapsLoadState } from '@/components/LocationPicker';
 import { updateCartQuantity } from '@/lib/cart';
+import { createBrowserSupabase } from '@/lib/supabase-browser';
 
 type CartItem = { productId: string; variantId?: string; name: string; size?: string; price: number; quantity: number; stock?: number };
 const distanceKm = (a: number, b: number, c: number, d: number) => { const r = Math.PI / 180, x = (c - a) * r, y = (d - b) * r, h = Math.sin(x / 2) ** 2 + Math.cos(a * r) * Math.cos(c * r) * Math.sin(y / 2) ** 2; return 6371 * 2 * Math.atan2(Math.sqrt(h), Math.sqrt(1 - h)); };
@@ -13,7 +14,21 @@ export function CheckoutClient({ settings, bands }: { settings: CheckoutSettings
   const [items, setItems] = useState<CartItem[]>([]), [name, setName] = useState(''), [email, setEmail] = useState(''), [phone, setPhone] = useState(''), [address, setAddress] = useState(''), [instructions, setInstructions] = useState(''), [manualLocation, setManualLocation] = useState(false), [gift, setGift] = useState(''), [payment, setPayment] = useState('mpesa'), [notice, setNotice] = useState(''), [error, setError] = useState(''), [submitting, setSubmitting] = useState(false);
   const [coordinates, setCoordinates] = useState<DeliveryLocation | null>(null);
   const [mapsLoadState, setMapsLoadState] = useState<MapsLoadState>('loading');
-  useEffect(() => { try { setItems(JSON.parse(localStorage.getItem('chupahub-cart') || '[]')); } catch { setItems([]); } }, []);
+  useEffect(() => { const refreshCart = () => { try { setItems(JSON.parse(localStorage.getItem('chupahub-cart') || '[]')); } catch { setItems([]); } }; refreshCart(); window.addEventListener('chupahub-cart-updated', refreshCart); return () => window.removeEventListener('chupahub-cart-updated', refreshCart); }, []);
+  useEffect(() => {
+    const supabase = createBrowserSupabase();
+    if (!supabase) return;
+    const applyUser = (user: { email?: string; user_metadata?: Record<string, unknown> } | null) => {
+      if (!user) return;
+      const metadata = user.user_metadata || {};
+      setEmail(current => current || user.email || '');
+      setName(current => current || String(metadata.full_name || metadata.name || ''));
+      setPhone(current => current || String(metadata.phone || metadata.phone_number || ''));
+    };
+    void supabase.auth.getUser().then(({ data }) => applyUser(data.user));
+    const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => applyUser(session?.user || null));
+    return () => listener.subscription.unsubscribe();
+  }, []);
   const productTotal = items.reduce((sum, item) => sum + item.price * item.quantity, 0); const km = coordinates ? distanceKm(Number(settings.store_latitude ?? -1.286389), Number(settings.store_longitude ?? 36.817223), coordinates.latitude, coordinates.longitude) : null; const band = useMemo(() => manualLocation ? bands.at(-1) || null : deliveryFor(km, bands), [manualLocation, km, bands]); const freeDelivery = productTotal >= 10000; const delivery = payment === 'pickup' || freeDelivery ? 0 : Number(band?.fee || 0);
   const methods = [{ id: 'mpesa', label: 'M-Pesa', on: settings.allow_mpesa !== false }, { id: 'cash', label: 'Cash on delivery', on: settings.allow_cash !== false }, { id: 'pickup', label: 'Store pickup', on: true }].filter((method) => method.on);
   function changeQuantity(item: CartItem, next: number) { if (next <= 0 && !window.confirm(`Remove ${item.name} from your cart?`)) return; updateCartQuantity(item.productId, item.variantId, next); setItems(read => next <= 0 ? read.filter((entry) => !(entry.productId === item.productId && entry.variantId === item.variantId)) : read.map((entry) => entry.productId === item.productId && entry.variantId === item.variantId ? { ...entry, quantity: Math.min(next, entry.stock || next) } : entry)); }
