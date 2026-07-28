@@ -6,8 +6,8 @@ export async function GET(request: Request) {
   const code = requestUrl.searchParams.get('code');
   const oauthError = requestUrl.searchParams.get('error');
   const oauthErrorDescription = requestUrl.searchParams.get('error_description');
-  const requestedNext = requestUrl.searchParams.get('next') || '/account';
-  const safeNext = requestedNext.startsWith('/') && !requestedNext.startsWith('//') ? requestedNext : '/account';
+  const requestedNext = requestUrl.searchParams.get('next');
+  const safeNext = requestedNext && /^\/(?!\/)[^\\\r\n]*$/.test(requestedNext) ? requestedNext : '/account';
 
   console.info('[OAuth callback] reached', {
     path: requestUrl.pathname,
