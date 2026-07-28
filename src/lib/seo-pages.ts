@@ -4,7 +4,7 @@ import { absoluteUrl } from '@/lib/seo';
 export type SeoPage = { title: string; heading: string; description: string; path: string; categorySlug?: string; offers?: boolean };
 
 export const shopLinks = [
-  ['Shop', '/shop'], ['Beer', '/beer'], ['Wine', '/wine'], ['Whisky', '/whisky'], ['Gin', '/gin'], ['Vodka', '/vodka'], ['Champagne', '/champagne'], ['Spirits', '/spirits'], ['Mixers', '/mixers'], ['Offers', '/offers'],
+  ['Shop', '/shop'], ['Beer', '/beer'], ['Wine', '/wine'], ['Whisky', '/whisky'], ['Vodka', '/vodka'], ['Gin', '/gin'], ['Champagne', '/champagne'], ['Brandy', '/brandy'], ['Rum', '/rum'], ['Tequila', '/tequila'], ['Mixers', '/mixers'], ['Soft Drinks', '/soft-drinks'], ['Energy Drinks', '/energy-drinks'], ['Offers', '/offers'], ['Same-Day Delivery', '/same-day-delivery'], ['Alcohol Delivery Nairobi', '/alcohol-delivery-nairobi'],
 ] as const;
 
 export const seoPages: Record<string, SeoPage> = {
@@ -16,20 +16,16 @@ export const seoPages: Record<string, SeoPage> = {
   vodka: { title: 'Vodka Delivery Nairobi – Shop Vodka Online', heading: 'Vodka Delivery Nairobi', description: 'Shop popular and premium vodka online from ChupaHub with fast Nairobi delivery.', path: '/vodka', categorySlug: 'vodka' },
   champagne: { title: 'Champagne Delivery Nairobi – Shop Online', heading: 'Champagne Delivery Nairobi', description: 'Browse champagne and sparkling wine for celebrations, gifts and delivery across Nairobi.', path: '/champagne', categorySlug: 'sparkling' },
   spirits: { title: 'Spirits Delivery Nairobi – Shop Spirits Online', heading: 'Spirits Delivery Nairobi', description: 'Explore brandy, cognac, tequila, rum, liqueurs and premium spirits delivered across Nairobi.', path: '/spirits', categorySlug: 'spirits' },
-  mixers: { title: 'Mixers Delivery Nairobi – Soft Drinks & Mixers', heading: 'Mixers Delivery Nairobi', description: 'Shop tonic, soda, juice, water and cocktail mixers online for delivery across Nairobi.', path: '/mixers', categorySlug: 'mixers' },
+  brandy: { title: 'Brandy Delivery Nairobi – Shop Brandy Online', heading: 'Brandy Delivery Nairobi', description: 'Shop brandy and cognac online from ChupaHub with responsible same-day delivery options across Nairobi.', path: '/brandy', categorySlug: 'brandy' },
+  rum: { title: 'Rum Delivery Nairobi – Shop Rum Online', heading: 'Rum Delivery Nairobi', description: 'Discover white, dark and spiced rum online for cocktails, celebrations and delivery across Nairobi.', path: '/rum', categorySlug: 'rum' },
+  tequila: { title: 'Tequila Delivery Nairobi – Shop Tequila Online', heading: 'Tequila Delivery Nairobi', description: 'Shop blanco, reposado and premium tequila online with convenient delivery across Nairobi.', path: '/tequila', categorySlug: 'tequila' },
+  mixers: { title: 'Mixers Delivery Nairobi – Cocktail Mixers', heading: 'Mixers Delivery Nairobi', description: 'Shop tonic, soda, juice, water and cocktail mixers online for delivery across Nairobi.', path: '/mixers', categorySlug: 'mixers' },
+  softDrinks: { title: 'Soft Drinks Delivery Nairobi – Shop Online', heading: 'Soft Drinks Delivery Nairobi', description: 'Order sodas, juices, water and alcohol-free refreshments online for delivery across Nairobi.', path: '/soft-drinks', categorySlug: 'soft-drinks' },
+  energyDrinks: { title: 'Energy Drinks Delivery Nairobi – Shop Online', heading: 'Energy Drinks Delivery Nairobi', description: 'Shop popular energy drinks and refreshment options online with delivery across Nairobi.', path: '/energy-drinks', categorySlug: 'energy-drinks' },
   offers: { title: 'Alcohol Offers Nairobi – Discounted Drinks', heading: 'ChupaHub Offers', description: 'Browse currently discounted wine, beer, whisky, spirits and mixers available from ChupaHub.', path: '/offers', offers: true },
+  sameDayDelivery: { title: 'Same-Day Alcohol Delivery Nairobi', heading: 'Same-Day Drinks Delivery', description: 'Order drinks online from ChupaHub for convenient same-day delivery in eligible Nairobi delivery areas.', path: '/same-day-delivery' },
+  alcoholDeliveryNairobi: { title: 'Alcohol Delivery Nairobi – Order Drinks Online', heading: 'Alcohol Delivery Nairobi', description: 'Order wine, beer, whisky, gin, vodka, champagne and mixers online from ChupaHub for delivery across Nairobi.', path: '/alcohol-delivery-nairobi' },
 };
 
-export function pageMetadata(page: SeoPage): Metadata {
-  return {
-    title: page.title,
-    description: page.description,
-    alternates: { canonical: page.path },
-    openGraph: { title: `${page.title} | ChupaHub`, description: page.description, url: page.path, type: 'website' },
-    twitter: { card: 'summary', title: `${page.title} | ChupaHub`, description: page.description },
-  };
-}
-
-export function collectionSchema(page: SeoPage, itemCount: number) {
-  return { '@context': 'https://schema.org', '@type': 'CollectionPage', name: page.heading, description: page.description, url: absoluteUrl(page.path), numberOfItems: itemCount, isPartOf: { '@id': `${absoluteUrl('/')}#website` } };
-}
+export function pageMetadata(page: SeoPage): Metadata { return { title: page.title, description: page.description, alternates: { canonical: page.path }, openGraph: { title: `${page.title} | ChupaHub`, description: page.description, url: page.path, type: 'website' }, twitter: { card: 'summary', title: `${page.title} | ChupaHub`, description: page.description } }; }
+export function collectionSchema(page: SeoPage, itemCount: number) { return { '@context': 'https://schema.org', '@type': 'CollectionPage', name: page.heading, description: page.description, url: absoluteUrl(page.path), numberOfItems: itemCount, isPartOf: { '@id': `${absoluteUrl('/')}#website` } }; }

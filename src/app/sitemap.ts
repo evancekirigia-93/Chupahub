@@ -1,9 +1,10 @@
 import type { MetadataRoute } from 'next';
 import { getCategories, getHomepageSections, getProducts } from '@/lib/supabase';
 import { absoluteUrl } from '@/lib/seo';
+import { seoPages } from '@/lib/seo-pages';
 
 export const revalidate = 300;
-const publicPages = ['/', '/shop', '/beer', '/wine', '/whisky', '/gin', '/vodka', '/champagne', '/spirits', '/mixers', '/offers', '/collections/top-sellers', '/collections/new-arrivals', '/collections/featured', '/about', '/contact', '/faq', '/track-order', '/privacy', '/terms'];
+const publicPages = ['/', ...Object.values(seoPages).map(page => page.path), '/search', '/collections/top-sellers', '/collections/new-arrivals', '/collections/featured', '/about', '/contact', '/faq', '/track-order', '/privacy', '/terms'];
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const [categories, products, sections] = await Promise.all([getCategories(), getProducts(), getHomepageSections()]);

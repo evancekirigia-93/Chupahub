@@ -52,7 +52,7 @@ export function businessGraph(socialLinks: string[] = [], logoUrl?: string) {
       inLanguage: 'en-KE',
       potentialAction: {
         '@type': 'SearchAction',
-        target: { '@type': 'EntryPoint', urlTemplate: `${SITE_URL}/category/all?q={search_term_string}` },
+        target: { '@type': 'EntryPoint', urlTemplate: `${SITE_URL}/search?q={search_term_string}` },
         'query-input': 'required name=search_term_string',
       },
     },
