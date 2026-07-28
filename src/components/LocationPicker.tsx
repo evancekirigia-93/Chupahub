@@ -129,20 +129,16 @@ export function LocationPicker({ address, onAddress, value, onChange, onLoadStat
       if (!api) { setSearchState('error'); setAutocompleteError('Places API (New) is not ready.'); return; }
       if (!sessionToken.current) sessionToken.current = new api.AutocompleteSessionToken();
       const configuredBiasRadius = 50000;
-      const biasRadius = Math.max(0, Math.min(configuredBiasRadius, 50000));
+      const biasRadius = Number.isFinite(configuredBiasRadius) ? Math.max(0, Math.min(configuredBiasRadius, 50000)) : null;
       const request = {
         input: address.trim(),
         sessionToken: sessionToken.current,
         includedRegionCodes: ['ke'],
         language: 'en',
         region: 'ke',
-        locationBias: {
-          circle: {
-            center: { latitude: -1.286389, longitude: 36.817223 },
-            radius: biasRadius,
-          },
-        } as unknown as google.maps.places.LocationBias,
+        ...(biasRadius == null ? {} : { locationBias: { center: { lat: -1.286389, lng: 36.817223 }, radius: biasRadius } }),
       } satisfies google.maps.places.AutocompleteRequest;
+      console.info('[Google Maps Places] Autocomplete request.', request);
       void api.AutocompleteSuggestion.fetchAutocompleteSuggestions(request).then((response) => {
         if (!active || currentRequest !== requestId.current) return;
         const results = response.suggestions ?? [];
