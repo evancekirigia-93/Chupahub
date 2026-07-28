@@ -133,6 +133,7 @@ export type SiteContent = {
   footer_shop_title?: string; footer_help_title?: string; footer_contact_title?: string; copyright_text?: string;
   instagram_url?: string; facebook_url?: string; tiktok_url?: string; whatsapp_url?: string;
   journal_title?: string; journal_intro?: string; article_title?: string; article_summary?: string; article_body?: string;
+  articles?: Array<{ id: string; title: string; summary: string; body: string; is_active: boolean }>;
 };
 export async function getSiteContent(): Promise<SiteContent> {
   const rows = await supabaseFetch<{ value: SiteContent }>('store_settings?select=value&key=eq.site_content&is_public=eq.true&limit=1', { resource: 'public website settings' });

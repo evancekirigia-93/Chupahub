@@ -70,3 +70,15 @@ body {
   .product-rail-grid { grid-template-columns: repeat(8, minmax(0, 1fr)); }
   .product-rail-grid > :nth-child(n) { display: block; }
 }
+@keyframes brand-partnership-scroll {
+  from { transform: translateX(100%); }
+  to { transform: translateX(-100%); }
+}
+
+.brand-partnership-ticker {
+  animation: brand-partnership-scroll 16s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .brand-partnership-ticker { animation: none; text-align: center; }
+}

@@ -29,6 +29,7 @@ export default async function Home() {
   const promotionHref = (promotion: typeof promotions[number]) => promotion.button_url || '/offers';
 
   return <main>
+    <nav aria-label="Popular ChupaHub categories" className="mx-auto flex max-w-7xl flex-wrap gap-2 px-4 py-3">{[['Shop','/shop'],['Beer','/beer'],['Wine','/wine'],['Whisky','/whisky'],['Gin','/gin'],['Vodka','/vodka'],['Offers','/offers'],['Track Order','/track-order']].map(([label,href])=><Link key={href} href={href} className="rounded-full border border-orange-100 bg-white px-4 py-2 text-sm font-bold text-brand-ink shadow-sm transition hover:border-brand-orange hover:bg-orange-50">{label}</Link>)}</nav>
     <HeroCarousel banners={banners} />
     <nav aria-label="Popular ChupaHub pages" className="mx-auto flex max-w-7xl flex-wrap gap-2 px-4 pt-5">{[['Shop','/shop'],['Beer','/beer'],['Wine','/wine'],['Whisky','/whisky'],['Gin','/gin'],['Vodka','/vodka'],['Offers','/offers'],['Track Order','/track-order'],['Contact','/contact']].map(([label,href])=><Link key={href} href={href} className="rounded-full border border-orange-100 bg-white px-4 py-2 text-sm font-bold text-brand-ink shadow-sm">{label}</Link>)}</nav>
     {promotions.length > 0 && <section className="mx-auto grid max-w-none gap-3 px-4 pt-5 md:grid-cols-2">
