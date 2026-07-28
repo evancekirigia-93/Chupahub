@@ -9,9 +9,10 @@ export async function GET(request: Request) {
   if (!supabase) return NextResponse.redirect(new URL('/login?error=Customer%20login%20is%20not%20configured.', url.origin));
   const { error } = await supabase.auth.exchangeCodeForSession(code);
   if (error) {
-    console.error('[ChupaHub Auth] OAuth code exchange failed.', { name: error.name, message: error.message, status: error.status });
+    console.error('[ChupaHub Auth] OAuth code exchange failed.', error, { name: error.name, message: error.message, status: error.status });
     const message = encodeURIComponent(`Google login failed: ${error.message}`);
     return NextResponse.redirect(new URL(`/login?error=${message}`, url.origin));
   }
+  console.info('[ChupaHub Auth] OAuth code exchanged successfully.');
   return NextResponse.redirect(new URL('/account', url.origin));
 }
