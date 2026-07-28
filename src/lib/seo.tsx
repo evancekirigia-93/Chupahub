@@ -19,7 +19,7 @@ export function JsonLd({ data }: { data: Record<string, unknown> | Array<Record<
   return <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: json }} />;
 }
 
-export function businessGraph(socialLinks: string[] = []) {
+export function businessGraph(socialLinks: string[] = [], logoUrl?: string) {
   return {
   '@context': 'https://schema.org',
   '@graph': [
@@ -28,8 +28,8 @@ export function businessGraph(socialLinks: string[] = []) {
       '@id': `${SITE_URL}/#organization`,
       name: SITE_NAME,
       url: SITE_URL,
-      logo: absoluteUrl('/chupahub-official-logo.svg'),
       description: DEFAULT_DESCRIPTION,
+      ...(logoUrl ? { logo: logoUrl } : {}),
       sameAs: socialLinks.filter(Boolean),
     },
     {
@@ -50,6 +50,11 @@ export function businessGraph(socialLinks: string[] = []) {
       name: SITE_NAME,
       publisher: { '@id': `${SITE_URL}/#organization` },
       inLanguage: 'en-KE',
+      potentialAction: {
+        '@type': 'SearchAction',
+        target: { '@type': 'EntryPoint', urlTemplate: `${SITE_URL}/category/all?q={search_term_string}` },
+        'query-input': 'required name=search_term_string',
+      },
     },
   ],
   };
