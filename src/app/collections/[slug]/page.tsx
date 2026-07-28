@@ -9,6 +9,7 @@ const collections = {
   'top-sellers': { title: 'Top Sellers', matches: (product: Awaited<ReturnType<typeof getProducts>>[number]) => Boolean(product.is_top_seller) },
   'new-arrivals': { title: 'New Arrivals', matches: (product: Awaited<ReturnType<typeof getProducts>>[number]) => Boolean(product.is_new_arrival) },
   featured: { title: 'Featured Offers', matches: (product: Awaited<ReturnType<typeof getProducts>>[number]) => Boolean(product.is_featured) },
+  offers: { title: 'Discounted Offers', matches: (product: Awaited<ReturnType<typeof getProducts>>[number]) => effectivePrice(product).active || (product.product_variants || []).some(variant => effectivePrice(variant).active) },
 };
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
