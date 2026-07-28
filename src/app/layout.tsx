@@ -43,7 +43,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <CartFeedback />
         <JsonLd data={businessGraph([content.instagram_url || '', content.facebook_url || '', content.tiktok_url || ''], content.logo_url)} />
         {children}
-        <Footer content={content} />
+        <Footer content={content} products={products} />
       </body>
     </html>
   );
