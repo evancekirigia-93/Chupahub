@@ -1,11 +1,12 @@
 import { notFound } from 'next/navigation';
 import { ProductCard, ProductVariantCard } from '@/components/Site';
-import { getHomepageSection, getProducts } from '@/lib/supabase';
+import { effectivePrice, getHomepageSection, getProducts } from '@/lib/supabase';
 
 const collections = {
   'top-sellers': { title: 'Top Sellers', matches: (product: Awaited<ReturnType<typeof getProducts>>[number]) => Boolean(product.is_top_seller) },
   'new-arrivals': { title: 'New Arrivals', matches: (product: Awaited<ReturnType<typeof getProducts>>[number]) => Boolean(product.is_new_arrival) },
   featured: { title: 'Featured Offers', matches: (product: Awaited<ReturnType<typeof getProducts>>[number]) => Boolean(product.is_featured) },
+  offers: { title: 'Discounted Offers', matches: (product: Awaited<ReturnType<typeof getProducts>>[number]) => effectivePrice(product).active || (product.product_variants || []).some(variant => effectivePrice(variant).active) },
 };
 
 export default async function CollectionPage({ params }: { params: Promise<{ slug: string }> }) {

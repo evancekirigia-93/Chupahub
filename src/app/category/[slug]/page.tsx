@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { ProductCard, ProductVariantCard } from '@/components/Site';
-import { getCategories, getCategory, getProductsByCategory } from '@/lib/supabase';
+import { getCategories, getCategory, getProducts, getProductsByCategory } from '@/lib/supabase';
 import { breadcrumbSchema, JsonLd, plainText, truncate } from '@/lib/seo';
 
 export async function generateStaticParams() {
@@ -25,8 +25,8 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 
 export default async function Category({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const [category, list] = await Promise.all([getCategory(slug), getProductsByCategory(slug)]);
-  const title = category?.name || slug.replaceAll('-', ' ');
+  const [category, list] = await Promise.all([slug === 'all' ? null : getCategory(slug), slug === 'all' ? getProducts() : getProductsByCategory(slug)]);
+  const title = slug === 'all' ? 'All Products' : category?.name || slug.replaceAll('-', ' ');
   return <main className="mx-auto max-w-none px-4 py-8">
     <JsonLd data={breadcrumbSchema([{ name: 'Home', url: '/' }, { name: title, url: `/category/${slug}` }])} />
     <div className="rounded-3xl bg-white p-6 shadow-card"><p className="font-bold uppercase tracking-wide text-brand-orange">Alcohol delivery Nairobi</p><h1 className="text-4xl font-black capitalize text-brand-ink sm:text-6xl">{title} Delivery Nairobi</h1><p className="mt-3 max-w-3xl text-neutral-600">{plainText(category?.description) || `Shop ${title.toLowerCase()} online for fast delivery across Nairobi.`}</p><div className="mt-6 grid gap-3 md:grid-cols-5"><input className="rounded-xl border border-orange-100 bg-brand-soft p-3 outline-brand-orange" placeholder={`Filter ${title.toLowerCase()}`} /><select className="rounded-xl border border-orange-100 bg-white p-3"><option>Sort by relevance</option><option>Price low to high</option><option>Price high to low</option></select></div></div>

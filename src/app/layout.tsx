@@ -5,7 +5,7 @@ import { CartFeedback } from '@/components/CartFeedback';
 import { getProducts, getSiteContent } from '@/lib/supabase';
 import { businessGraph, DEFAULT_DESCRIPTION, JsonLd, SITE_NAME, SITE_URL } from '@/lib/seo';
 
-export const metadata: Metadata = {
+const baseMetadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
     default: 'Alcohol Delivery Nairobi | ChupaHub',
@@ -25,6 +25,14 @@ export const metadata: Metadata = {
   robots: { index: true, follow: true, googleBot: { index: true, follow: true, 'max-image-preview': 'large', 'max-snippet': -1 } },
 };
 
+export async function generateMetadata(): Promise<Metadata> {
+  const content = await getSiteContent();
+  return {
+    ...baseMetadata,
+    ...(content.logo_url ? { icons: { icon: content.logo_url, shortcut: content.logo_url, apple: content.logo_url } } : {}),
+  };
+}
+
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const [content, products] = await Promise.all([getSiteContent(), getProducts()]);
   return (
@@ -33,7 +41,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       <body className="app-shell min-h-screen">
         <Header content={content} products={products} />
         <CartFeedback />
-        <JsonLd data={businessGraph([content.instagram_url || '', content.facebook_url || '', content.tiktok_url || ''])} />
+        <JsonLd data={businessGraph([content.instagram_url || '', content.facebook_url || '', content.tiktok_url || ''], content.logo_url)} />
         {children}
         <Footer content={content} />
       </body>
