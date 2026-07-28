@@ -5,7 +5,7 @@ import { CartFeedback } from '@/components/CartFeedback';
 import { getProducts, getSiteContent } from '@/lib/supabase';
 import { businessGraph, DEFAULT_DESCRIPTION, JsonLd, SITE_NAME, SITE_URL } from '@/lib/seo';
 
-export const metadata: Metadata = {
+const baseMetadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
     default: 'Alcohol Delivery Nairobi | ChupaHub',
@@ -21,10 +21,17 @@ export const metadata: Metadata = {
     type: 'website', url: SITE_URL, siteName: SITE_NAME, locale: 'en_KE',
   },
   twitter: { card: 'summary', title: 'Alcohol Delivery Nairobi | ChupaHub', description: DEFAULT_DESCRIPTION },
-  icons: { icon: [{ url: '/chupahub-official-logo.svg', type: 'image/svg+xml' }], apple: [{ url: '/chupahub-official-logo.svg', type: 'image/svg+xml' }], shortcut: ['/chupahub-official-logo.svg'] },
   manifest: '/site.webmanifest',
   robots: { index: true, follow: true, googleBot: { index: true, follow: true, 'max-image-preview': 'large', 'max-snippet': -1 } },
 };
+
+export async function generateMetadata(): Promise<Metadata> {
+  const content = await getSiteContent();
+  return {
+    ...baseMetadata,
+    ...(content.logo_url ? { icons: { icon: content.logo_url, shortcut: content.logo_url, apple: content.logo_url } } : {}),
+  };
+}
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const [content, products] = await Promise.all([getSiteContent(), getProducts()]);
@@ -34,7 +41,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       <body className="app-shell min-h-screen">
         <Header content={content} products={products} />
         <CartFeedback />
-        <JsonLd data={businessGraph([content.instagram_url || '', content.facebook_url || '', content.tiktok_url || ''])} />
+        <JsonLd data={businessGraph([content.instagram_url || '', content.facebook_url || '', content.tiktok_url || ''], content.logo_url)} />
         {children}
         <Footer content={content} />
       </body>

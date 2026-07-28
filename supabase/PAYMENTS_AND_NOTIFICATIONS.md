@@ -22,13 +22,16 @@ The checkout server recalculates item prices and stock from Supabase and calcula
 
 ## Authentication
 
-In Supabase Auth, enable Email and Google. Add these redirect URLs to the Auth configuration:
+In Supabase Auth, enable Email and Google, set the **Site URL** to `https://chupahub.com`, and add these redirect URLs to the Auth configuration:
 
-- `https://YOUR_DOMAIN/auth/callback`
-- `https://YOUR_DOMAIN/checkout`
+- `https://chupahub.com/auth/callback`
+- `https://www.chupahub.com/auth/callback`
+- `https://*.vercel.app/auth/callback`
 - `http://localhost:3000/auth/callback` (development only)
 
-Create the Google OAuth client in Google Cloud Console, add the Supabase callback URL shown by the Supabase Google provider page, then place its client ID and secret in the Supabase Google provider settings. Email confirmation and password reset are supplied by Supabase Auth; configure the email templates and site URL in Supabase.
+Create the Google OAuth client in Google Cloud Console and use **Supabase's provider callback URL** as its authorized redirect URI: `https://YOUR_SUPABASE_PROJECT_REF.supabase.co/auth/v1/callback`. Do not add a ChupaHub `/auth/callback` URL to Google Cloud; those application callback URLs belong in Supabase's redirect allow list. Place the Google client ID and secret only in the Supabase Google provider settings.
+
+Vercel's `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY` must both belong to that same Supabase project. Remove old credentials from every Vercel environment before redeploying. Never expose the service-role key in a `NEXT_PUBLIC_` variable.
 
 ## Notifications
 
@@ -38,4 +41,4 @@ No SMS, WhatsApp, or email credentials are included in this repository. Until a 
 
 ## Google Maps delivery search
 
-Create a browser API key in Google Cloud Console and enable **Maps JavaScript API**, **Places API**, and **Geocoding API**. Set `NEXT_PUBLIC_GOOGLE_MAPS_API_KEY` in Vercel. Restrict the key to HTTP referrers for the exact ChupaHub production domain, approved Vercel preview domains, and `http://localhost:3000/*` only when developing. Apply API restrictions so the key can call only those three APIs. The key is intentionally browser-visible; its referrer and API restrictions are mandatory. Checkout stores the selected Google Place ID, place name, formatted address, coordinates, and verification state. Manual fallback orders are visibly stored as unverified.
+Create a browser API key in Google Cloud Console and enable **Maps JavaScript API**, **Places API (New)**, and **Geocoding API**. Set `NEXT_PUBLIC_GOOGLE_MAPS_API_KEY` in Vercel. Restrict the key to HTTP referrers for the exact ChupaHub production domain, approved Vercel preview domains, and `http://localhost:3000/*` only when developing. Apply API restrictions so the key can call only those three APIs. The key is intentionally browser-visible; its referrer and API restrictions are mandatory. Checkout stores the selected Google Place ID, place name, formatted address, coordinates, and verification state. Manual fallback orders are visibly stored as unverified.
