@@ -2,17 +2,25 @@ import { NextResponse } from 'next/server';
 import { createServerSupabase } from '@/lib/supabase-server';
 
 export async function GET(request: Request) {
-  const url = new URL(request.url);
-  const code = url.searchParams.get('code');
-  if (!code) return NextResponse.redirect(new URL('/login?error=Google%20did%20not%20return%20an%20authorization%20code.', url.origin));
+  const requestUrl = new URL(request.url);
+  const code = requestUrl.searchParams.get('code');
+  const requestedNext = requestUrl.searchParams.get('next') || '/account';
+  const next = requestedNext.startsWith('/') && !requestedNext.startsWith('//') ? requestedNext : '/account';
+
+  if (!code) return NextResponse.redirect(new URL('/login?error=Missing+OAuth+authorization+code', requestUrl.origin));
+
   const supabase = await createServerSupabase();
-  if (!supabase) return NextResponse.redirect(new URL('/login?error=Customer%20login%20is%20not%20configured.', url.origin));
+  if (!supabase) return NextResponse.redirect(new URL('/login?error=Customer+login+is+not+configured', requestUrl.origin));
+
   const { error } = await supabase.auth.exchangeCodeForSession(code);
   if (error) {
-    console.error('[ChupaHub Auth] OAuth code exchange failed.', error, { name: error.name, message: error.message, status: error.status });
-    const message = encodeURIComponent(`Google login failed: ${error.message}`);
-    return NextResponse.redirect(new URL(`/login?error=${message}`, url.origin));
+    console.error('[Google OAuth callback] exchange failed', {
+      name: error.name,
+      message: error.message,
+      status: error.status,
+    });
+    return NextResponse.redirect(new URL(`/login?error=${encodeURIComponent(error.message)}`, requestUrl.origin));
   }
-  console.info('[ChupaHub Auth] OAuth code exchanged successfully.');
-  return NextResponse.redirect(new URL('/account', url.origin));
+
+  return NextResponse.redirect(new URL(next, requestUrl.origin));
 }
