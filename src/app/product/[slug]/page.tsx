@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { notFound } from 'next/navigation';
 import { ProductRail } from '@/components/Site';
 import { ProductPurchase } from '@/components/ProductPurchase';
 import { ProductGallery } from '@/components/ProductGallery';
@@ -27,7 +28,7 @@ export default async function Product({ params, searchParams }: { params: Promis
   const { slug } = await params;
   const { variant: initialVariantId } = await searchParams;
   const [product, related] = await Promise.all([getProduct(slug), getProducts()]);
-  if (!product) return <main className="mx-auto max-w-none px-4 py-8"><h1 className="text-3xl font-black">Product not found</h1></main>;
+  if (!product) notFound();
   const images = [...new Set([imageFor(product), ...(product.gallery_urls || [])])].slice(0, 6);
   const textDescription = plainText(product.description || product.short_description);
   const description = sanitizeHtml(product.description || '', { allowedTags: ['p', 'br', 'strong', 'em', 'h2', 'h3', 'ul', 'ol', 'li', 'a'], allowedAttributes: { a: ['href', 'target', 'rel'] } });

@@ -50,6 +50,11 @@ export function businessGraph(socialLinks: string[] = [], logoUrl?: string) {
       name: SITE_NAME,
       publisher: { '@id': `${SITE_URL}/#organization` },
       inLanguage: 'en-KE',
+      potentialAction: {
+        '@type': 'SearchAction',
+        target: { '@type': 'EntryPoint', urlTemplate: `${SITE_URL}/category/all?q={search_term_string}` },
+        'query-input': 'required name=search_term_string',
+      },
     },
   ],
   };
