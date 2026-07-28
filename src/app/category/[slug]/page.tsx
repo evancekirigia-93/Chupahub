@@ -4,6 +4,7 @@ import { ProductCard, ProductVariantCard } from '@/components/Site';
 import { getCategories, getCategory, getProducts, getProductsByCategory } from '@/lib/supabase';
 import { absoluteUrl, breadcrumbSchema, JsonLd, plainText, truncate } from '@/lib/seo';
 import { shopLinks } from '@/lib/seo-pages';
+import { categoryCanonicalPath } from '@/lib/public-urls';
 
 export async function generateStaticParams() {
   const categories = await getCategories();
@@ -16,7 +17,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const name = category?.name || slug.replaceAll('-', ' ').replace(/\b\w/g, (letter) => letter.toUpperCase());
   const title = category?.seo_title || `${name} Delivery Nairobi – Order Online`;
   const description = truncate(category?.seo_description || plainText(category?.description) || `Order ${name.toLowerCase()} online from ChupaHub with fast, reliable ${name.toLowerCase()} delivery across Nairobi.`);
-  const url = `/category/${slug}`;
+  const url = categoryCanonicalPath(slug);
   return {
     title, description, alternates: { canonical: url },
     keywords: [`${name} Delivery Nairobi`, `${name} online Nairobi`, 'Alcohol Delivery Nairobi', 'Liquor Delivery Nairobi'],
@@ -31,7 +32,7 @@ export default async function Category({ params }: { params: Promise<{ slug: str
   if (slug !== 'all' && !category) notFound();
   const title = slug === 'all' ? 'All Products' : category?.name || slug.replaceAll('-', ' ');
   return <main className="mx-auto max-w-none px-4 py-8">
-    <JsonLd data={[{ '@context': 'https://schema.org', '@type': 'CollectionPage', name: title, url: absoluteUrl(`/category/${slug}`), numberOfItems: list.length }, breadcrumbSchema([{ name: 'Home', url: '/' }, { name: title, url: `/category/${slug}` }])]} />
+    <JsonLd data={[{ '@context': 'https://schema.org', '@type': 'CollectionPage', name: title, url: absoluteUrl(categoryCanonicalPath(slug)), numberOfItems: list.length }, breadcrumbSchema([{ name: 'Home', url: '/' }, { name: title, url: categoryCanonicalPath(slug) }])]} />
     <nav aria-label="Breadcrumb" className="mb-4 text-sm text-neutral-600"><a href="/">Home</a> / <span className="capitalize">{title}</span></nav>
     <div className="rounded-3xl bg-white p-6 shadow-card"><p className="font-bold uppercase tracking-wide text-brand-orange">Alcohol delivery Nairobi</p><h1 className="text-4xl font-black capitalize text-brand-ink sm:text-6xl">{title} Delivery Nairobi</h1><p className="mt-3 max-w-3xl text-neutral-600">{plainText(category?.description) || `Shop ${title.toLowerCase()} online for fast delivery across Nairobi.`}</p><div className="mt-6 grid gap-3 md:grid-cols-5"><input className="rounded-xl border border-orange-100 bg-brand-soft p-3 outline-brand-orange" placeholder={`Filter ${title.toLowerCase()}`} /><select className="rounded-xl border border-orange-100 bg-white p-3"><option>Sort by relevance</option><option>Price low to high</option><option>Price high to low</option></select></div></div>
     <nav aria-label="Related drink categories" className="mt-5 flex flex-wrap gap-2">{shopLinks.map(([label,href]) => <a key={href} href={href} className="rounded-full border border-orange-100 bg-white px-4 py-2 text-sm font-bold text-brand-ink">{label}</a>)}</nav>

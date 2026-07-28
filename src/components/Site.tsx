@@ -7,6 +7,7 @@ import { DbCategory, DbProduct, effectivePrice, imageFor, money, SiteContent } f
 import { readCart, writeCart } from '@/lib/cart';
 import { BrandLogo } from '@/components/BrandLogo';
 import { shopLinks } from '@/lib/seo-pages';
+import { categoryCanonicalPath } from '@/lib/public-urls';
 
 function animateProductToCart(source: HTMLButtonElement) {
   const image = source.parentElement?.querySelector('img'), cart = document.querySelector('[data-cart-icon]');
@@ -46,7 +47,7 @@ export function SeoArticle({ content = {} }: { content?: SiteContent }) {
 }
 
 export function CategoryGrid({ categories }: { categories: DbCategory[] }) {
-  return <section className="mx-auto grid max-w-none grid-cols-3 gap-2 px-3 py-4 sm:grid-cols-4 sm:gap-3 sm:px-4 md:grid-cols-6 xl:grid-cols-8">{categories.map((category) => <Link href={`/category/${category.slug}`} key={category.id} className="group relative h-28 overflow-hidden rounded-2xl bg-gradient-to-br from-orange-300 to-red-800 shadow-card sm:h-36"><img src={category.image_url || 'https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?auto=format&fit=crop&w=700&q=80'} alt={`${category.name} delivery Nairobi`} loading="lazy" decoding="async" className="absolute inset-0 h-full w-full object-cover opacity-45 transition group-hover:scale-105" /><div className="tile-shade absolute inset-0" /><div className="absolute inset-x-0 bottom-0 p-3 text-center text-white"><div className="mx-auto mb-2 grid h-7 w-7 place-items-center rounded-full bg-white/90 text-2xl shadow-card sm:h-14 sm:w-14 sm:text-3xl">{category.icon || '🍾'}</div><h2 className="text-lg font-bold sm:text-xl">{category.name}</h2></div></Link>)}</section>;
+  return <section className="mx-auto grid max-w-none grid-cols-3 gap-2 px-3 py-4 sm:grid-cols-4 sm:gap-3 sm:px-4 md:grid-cols-6 xl:grid-cols-8">{categories.map((category) => <Link href={categoryCanonicalPath(category.slug)} key={category.id} className="group relative h-28 overflow-hidden rounded-2xl bg-gradient-to-br from-orange-300 to-red-800 shadow-card sm:h-36"><img src={category.image_url || 'https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?auto=format&fit=crop&w=700&q=80'} alt={`${category.name} delivery Nairobi`} loading="lazy" decoding="async" className="absolute inset-0 h-full w-full object-cover opacity-45 transition group-hover:scale-105" /><div className="tile-shade absolute inset-0" /><div className="absolute inset-x-0 bottom-0 p-3 text-center text-white"><div className="mx-auto mb-2 grid h-7 w-7 place-items-center rounded-full bg-white/90 text-2xl shadow-card sm:h-14 sm:w-14 sm:text-3xl">{category.icon || '🍾'}</div><h2 className="text-lg font-bold sm:text-xl">{category.name}</h2></div></Link>)}</section>;
 }
 
 export function ProductCard({ p }: { p: DbProduct }) {

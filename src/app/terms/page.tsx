@@ -1,4 +1,7 @@
+import type { Metadata } from 'next';
 import { getSiteContent } from '@/lib/supabase';
+
+export const metadata: Metadata = { title: 'ChupaHub Terms and Conditions', description: 'Read the terms for using ChupaHub, ordering products and receiving drinks delivery in Nairobi.', alternates: { canonical: '/terms' }, openGraph: { title: 'ChupaHub Terms and Conditions', description: 'Terms for using ChupaHub and ordering drinks.', url: '/terms', type: 'website' }, twitter: { card: 'summary', title: 'ChupaHub Terms and Conditions', description: 'Terms for using ChupaHub and ordering drinks.' } };
 
 export default async function TermsPage() {
   const content = await getSiteContent();

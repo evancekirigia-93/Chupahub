@@ -1,4 +1,7 @@
+import type { Metadata } from 'next';
 import { getSiteContent } from '@/lib/supabase';
+
+export const metadata: Metadata = { title: 'ChupaHub Privacy Policy', description: 'Read how ChupaHub handles customer information for accounts, orders and delivery services.', alternates: { canonical: '/privacy' }, openGraph: { title: 'ChupaHub Privacy Policy', description: 'How ChupaHub handles customer information.', url: '/privacy', type: 'website' }, twitter: { card: 'summary', title: 'ChupaHub Privacy Policy', description: 'How ChupaHub handles customer information.' } };
 
 export default async function PrivacyPage() {
   const content = await getSiteContent();

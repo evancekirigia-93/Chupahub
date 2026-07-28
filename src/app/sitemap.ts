@@ -1,18 +1,23 @@
 import type { MetadataRoute } from 'next';
-import { getCategories, getHomepageSections, getProducts } from '@/lib/supabase';
+import { getCategories, getProducts, sitemapProducts } from '@/lib/supabase';
 import { absoluteUrl } from '@/lib/seo';
 import { seoPages } from '@/lib/seo-pages';
+import { categoryCanonicalPath } from '@/lib/public-urls';
 
 export const revalidate = 300;
 const publicPages = ['/', ...Object.values(seoPages).map(page => page.path), '/search', '/collections/top-sellers', '/collections/new-arrivals', '/collections/featured', '/about', '/contact', '/faq', '/track-order', '/privacy', '/terms'];
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const [categories, products, sections] = await Promise.all([getCategories(), getProducts(), getHomepageSections()]);
-  const now = new Date();
+  const [categories, allProducts] = await Promise.all([getCategories(), getProducts()]);
+  const products = sitemapProducts(allProducts);
+  const categoryEntries = [...new Map(categories.map(category => [categoryCanonicalPath(category.slug), category])).entries()];
+  const collectionLastModified = (predicate: (product: typeof products[number]) => boolean) => products.filter(predicate).map(product => product.updated_at).filter(Boolean).sort().at(-1);
   return [
-    ...publicPages.map((path, index) => ({ url: absoluteUrl(path), lastModified: now, changeFrequency: (index === 0 ? 'daily' : 'weekly') as 'daily' | 'weekly', priority: index === 0 ? 1 : 0.8 })),
-    ...categories.map(category => ({ url: absoluteUrl(`/category/${category.slug}`), lastModified: now, changeFrequency: 'daily' as const, priority: 0.8 })),
-    ...sections.map(section => ({ url: absoluteUrl(`/collections/${section.id}`), lastModified: now, changeFrequency: 'weekly' as const, priority: 0.7 })),
-    ...products.map(product => ({ url: absoluteUrl(`/product/${product.slug}`), lastModified: now, changeFrequency: 'daily' as const, priority: 0.9 })),
+    ...[...new Set(publicPages)].map(path => ({ url: absoluteUrl(path) })),
+    ...categoryEntries.filter(([path]) => !publicPages.includes(path)).map(([path, category]) => ({ url: absoluteUrl(path), ...(category.updated_at ? { lastModified: category.updated_at } : {}) })),
+    { url: absoluteUrl('/collections/top-sellers'), ...(collectionLastModified(product => Boolean(product.is_top_seller)) ? { lastModified: collectionLastModified(product => Boolean(product.is_top_seller)) } : {}) },
+    { url: absoluteUrl('/collections/new-arrivals'), ...(collectionLastModified(product => Boolean(product.is_new_arrival)) ? { lastModified: collectionLastModified(product => Boolean(product.is_new_arrival)) } : {}) },
+    { url: absoluteUrl('/collections/featured'), ...(collectionLastModified(product => Boolean(product.is_featured)) ? { lastModified: collectionLastModified(product => Boolean(product.is_featured)) } : {}) },
+    ...products.map(product => ({ url: absoluteUrl(`/product/${product.slug}`), ...(product.updated_at ? { lastModified: product.updated_at } : {}) })),
   ];
 }
