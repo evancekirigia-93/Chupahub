@@ -16,10 +16,10 @@ type Order = {
 type Connection = 'connecting' | 'live' | 'polling' | 'error';
 const PAGE_SIZE = 20;
 const unreviewedStatuses = new Set(['pending', 'pending_payment', 'paid']);
-const statusOptions = ['pending', 'confirmed', 'processing', 'dispatched', 'delivered', 'rejected', 'cancelled'];
-const transitions: Record<string, string[]> = { pending: ['confirmed','rejected','cancelled'], pending_payment: ['confirmed','rejected','cancelled'], paid: ['confirmed','rejected','cancelled'], accepted: ['processing','dispatched','rejected','cancelled'], confirmed: ['processing','dispatched','rejected','cancelled'], processing: ['dispatched','rejected','cancelled'], dispatched: ['delivered','cancelled'], delivered: [], rejected: [], cancelled: [] };
-const statusLabel = (value: string) => value === 'pending' || value === 'pending_payment' ? 'New' : value === 'accepted' ? 'Confirmed' : value;
-const statusClass = (value: string) => ({ pending: 'bg-blue-100 text-blue-800', pending_payment: 'bg-amber-100 text-amber-800', paid: 'bg-blue-100 text-blue-800', confirmed: 'bg-indigo-100 text-indigo-800', accepted: 'bg-indigo-100 text-indigo-800', processing: 'bg-purple-100 text-purple-800', dispatched: 'bg-orange-100 text-orange-800', delivered: 'bg-green-100 text-green-800', rejected: 'bg-red-100 text-red-800', cancelled: 'bg-neutral-200 text-neutral-700' }[value] || 'bg-neutral-100 text-neutral-700');
+const statusOptions = ['pending', 'confirmed', 'processing', 'out_for_delivery', 'delivered', 'rejected', 'cancelled'];
+const transitions: Record<string, string[]> = { pending: ['confirmed','rejected','cancelled'], pending_payment: ['confirmed','rejected','cancelled'], paid: ['confirmed','rejected','cancelled'], accepted: ['processing','out_for_delivery','rejected','cancelled'], confirmed: ['processing','out_for_delivery','rejected','cancelled'], processing: ['out_for_delivery','rejected','cancelled'], dispatched: ['delivered','cancelled'], out_for_delivery: ['delivered','cancelled'], delivered: [], rejected: [], cancelled: [] };
+const statusLabel = (value: string) => value === 'pending' || value === 'pending_payment' ? 'New' : value === 'accepted' ? 'Confirmed' : value === 'out_for_delivery' ? 'Out for delivery' : value;
+const statusClass = (value: string) => ({ pending: 'bg-blue-100 text-blue-800', pending_payment: 'bg-amber-100 text-amber-800', paid: 'bg-blue-100 text-blue-800', confirmed: 'bg-indigo-100 text-indigo-800', accepted: 'bg-indigo-100 text-indigo-800', processing: 'bg-purple-100 text-purple-800', dispatched: 'bg-orange-100 text-orange-800', out_for_delivery: 'bg-orange-100 text-orange-800', delivered: 'bg-green-100 text-green-800', rejected: 'bg-red-100 text-red-800', cancelled: 'bg-neutral-200 text-neutral-700' }[value] || 'bg-neutral-100 text-neutral-700');
 
 export default function OrdersPage() {
   const supabase = useMemo(() => createBrowserSupabase(), []);
