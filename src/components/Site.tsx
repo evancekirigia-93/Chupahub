@@ -54,9 +54,44 @@ export function Journal({ content = {} }: { content?: SiteContent }) {
 }
 
 export function SeoArticle({ content = {} }: { content?: SiteContent }) {
-  const title = content.article_title || 'A practical guide to alcohol delivery in Nairobi';
-  const summary = content.article_summary || 'How to choose drinks online, plan quantities and arrange responsible delivery.';
-  const body = content.article_body || 'ChupaHub provides convenient online alcohol delivery in Nairobi for wine, whisky, gin, vodka, champagne, beer, liqueurs and mixers. Browse clear bottle sizes and prices, confirm your delivery location and choose a suitable payment method. When planning an event, compare the number of guests, serving sizes and food pairings before ordering. Customers must be 18 or older, and everyone should enjoy alcohol responsibly.';
+  const title = content.article_title || "ChupaHub Deliveries – Kenya's Online Alcohol & Drinks Delivery Platform";
+  const summary = content.article_summary || 'Discover wines, spirits, beers, champagne and mixers online with convenient ChupaHub delivery.';
+  const body = content.article_body || `ChupaHub Deliveries is a fast, convenient online platform for ordering wines, spirits, beers, champagne, whisky, gin, vodka, tequila, rum, ciders, mixers, and other beverages for delivery across Kenya. Whether you're planning a celebration, stocking your home bar, or simply need a quick delivery, ChupaHub makes ordering drinks online simple and reliable.
+
+If you're familiar with stores such as Chupa Chap, Oaks & Corks, The Bar KE, or other well-known liquor retailers in Kenya, ChupaHub offers a convenient online marketplace where you can discover a wide selection of drinks and have them delivered to your location.
+
+Customers searching for terms such as:
+
+• Chupa Chap
+• Oaks & Corks
+• The Bar KE
+• online alcohol delivery Kenya
+• liquor delivery near me
+• wine delivery Nairobi
+• whisky delivery Kenya
+• beer delivery
+• champagne delivery
+• gin delivery
+• vodka delivery
+• tequila delivery
+• same-day alcohol delivery
+• drinks delivery
+• buy alcohol online
+• buy wine online Kenya
+• premium liquor store
+• online liquor shop
+• alcohol delivery service
+• drinks delivered to your door
+
+can use ChupaHub to browse products, compare options, and order quickly from one easy-to-use platform.
+
+Our goal is to make finding and ordering your favorite drinks as easy as ordering food online. Whether you're looking for premium whisky, fine wine, craft beer, champagne, spirits, or mixers, ChupaHub provides a secure and convenient shopping experience with fast delivery and excellent customer service.
+
+ChupaHub Deliveries is designed for customers who want a trusted alternative when searching online for alcohol delivery services in Kenya. If you're searching for online liquor stores, wine delivery, beer delivery, or drink delivery services similar to Chupa Chap, Oaks & Corks, or The Bar KE, ChupaHub is ready to help you find what you need.
+
+Please note that ChupaHub is an independent platform and is not affiliated with, endorsed by, or operated by Chupa Chap, Oaks & Corks, The Bar KE, or other third-party brands that may be referenced for comparison. All trademarks remain the property of their respective owners.
+
+ChupaHub Deliveries promotes responsible drinking and only serves customers who are of legal drinking age.`;
   return <section className="mx-auto max-w-4xl px-4 pb-10"><details className="group rounded-2xl border border-orange-100 bg-white px-5 py-4 text-sm shadow-sm"><summary className="cursor-pointer list-none font-black text-brand-ink"><span className="text-brand-orange">Journal</span> · {title}<span className="float-right text-brand-orange group-open:hidden">Read article</span><span className="float-right hidden text-brand-orange group-open:inline">Close</span></summary><p className="mt-2 text-neutral-500">{summary}</p><article className="mt-4 border-t border-orange-100 pt-4 leading-7 text-neutral-700"><h2 className="text-xl font-black text-brand-ink">{title}</h2><p className="mt-3 whitespace-pre-line">{body}</p></article></details></section>;
 }
 
