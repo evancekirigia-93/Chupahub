@@ -1,11 +1,16 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { createBrowserSupabase } from '@/lib/supabase-browser';
 
 export function LoginForm({ initialError }: { initialError?: string }) {
   const supabase = useMemo(() => createBrowserSupabase(), []);
   const [loading, setLoading] = useState(false), [error, setError] = useState<string | null>(initialError || null);
+
+  useEffect(() => {
+    setLoading(false);
+    setError(initialError || null);
+  }, [initialError]);
 
   const handleGoogleLogin = async () => {
     setLoading(true);

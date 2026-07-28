@@ -1,6 +1,6 @@
 import { createClient } from '@supabase/supabase-js';
 import { cookies } from 'next/headers';
-import { authCookieOptions, decodeAuthCookie, encodeAuthCookie } from '@/lib/supabase-auth-storage';
+import { authCookieNames, authCookieOptions, chunkAuthCookie, readChunkedAuthCookie } from '@/lib/supabase-auth-storage';
 import { supabasePublicKey, supabaseUrl } from '@/lib/supabase';
 
 export async function createServerSupabase() {
@@ -13,9 +13,15 @@ export async function createServerSupabase() {
       detectSessionInUrl: false,
       persistSession: true,
       storage: {
-        getItem: (key) => decodeAuthCookie(cookieStore.get(key)?.value),
-        setItem: (key, value) => { cookieStore.set(key, encodeAuthCookie(value), authCookieOptions); },
-        removeItem: (key) => { cookieStore.set(key, '', { ...authCookieOptions, maxAge: 0 }); },
+        getItem: (key) => readChunkedAuthCookie(key, cookieStore.getAll()),
+        setItem: (key, value) => {
+          const existing = cookieStore.getAll();
+          authCookieNames(key, existing).forEach(name => cookieStore.set(name, '', { ...authCookieOptions, maxAge: 0 }));
+          const chunks = chunkAuthCookie(key, value);
+          chunks.forEach(cookie => cookieStore.set(cookie.name, cookie.value, authCookieOptions));
+          console.info('[Supabase SSR] session cookie write', { cookieName: key, chunks: chunks.length });
+        },
+        removeItem: (key) => { authCookieNames(key, cookieStore.getAll()).forEach(name => cookieStore.set(name, '', { ...authCookieOptions, maxAge: 0 })); },
       },
     },
   });

@@ -29,7 +29,7 @@ In Supabase Auth, enable Email and Google, set the **Site URL** to `https://chup
 - `https://*.vercel.app/auth/callback`
 - `http://localhost:3000/auth/callback` (development only)
 
-Create the Google OAuth client in Google Cloud Console and use **Supabase's provider callback URL** as its authorized redirect URI: `https://YOUR_SUPABASE_PROJECT_REF.supabase.co/auth/v1/callback`. Do not add a ChupaHub `/auth/callback` URL to Google Cloud; those application callback URLs belong in Supabase's redirect allow list. Place the Google client ID and secret only in the Supabase Google provider settings.
+Create the Google OAuth client in Google Cloud Console and use **Supabase's provider callback URL** as its authorized redirect URI: `https://zoiafygddwqwjqvaahtb.supabase.co/auth/v1/callback`. Do not add a ChupaHub `/auth/callback` URL to Google Cloud; those application callback URLs belong in Supabase's redirect allow list. Place the Google client ID and secret only in the Supabase Google provider settings.
 
 Vercel's `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY` must both belong to that same Supabase project. Remove old credentials from every Vercel environment before redeploying. Never expose the service-role key in a `NEXT_PUBLIC_` variable.
 
