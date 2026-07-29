@@ -35,7 +35,7 @@ export function Header({ content = {}, products = [] }: { content?: SiteContent;
   </header>;
 }
 
-export function Footer({ content = {} }: { content?: SiteContent }) {
+export function Footer({ content = {}, products = [] }: { content?: SiteContent; products?: DbProduct[] }) {
   const socialLinks = [['Instagram', content.instagram_url], ['Facebook', content.facebook_url], ['TikTok', content.tiktok_url], ['WhatsApp', content.whatsapp_url]].filter(([, url]) => Boolean(url));
   const partners = content.brand_partners?.filter(partner => partner.name.trim() && partner.image_url.trim()) || defaultBrandPartners;
   const partnerLogos = partners.map(partner => <span key={partner.id} className="inline-flex h-8 w-24 shrink-0 items-center justify-center rounded bg-white px-2"><img src={partner.image_url} alt={partner.name} loading="lazy" className="max-h-6 max-w-full object-contain"/></span>);
