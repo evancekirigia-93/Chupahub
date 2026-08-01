@@ -129,7 +129,7 @@ export function sitemapProducts(products: DbProduct[]) {
 
 
 export type SiteContent = {
-  logo_url?: string; about?: string; privacy?: string; terms?: string; contact_phone?: string; contact_email?: string; header_notice?: string; footer_text?: string;
+  about?: string; logo_url?: string; contact_phone?: string; contact_email?: string; header_notice?: string; footer_text?: string;
   footer_shop_title?: string; footer_help_title?: string; footer_contact_title?: string; copyright_text?: string;
   instagram_url?: string; facebook_url?: string; tiktok_url?: string; whatsapp_url?: string;
   journal_title?: string; journal_intro?: string; article_title?: string; article_summary?: string; article_body?: string;

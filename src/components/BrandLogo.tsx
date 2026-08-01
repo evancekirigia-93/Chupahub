@@ -1,10 +1,10 @@
-import Image from 'next/image';
+const DEFAULT_LOGO_SRC = '/chupahub-logo.svg';
 
-export function BrandLogo({ footer = false, logoUrl }: { footer?: boolean; logoUrl?: string }) {
+export function BrandLogo({ footer = false, src = DEFAULT_LOGO_SRC }: { footer?: boolean; src?: string }) {
   return (
     <div className="flex shrink-0 items-center gap-2.5 text-left">
       <img
-        src={LOGO_SRC}
+        src={src || DEFAULT_LOGO_SRC}
         alt=""
         aria-hidden="true"
         className={footer ? 'h-16 w-10 object-contain' : 'h-12 w-8 object-contain sm:h-14 sm:w-9'}
