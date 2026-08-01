@@ -1,6 +1,6 @@
-const LOGO_SRC = '/chupahub-logo.svg';
+import Image from 'next/image';
 
-export function BrandLogo({ footer = false }: { footer?: boolean }) {
+export function BrandLogo({ footer = false, logoUrl }: { footer?: boolean; logoUrl?: string }) {
   return (
     <div className="flex shrink-0 items-center gap-2.5 text-left">
       <img
