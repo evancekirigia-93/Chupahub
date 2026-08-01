@@ -5,11 +5,25 @@ import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import type { DbBanner } from '@/lib/supabase';
 
+function SlideContent({ banner }: { banner: DbBanner }) {
+  return <>
+    <picture><source media="(max-width: 640px)" srcSet={banner.mobile_image_url || banner.image_url}/><img src={banner.image_url} alt={banner.title} className="absolute inset-0 h-full w-full object-cover"/></picture>
+    <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/20 to-transparent"/>
+    <div className="absolute bottom-5 left-5 max-w-md text-white">
+      {banner.badge_text && <p className="font-bold uppercase tracking-wide">{banner.badge_text}</p>}
+      <h1 className="text-3xl font-black sm:text-5xl">{banner.title}</h1>
+      {banner.subtitle && <p className="mt-2 hidden text-white/90 sm:block">{banner.subtitle}</p>}
+      {banner.button_url && (banner.button_label || banner.button_text) && <span className="orange-gradient mt-4 inline-block rounded-lg px-5 py-3 font-black uppercase text-white shadow-card">{banner.button_label || banner.button_text}</span>}
+    </div>
+  </>;
+}
+
 export function HeroCarousel({ banners }: { banners: DbBanner[] }) {
+  const slides = banners.slice(0, 3);
   const [current, setCurrent] = useState(0), [paused, setPaused] = useState(false);
   useEffect(() => {
-    if (banners.length < 2 || paused || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-    const timer = window.setInterval(() => setCurrent(index => (index + 1) % banners.length), 6000);
+    if (slides.length < 2 || paused || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    const timer = window.setInterval(() => setCurrent(index => (index + 1) % slides.length), 3000);
     return () => window.clearInterval(timer);
   }, [banners.length, paused]);
   useEffect(() => { if (current >= banners.length) setCurrent(0); }, [banners.length, current]);

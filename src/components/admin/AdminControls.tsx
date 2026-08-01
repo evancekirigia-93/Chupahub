@@ -31,7 +31,7 @@ export function ImageDropzone({ busy, onFiles }: { busy: boolean; onFiles: (file
 
 export function GalleryPreview({ urls, onRemove }: { urls: string[]; onRemove: (url: string) => void }) {
   if (!urls.length) return null;
-  return <div className="mt-3 grid grid-cols-3 gap-2 sm:grid-cols-5">{urls.map((url) => <div key={url} className="group relative"><img src={url} alt="Product gallery" className="h-20 w-full rounded-lg object-cover" /><button type="button" onClick={() => onRemove(url)} className="absolute right-1 top-1 rounded-full bg-red-600 px-2 py-0.5 text-xs font-black text-white opacity-90">×</button></div>)}</div>;
+  return <div className="mt-3 grid grid-cols-3 gap-2 sm:grid-cols-5">{urls.map((url) => <div key={url} className="group relative"><img src={url} alt="Product gallery" className="h-20 w-full rounded-lg bg-white object-contain" /><button type="button" onClick={() => onRemove(url)} className="absolute right-1 top-1 rounded-full bg-red-600 px-2 py-0.5 text-xs font-black text-white opacity-90">×</button></div>)}</div>;
 }
 
 export function EmptyState({ title, detail }: { title: string; detail: string }) {

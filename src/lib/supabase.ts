@@ -2,17 +2,17 @@ export const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
 export const supabasePublicKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY || '';
 export const hasSupabaseConfig = Boolean(supabaseUrl && supabasePublicKey);
 
-export type DbCategory = { id: string; name: string; slug: string; parent_id?: string; icon?: string; image_url?: string; description?: string; color?: string; seo_title?: string; seo_description?: string; sort_order?: number; is_active?: boolean };
+export type DbCategory = { id: string; name: string; slug: string; parent_id?: string; icon?: string; image_url?: string; description?: string; color?: string; seo_title?: string; seo_description?: string; sort_order?: number; is_active?: boolean; updated_at?: string };
 export type DbVariant = { id: string; name: string; sku?: string; option_values?: Record<string, string>; price: number; old_price?: number; discount_starts_at?: string; discount_ends_at?: string; discount_label?: string; stock: number; low_stock_threshold?: number; image_url?: string; is_active?: boolean };
 export type DbBanner = { id: string; title: string; subtitle?: string | null; image_url: string; mobile_image_url?: string | null; badge_text?: string | null; button_label?: string | null; button_text?: string | null; button_url?: string | null; sort_order?: number | null; is_active?: boolean; starts_at?: string | null; ends_at?: string | null };
 export type DbPromotion = { id: string; title: string; code?: string; description?: string; image_url?: string; badge_text?: string; button_label?: string; button_url?: string; discount_type: string; discount_value: number; sort_order?: number };
-export type DbHomepageSection = { id: string; heading: string; category_id?: string | null; product_ids: string[]; use_best_sellers: boolean; item_limit: number; sort_order: number; is_active: boolean; categories?: { slug: string } | null };
+export type DbHomepageSection = { id: string; heading: string; category_id?: string | null; product_ids: string[]; use_best_sellers: boolean; item_limit: number; sort_order: number; is_active: boolean; updated_at?: string; categories?: { slug: string } | null };
 export type DbDeliverySetting = { id: string; name: string; min_distance_km: number; max_distance_km?: number; fee: number; estimated_minutes_min: number; estimated_minutes_max: number };
 export type DbProduct = {
   id: string; name: string; slug: string; description?: string; short_description?: string; seo_title?: string; seo_description?: string; sku?: string; abv?: number; country?: string; bottle_size?: string;
   price: number; old_price?: number; discount_starts_at?: string; discount_ends_at?: string; discount_label?: string; currency?: string; stock?: number; low_stock_threshold?: number; image_url?: string; gallery_urls?: string[];
   tasting_notes?: string; pairing_suggestions?: string;
-  is_top_seller?: boolean; is_new_arrival?: boolean; is_featured?: boolean; is_active?: boolean;
+  is_top_seller?: boolean; is_new_arrival?: boolean; is_featured?: boolean; is_active?: boolean; updated_at?: string;
   categories?: { name: string; slug: string } | null; brands?: { name: string; country?: string } | null;
   product_variants?: DbVariant[];
 };
@@ -93,6 +93,11 @@ export async function getHomepageSections(): Promise<DbHomepageSection[]> {
   return supabaseFetch<DbHomepageSection>('homepage_product_sections?select=*,categories(slug)&is_active=eq.true&order=sort_order.asc,created_at.asc', { cache: 'no-store', resource: 'public homepage product sections' });
 }
 
+export async function getHomepageSection(id: string): Promise<DbHomepageSection | null> {
+  const rows = await supabaseFetch<DbHomepageSection>(`homepage_product_sections?select=*,categories(slug)&id=eq.${encodeURIComponent(id)}&is_active=eq.true&limit=1`, { cache: 'no-store', resource: 'public homepage product section' });
+  return rows[0] || null;
+}
+
 export async function getProductsByCategory(slug: string): Promise<DbProduct[]> {
   return supabaseFetch<DbProduct>(`products?select=*,categories!inner(name,slug),brands(name,country),product_variants(*)&is_active=eq.true&categories.slug=eq.${encodeURIComponent(slug)}&order=sort_order.asc,created_at.desc`, { resource: 'public products by category' });
 }
@@ -102,12 +107,34 @@ export async function getProduct(slug: string): Promise<DbProduct | null> {
   return rows[0] || null;
 }
 
+const testProductSlugs = new Set(['jospeh', 'jose-b', 'jose']);
+const validPublicSlug = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
+
+/** Sitemap entries are deliberately stricter than storefront visibility. A
+ * product must be complete enough to be a useful, indexable landing page. */
+export function isSitemapProduct(product: DbProduct, duplicateSlugs?: ReadonlySet<string>) {
+  const slug = product.slug?.trim().toLowerCase();
+  const hasInventory = Number.isFinite(Number(product.stock)) || (product.product_variants || []).some(variant => Number.isFinite(Number(variant.stock)));
+  return product.is_active !== false && Boolean(slug) && validPublicSlug.test(slug) && !testProductSlugs.has(slug) && !duplicateSlugs?.has(slug)
+    && Boolean(product.name?.trim() && product.name.trim().length >= 3) && Number.isFinite(Number(product.price)) && Number(product.price) > 0
+    && Boolean((product.description || product.short_description || '').trim()) && Boolean(product.image_url || product.gallery_urls?.length) && hasInventory;
+}
+
+export function sitemapProducts(products: DbProduct[]) {
+  const counts = new Map<string, number>();
+  products.forEach(product => counts.set(product.slug?.trim().toLowerCase(), (counts.get(product.slug?.trim().toLowerCase()) || 0) + 1));
+  const duplicates = new Set([...counts].filter(([, count]) => count > 1).map(([slug]) => slug));
+  return products.filter(product => isSitemapProduct(product, duplicates));
+}
+
 
 export type SiteContent = {
   about?: string; privacy?: string; terms?: string; logo_url?: string; contact_phone?: string; contact_email?: string; header_notice?: string; footer_text?: string;
   footer_shop_title?: string; footer_help_title?: string; footer_contact_title?: string; copyright_text?: string;
   instagram_url?: string; facebook_url?: string; tiktok_url?: string; whatsapp_url?: string;
   journal_title?: string; journal_intro?: string; article_title?: string; article_summary?: string; article_body?: string;
+  articles?: Array<{ id: string; title: string; summary: string; body: string; is_active: boolean }>;
+  brand_partners?: Array<{ id: string; name: string; image_url: string }>;
 };
 export async function getSiteContent(): Promise<SiteContent> {
   const rows = await supabaseFetch<{ value: SiteContent }>('store_settings?select=value&key=eq.site_content&is_public=eq.true&limit=1', { resource: 'public website settings' });
