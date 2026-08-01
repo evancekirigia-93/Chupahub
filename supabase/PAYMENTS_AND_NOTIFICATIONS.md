@@ -35,7 +35,7 @@ Vercel's `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY` must bot
 
 ## Notifications
 
-`admin_notifications` always records new-order and confirmed-payment events for the secure admin dashboard. Configure an email provider such as Resend (`RESEND_API_KEY`, `EMAIL_FROM`, `ADMIN_NOTIFICATION_EMAIL`) before enabling email sends. Configure Africa's Talking or another approved provider only after valid credentials are available. WhatsApp requires a Meta Cloud API access token, phone-number ID, and approved templates where Meta requires them.
+`admin_notifications` always records new-order and confirmed-payment events for the secure admin dashboard. Resend order email uses the server-only `RESEND_API_KEY`, `EMAIL_FROM`, and `ADMIN_ORDER_EMAIL` variables. `EMAIL_PROVIDER=resend` is optional because the application detects Resend when an API key is present. Configure Africa's Talking or another approved provider only after valid credentials are available. WhatsApp requires a Meta Cloud API access token, phone-number ID, and approved templates where Meta requires them.
 
 No SMS, WhatsApp, or email credentials are included in this repository. Until a provider integration and verified credentials are configured, use the in-dashboard notification record and do not claim external messages were sent.
 

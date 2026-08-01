@@ -129,10 +129,12 @@ export function sitemapProducts(products: DbProduct[]) {
 
 
 export type SiteContent = {
-  logo_url?: string; about?: string; privacy?: string; terms?: string; contact_phone?: string; contact_email?: string; header_notice?: string; footer_text?: string;
+  about?: string; privacy?: string; terms?: string; logo_url?: string; contact_phone?: string; contact_email?: string; header_notice?: string; footer_text?: string;
   footer_shop_title?: string; footer_help_title?: string; footer_contact_title?: string; copyright_text?: string;
   instagram_url?: string; facebook_url?: string; tiktok_url?: string; whatsapp_url?: string;
   journal_title?: string; journal_intro?: string; article_title?: string; article_summary?: string; article_body?: string;
+  articles?: Array<{ id: string; title: string; summary: string; body: string; is_active: boolean }>;
+  brand_partners?: Array<{ id: string; name: string; image_url: string }>;
 };
 export async function getSiteContent(): Promise<SiteContent> {
   const rows = await supabaseFetch<{ value: SiteContent }>('store_settings?select=value&key=eq.site_content&is_public=eq.true&limit=1', { resource: 'public website settings' });
