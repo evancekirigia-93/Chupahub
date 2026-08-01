@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getAdminSupabase } from '@/lib/server/supabase-admin';
 import { getEmailConfig, safeEmailStatus } from '@/lib/server/email-config';
-import { sendEmailWithResend } from '@/lib/server/order-email';
+import { sendEmailWithResend } from '@/lib/server/resend-email';
 
 async function isAdministrator(request: NextRequest) {
   const token = request.headers.get('authorization')?.replace(/^Bearer\s+/i, '');
