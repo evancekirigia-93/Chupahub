@@ -41,10 +41,58 @@ const money = (value: number) => `KES ${Number(value).toLocaleString('en-KE', { 
 export function orderEmailHtml(order: EmailOrder, event: OrderEmailEvent) {
   const copy = eventCopy[event];
   const viewUrl = `${SITE_URL}/account/receipt/${encodeURIComponent(order.id)}`;
-  const action = event === 'order_received' ? { url: viewUrl, label: 'View order' } : event === 'rider_dispatched' && order.trackingUrl ? { url: order.trackingUrl, label: 'Track order' } : null;
-  const eventDetails = `${order.paymentStatus ? `<br><strong>Payment status:</strong> ${escapeHtml(order.paymentStatus.replaceAll('_', ' '))}` : ''}${order.dispatchTime ? `<br><strong>Dispatched:</strong> ${escapeHtml(order.dispatchTime)}` : ''}${order.riderName ? `<br><strong>Rider:</strong> ${escapeHtml(order.riderName)}${order.riderPhone ? ` · ${escapeHtml(order.riderPhone)}` : ''}` : ''}${order.cancellationReason ? `<br><strong>Cancellation reason:</strong> ${escapeHtml(order.cancellationReason)}` : ''}${event === 'order_cancelled' ? `<br><strong>Support:</strong> ${escapeHtml(order.supportContact || 'orders@chupahub.com')}` : ''}`;
-  const itemRows = order.items.map(item => `<tr><td style="padding:12px 8px;border-bottom:1px solid #fee2d5;color:#082b57">${escapeHtml(item.name)}</td><td style="padding:12px 8px;border-bottom:1px solid #fee2d5;text-align:center">${item.quantity}</td><td style="padding:12px 8px;border-bottom:1px solid #fee2d5;text-align:right">${money(item.unitPrice)}</td><td style="padding:12px 8px;border-bottom:1px solid #fee2d5;text-align:right;font-weight:700">${money(item.lineTotal)}</td></tr>`).join('');
-  return `<!doctype html><html><body style="margin:0;background:#fff7f2;font-family:Arial,sans-serif;color:#111827"><div style="display:none;max-height:0;overflow:hidden">${escapeHtml(copy.message)}</div><table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background:#fff7f2"><tr><td align="center" style="padding:24px 12px"><table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="max-width:640px;background:#fff;border-radius:20px;overflow:hidden;box-shadow:0 8px 30px rgba(8,43,87,.10)"><tr><td style="padding:24px;background:linear-gradient(135deg,#ef2415,#ff681c);color:#fff"><div style="font-size:28px;font-weight:900;letter-spacing:-1px">Chupa<span style="color:#082b57">Hub</span></div><div style="margin-top:4px;font-size:13px">Fast, responsible drinks delivery</div></td></tr><tr><td style="padding:28px"><p style="margin:0;color:#ff4b18;font-size:12px;font-weight:800;text-transform:uppercase">Order ${escapeHtml(order.orderNumber)}</p><h1 style="margin:8px 0 10px;color:#082b57;font-size:28px">${escapeHtml(copy.heading)}</h1><p style="margin:0 0 20px;line-height:1.6">Hi ${escapeHtml(order.customerName || 'there')}, ${escapeHtml(copy.message)}</p><table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="border-collapse:collapse;font-size:14px"><thead><tr style="background:#fff3eb;color:#082b57"><th align="left" style="padding:10px 8px">Item</th><th style="padding:10px 8px">Qty</th><th align="right" style="padding:10px 8px">Price</th><th align="right" style="padding:10px 8px">Total</th></tr></thead><tbody>${itemRows}</tbody></table><table role="presentation" width="100%" style="margin-top:18px;font-size:14px"><tr><td>Subtotal</td><td align="right">${money(order.subtotal)}</td></tr><tr><td>Delivery</td><td align="right">${money(order.deliveryFee)}</td></tr><tr><td style="padding-top:8px;font-size:18px;font-weight:800;color:#082b57">Order total</td><td align="right" style="padding-top:8px;font-size:18px;font-weight:800;color:#082b57">${money(order.total)}</td></tr></table><div style="margin-top:22px;padding:16px;border-radius:14px;background:#fff7f2;line-height:1.6"><strong style="color:#082b57">Delivery address</strong><br>${escapeHtml(order.deliveryAddress)}<br><strong>Payment:</strong> ${escapeHtml(order.paymentMethod)}<br><strong>Estimated delivery:</strong> ${escapeHtml(order.estimatedDelivery)}${eventDetails}</div>${action ? `<div style="text-align:center;margin-top:26px"><a href="${escapeHtml(action.url)}" style="display:inline-block;padding:14px 24px;border-radius:12px;background:#ff4b18;color:#fff;text-decoration:none;font-weight:800">${action.label}</a></div>` : ''}<p style="margin:24px 0 0;color:#6b7280;font-size:12px;line-height:1.5">Customers must be 18 or older. Please drink responsibly.</p></td></tr></table></td></tr></table></body></html>`;
+  const action = event === 'order_received'
+    ? { url: viewUrl, label: 'View order' }
+    : event === 'rider_dispatched' && order.trackingUrl
+      ? { url: order.trackingUrl, label: 'Track order' }
+      : null;
+
+  const eventDetails: Array<[string, string]> = [];
+  if (order.paymentStatus) eventDetails.push(['Payment status', order.paymentStatus.replaceAll('_', ' ')]);
+  if (order.dispatchTime) eventDetails.push(['Dispatched', order.dispatchTime]);
+  if (order.riderName || order.riderPhone) eventDetails.push(['Rider', [order.riderName, order.riderPhone].filter(Boolean).join(' — ')]);
+  if (order.cancellationReason) eventDetails.push(['Cancellation reason', order.cancellationReason]);
+  if (event === 'order_cancelled') eventDetails.push(['Support', order.supportContact || 'orders@chupahub.com']);
+  const eventDetailsHtml = eventDetails.length
+    ? `<div style="margin:16px 0;padding:14px;border-radius:10px;background:#fff7f2;line-height:1.7">${eventDetails.map(([label, value]) => `<div><strong>${escapeHtml(label)}:</strong> ${escapeHtml(value)}</div>`).join('')}</div>`
+    : '';
+
+  const itemRows = order.items.map(item => `
+    <tr>
+      <td style="padding:12px 8px;border-bottom:1px solid #fee2d5;color:#082b57">${escapeHtml(item.name)}</td>
+      <td style="padding:12px 8px;border-bottom:1px solid #fee2d5;text-align:center">${escapeHtml(item.quantity)}</td>
+      <td style="padding:12px 8px;border-bottom:1px solid #fee2d5;text-align:right">${escapeHtml(money(item.unitPrice))}</td>
+      <td style="padding:12px 8px;border-bottom:1px solid #fee2d5;text-align:right;font-weight:700">${escapeHtml(money(item.lineTotal))}</td>
+    </tr>`).join('');
+  const actionHtml = action
+    ? `<p style="margin:24px 0 0;text-align:center"><a href="${escapeHtml(action.url)}" style="display:inline-block;background:#ff4b18;color:#fff;padding:12px 18px;border-radius:8px;text-decoration:none;font-weight:700">${escapeHtml(action.label)}</a></p>`
+    : '';
+
+  return `<!doctype html>
+<html lang="en">
+  <body style="margin:0;background:#fff7f2;font-family:Arial,sans-serif;color:#111827">
+    <div style="display:none;max-height:0;overflow:hidden">${escapeHtml(copy.message)}</div>
+    <div style="max-width:700px;margin:24px auto;padding:24px;background:#fff;border-radius:12px">
+      <div style="font-size:26px;font-weight:900;color:#ff4b18">Chupa<span style="color:#082b57">Hub</span></div>
+      <p style="margin:20px 0 0;color:#ff4b18;font-size:12px;font-weight:700;text-transform:uppercase">Order ${escapeHtml(order.orderNumber)}</p>
+      <h1 style="font-size:24px;color:#082b57;margin:8px 0">${escapeHtml(copy.heading)}</h1>
+      <p style="margin:0 0 12px">Hi ${escapeHtml(order.customerName || 'there')}, ${escapeHtml(copy.message)}</p>
+      ${eventDetailsHtml}
+      <table role="presentation" style="width:100%;border-collapse:collapse;margin-top:18px;font-size:14px">
+        <thead><tr style="background:#fff1e6;color:#082b57"><th style="padding:10px 8px;text-align:left">Item</th><th style="padding:10px 8px">Qty</th><th style="padding:10px 8px;text-align:right">Price</th><th style="padding:10px 8px;text-align:right">Total</th></tr></thead>
+        <tbody>${itemRows}</tbody>
+      </table>
+      <table role="presentation" style="width:100%;margin-top:18px;font-size:14px"><tbody>
+        <tr><td>Subtotal</td><td style="text-align:right">${escapeHtml(money(order.subtotal))}</td></tr>
+        <tr><td>Delivery</td><td style="text-align:right">${escapeHtml(money(order.deliveryFee))}</td></tr>
+        <tr><td style="padding-top:8px;font-size:18px;font-weight:700;color:#082b57">Order total</td><td style="padding-top:8px;text-align:right;font-size:18px;font-weight:700;color:#082b57">${escapeHtml(money(order.total))}</td></tr>
+      </tbody></table>
+      <div style="margin-top:20px;padding:14px;border-radius:10px;background:#fff7f2;line-height:1.7"><strong style="color:#082b57">Delivery address</strong><br>${escapeHtml(order.deliveryAddress)}<br><strong>Payment:</strong> ${escapeHtml(order.paymentMethod)}<br><strong>Estimated delivery:</strong> ${escapeHtml(order.estimatedDelivery)}</div>
+      ${actionHtml}
+      <p style="margin:24px 0 0;color:#6b7280;font-size:12px">Customers must be 18 or older. Please drink responsibly.</p>
+    </div>
+  </body>
+</html>`;
 }
 
 export async function sendEmailWithResend(recipient: string, subject: string, html: string) {
