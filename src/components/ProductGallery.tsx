@@ -1,16 +1,17 @@
 'use client';
 
 import { useState } from 'react';
+import { SmartImage } from '@/components/SmartImage';
 
 export function ProductGallery({ images, name }: { images: string[]; name: string }) {
   const [active, setActive] = useState(0);
   const current = images[active] || '/placeholder-product.png';
   return <div className="min-w-0">
-    <div className="flex h-[clamp(12rem,21vw,15rem)] items-center justify-center rounded-2xl bg-white p-[clamp(.75rem,2vw,1.25rem)] ring-1 ring-orange-100">
-      <img src={current} alt={name} className="h-[90%] w-[90%] object-contain object-center" />
+    <div className="group relative aspect-square min-h-[20rem] overflow-hidden rounded-2xl bg-white ring-1 ring-orange-100">
+      <SmartImage src={current} alt={name} sizes="(max-width: 768px) 92vw, 420px" fit="contain" priority quality={94} className="p-3 transition-transform duration-500 ease-out md:group-hover:scale-110" />
     </div>
     {images.length > 1 && <div className="mt-3 flex gap-3 overflow-x-auto pb-1" aria-label="Product images">
-      {images.map((image, index) => <button key={image} type="button" onClick={() => setActive(index)} aria-label={`View image ${index + 1}`} className={`flex h-16 w-16 shrink-0 items-center justify-center rounded-xl bg-white p-2 ring-2 ${active === index ? 'ring-brand-orange' : 'ring-orange-100'}`}><img src={image} alt={`${name} image ${index + 1}`} loading="lazy" decoding="async" className="h-full w-full object-contain" /></button>)}
+      {images.map((image, index) => <button key={image} type="button" onClick={() => setActive(index)} aria-label={`View image ${index + 1}`} className={`relative h-16 w-16 shrink-0 overflow-hidden rounded-xl bg-white ring-2 ${active === index ? 'ring-brand-orange' : 'ring-orange-100'}`}><SmartImage src={image} alt={`${name} image ${index + 1}`} sizes="64px" fit="contain" className="p-1" /></button>)}
     </div>}
   </div>;
 }
