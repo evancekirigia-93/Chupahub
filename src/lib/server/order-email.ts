@@ -1,11 +1,10 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
-import { getEmailConfig } from '@/lib/server/email-config';
+import { deliverEmail } from '@/lib/server/resend-email';
 
-const RESEND_ENDPOINT = 'https://api.resend.com/emails';
 const SITE_URL = 'https://chupahub.com';
 const MAX_ATTEMPTS = 3;
 
-export type OrderEmailEvent = 'order_received' | 'rider_dispatched' | 'order_cancelled' | 'new_order_admin';
+export type OrderEmailEvent = 'placed' | 'accepted' | 'preparing' | 'dispatched' | 'delivered' | 'cancelled' | 'new_order_admin';
 export type EmailOrder = {
   id: string;
   orderNumber: string;
@@ -14,7 +13,6 @@ export type EmailOrder = {
   customerPhone?: string | null;
   deliveryAddress: string;
   paymentMethod: string;
-  paymentStatus?: string | null;
   subtotal: number;
   deliveryFee: number;
   total: number;
@@ -22,16 +20,15 @@ export type EmailOrder = {
   items: Array<{ name: string; quantity: number; unitPrice: number; lineTotal: number }>;
   riderName?: string | null;
   riderPhone?: string | null;
-  dispatchTime?: string | null;
-  trackingUrl?: string | null;
-  cancellationReason?: string | null;
-  supportContact?: string | null;
 };
 
 const eventCopy: Record<OrderEmailEvent, { subject: (number: string) => string; heading: string; message: string }> = {
-  order_received: { subject: () => 'We’ve Received Your ChupaHub Order', heading: 'We’ve received your order', message: 'Thank you. Your order has been created successfully.' },
-  rider_dispatched: { subject: () => 'Your ChupaHub Order Is On The Way', heading: 'Your rider is on the way', message: 'Your rider is on the way.' },
-  order_cancelled: { subject: number => `ChupaHub Order ${number} Cancelled`, heading: 'Your order was cancelled', message: 'Your order has been cancelled.' },
+  placed: { subject: number => `Order ${number} received`, heading: 'Thanks for your order', message: 'We received your order and will update you as it moves through delivery.' },
+  accepted: { subject: number => `Order ${number} accepted`, heading: 'Your order is accepted', message: 'The ChupaHub team has accepted your order.' },
+  preparing: { subject: number => `Order ${number} is being prepared`, heading: 'We are preparing your order', message: 'Your items are being packed and checked for dispatch.' },
+  dispatched: { subject: number => `Order ${number} is on the way`, heading: 'Your rider is on the way', message: 'Your order has left ChupaHub and is heading to you.' },
+  delivered: { subject: number => `Order ${number} delivered`, heading: 'Your order was delivered', message: 'Thank you for choosing ChupaHub. We hope you enjoy your order responsibly.' },
+  cancelled: { subject: number => `Order ${number} cancelled`, heading: 'Your order was cancelled', message: 'Your order has been cancelled. Contact ChupaHub customer care if you need help.' },
   new_order_admin: { subject: number => `New ChupaHub order ${number}`, heading: 'New order placed', message: 'A new customer order needs attention.' },
 };
 
@@ -95,29 +92,9 @@ export function orderEmailHtml(order: EmailOrder, event: OrderEmailEvent) {
 </html>`;
 }
 
-export async function sendEmailWithResend(recipient: string, subject: string, html: string) {
-  const config = getEmailConfig();
-  if (!config.configured || !config.apiKey || !config.from) return { status: 'not_configured' as const, attempts: 0, error: `Email provider not configured. Missing: ${config.missing.join(', ') || 'EMAIL_PROVIDER=resend'}` };
-  let lastError = 'Email delivery failed';
-  let attempts = 0;
-  for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt += 1) {
-    attempts = attempt;
-    try {
-      const response = await fetch(RESEND_ENDPOINT, { method: 'POST', headers: { Authorization: `Bearer ${config.apiKey}`, 'Content-Type': 'application/json' }, body: JSON.stringify({ from: config.from, to: [recipient], subject, html }) });
-      const payload = await response.json().catch(() => ({})) as { id?: string; message?: string; name?: string; statusCode?: number; code?: string };
-      if (response.ok) return { status: 'sent' as const, attempts: attempt, reference: payload.id };
-      lastError = payload.message || `Resend returned HTTP ${response.status}`;
-      console.error('[Resend] request rejected', { name: payload.name || 'ResendError', message: lastError, httpStatus: response.status, providerCode: payload.code || null });
-      if (response.status !== 429 && response.status < 500) break;
-    } catch (error) { lastError = error instanceof Error ? error.message : 'Network error while sending email'; }
-    if (attempt < MAX_ATTEMPTS) await new Promise(resolve => setTimeout(resolve, attempt * 300));
-  }
-  return { status: 'failed' as const, attempts, error: lastError };
-}
-
 export async function sendOrderEmail(db: SupabaseClient, order: EmailOrder, event: OrderEmailEvent, recipient: string) {
   if (!recipient) return { status: 'skipped' as const, reason: 'No recipient' };
-  const eventKey = event;
+  const eventKey = `order_${event}`;
   const { data: existing } = await db.from('notification_deliveries').select('id,status,attempts').eq('order_id', order.id).eq('channel', 'email').eq('recipient', recipient).eq('event_key', eventKey).maybeSingle();
   if (existing?.status === 'sent' || existing?.status === 'pending') {
     console.info('[Order email] duplicate skipped', { orderId: order.id, event, recipient, status: existing.status });
@@ -135,10 +112,9 @@ export async function sendOrderEmail(db: SupabaseClient, order: EmailOrder, even
     deliveryId = claimed.id;
   }
   const copy = eventCopy[event];
-  const result = await sendEmailWithResend(recipient, copy.subject(order.orderNumber), orderEmailHtml(order, event));
+  const result = await deliverEmail(recipient, copy.subject(order.orderNumber), orderEmailHtml(order, event));
   const attempts = Number(existing?.attempts || 0) + result.attempts;
-  const deliveryStatus = result.status === 'not_configured' ? 'failed' : result.status;
-  await db.from('notification_deliveries').update({ status: deliveryStatus, attempts, provider_message_id: result.reference || null, error_message: result.error || null, sent_at: result.status === 'sent' ? new Date().toISOString() : null }).eq('id', deliveryId);
+  await db.from('notification_deliveries').update({ status: result.status, attempts, provider_message_id: result.reference || null, error_message: result.error || null, sent_at: result.status === 'sent' ? new Date().toISOString() : null }).eq('id', deliveryId);
   const details = { orderId: order.id, event, recipient, status: result.status, attempts, providerReference: result.reference || null, error: result.error || null };
   if (result.status === 'sent') console.info('[Order email] delivered', details); else console.error('[Order email] failed', details);
   return result;
