@@ -8,13 +8,13 @@ import type { DbProduct } from '@/lib/supabase';
 
 type FacetKey = 'wine_type'|'grape_variety'|'country'|'abv'|'price'|'bottle_size'|'sweetness'|'brand'|'whisky_type'|'age_statement'|'beer_type'|'pack_size'|'product_format'|'gin_style'|'flavour';
 type Facet = { key: FacetKey; label: string };
-const common: Facet[] = [{key:'country',label:'Country'},{key:'brand',label:'Brand'},{key:'abv',label:'Alcohol percentage / ABV'},{key:'bottle_size',label:'Bottle size'},{key:'price',label:'Price'}];
+const common: Facet[] = [{key:'country',label:'Country of origin'},{key:'brand',label:'Brand'},{key:'abv',label:'Alcohol percentage / ABV'},{key:'bottle_size',label:'Bottle size'},{key:'price',label:'Price'}];
 const configs: Record<string, Facet[]> = {
   wine: [{key:'wine_type',label:'Wine type'},{key:'grape_variety',label:'Grape variety'},...common.slice(0,1),{key:'abv',label:'Alcohol percentage / ABV'},{key:'price',label:'Price'},{key:'bottle_size',label:'Bottle size'},{key:'sweetness',label:'Sweetness'},{key:'brand',label:'Brand'}],
-  whisky: [{key:'country',label:'Country'},{key:'brand',label:'Brand'},{key:'whisky_type',label:'Whisky type'},{key:'age_statement',label:'Age statement'},...common.slice(2)],
-  beer: [{key:'brand',label:'Brand'},{key:'beer_type',label:'Beer type'},{key:'country',label:'Country'},{key:'pack_size',label:'Pack size'},{key:'product_format',label:'Bottle or can'},{key:'abv',label:'ABV'},{key:'price',label:'Price'}],
-  gin: [{key:'brand',label:'Brand'},{key:'country',label:'Country'},{key:'gin_style',label:'Gin style'},{key:'flavour',label:'Flavour'},...common.slice(2)],
-  vodka: [{key:'brand',label:'Brand'},{key:'country',label:'Country'},{key:'flavour',label:'Flavour'},...common.slice(2)],
+  whisky: [{key:'country',label:'Country of origin'},{key:'brand',label:'Brand'},{key:'whisky_type',label:'Whisky type'},{key:'age_statement',label:'Age statement'},...common.slice(2)],
+  beer: [{key:'brand',label:'Brand'},{key:'beer_type',label:'Beer type'},{key:'country',label:'Country of origin'},{key:'pack_size',label:'Pack size'},{key:'product_format',label:'Bottle or can'},{key:'abv',label:'ABV'},{key:'price',label:'Price'}],
+  gin: [{key:'brand',label:'Brand'},{key:'country',label:'Country of origin'},{key:'gin_style',label:'Gin style'},{key:'flavour',label:'Flavour'},...common.slice(2)],
+  vodka: [{key:'brand',label:'Brand'},{key:'country',label:'Country of origin'},{key:'flavour',label:'Flavour'},...common.slice(2)],
 };
 const abvRanges = [['Under 5%','0','5'],['5%–10%','5','10'],['10%–12%','10','12'],['12%–13%','12','13'],['13%–14%','13','14'],['14% and above','14','999']];
 const priceRanges = [['Under KES 1,000','0','1000'],['KES 1,000–2,000','1000','2000'],['KES 2,000–3,000','2000','3000'],['KES 3,000–5,000','3000','5000'],['KES 5,000–10,000','5000','10000'],['Above KES 10,000','10000','999999999']];

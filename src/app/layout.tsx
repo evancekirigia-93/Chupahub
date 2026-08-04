@@ -21,6 +21,7 @@ const baseMetadata: Metadata = {
     type: 'website', url: SITE_URL, siteName: SITE_NAME, locale: 'en_KE',
   },
   twitter: { card: 'summary', title: 'Alcohol Delivery Nairobi | ChupaHub', description: DEFAULT_DESCRIPTION },
+  icons: { icon: '/chupahub-icon.svg', shortcut: '/chupahub-icon.svg', apple: '/chupahub-icon.svg' },
   manifest: '/site.webmanifest',
   robots: { index: true, follow: true, googleBot: { index: true, follow: true, 'max-image-preview': 'large', 'max-snippet': -1 } },
 };
@@ -29,7 +30,7 @@ export async function generateMetadata(): Promise<Metadata> {
   const content = await getSiteContent();
   return {
     ...baseMetadata,
-    ...(content.logo_url ? { icons: { icon: content.logo_url, shortcut: content.logo_url, apple: content.logo_url } } : {}),
+    ...(content.logo_url ? { openGraph: { ...baseMetadata.openGraph, images: [{ url: content.logo_url, alt: 'ChupaHub' }] } } : {}),
   };
 }
 
