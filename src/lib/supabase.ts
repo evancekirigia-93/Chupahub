@@ -9,7 +9,7 @@ export type DbPromotion = { id: string; title: string; code?: string; descriptio
 export type DbHomepageSection = { id: string; heading: string; category_id?: string | null; product_ids: string[]; use_best_sellers: boolean; item_limit: number; sort_order: number; is_active: boolean; updated_at?: string; categories?: { slug: string } | null };
 export type DbDeliverySetting = { id: string; name: string; min_distance_km: number; max_distance_km?: number; fee: number; estimated_minutes_min: number; estimated_minutes_max: number };
 export type DbProduct = {
-  id: string; name: string; slug: string; description?: string; short_description?: string; seo_title?: string; seo_description?: string; sku?: string; abv?: number; country?: string; bottle_size?: string;
+  id: string; name: string; slug: string; description?: string; short_description?: string; seo_title?: string; seo_description?: string; sku?: string; abv?: number; country?: string; bottle_size?: string; grape_variety?: string; wine_type?: string; sweetness?: string; whisky_type?: string; age_statement?: string; beer_type?: string; pack_size?: string; product_format?: string; gin_style?: string; flavour?: string;
   price: number; old_price?: number; discount_starts_at?: string; discount_ends_at?: string; discount_label?: string; currency?: string; stock?: number; low_stock_threshold?: number; image_url?: string; gallery_urls?: string[];
   tasting_notes?: string; pairing_suggestions?: string;
   is_top_seller?: boolean; is_new_arrival?: boolean; is_featured?: boolean; is_active?: boolean; updated_at?: string;
