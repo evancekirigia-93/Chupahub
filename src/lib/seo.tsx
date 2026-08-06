@@ -1,5 +1,5 @@
 export const SITE_URL = 'https://chupahub.com';
-export const SITE_NAME = 'ChupaHub';
+export const SITE_NAME = 'Chupa Hub';
 export const DEFAULT_DESCRIPTION = 'Order wine, whisky, gin, vodka, beer and premium alcohol online with fast alcohol delivery across Nairobi, Kenya.';
 
 export function absoluteUrl(path = '/') {
