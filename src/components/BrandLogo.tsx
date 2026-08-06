@@ -2,7 +2,7 @@ const DEFAULT_LOGO_SRC = '/chupahub-logo.svg';
 
 export function BrandLogo({ footer = false, src = DEFAULT_LOGO_SRC }: { footer?: boolean; src?: string }) {
   return (
-    <div className="flex shrink-0 items-center gap-2.5 text-left">
+    <div className="flex shrink-0 items-center gap-1 text-left">
       <img
         src={src || DEFAULT_LOGO_SRC}
         alt=""

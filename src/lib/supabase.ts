@@ -86,7 +86,7 @@ export async function getCheckoutSettings(): Promise<CheckoutSettings> {
 }
 
 export async function getProducts(): Promise<DbProduct[]> {
-  return supabaseFetch<DbProduct>('products?select=*,categories(name,slug),brands(name,country),product_variants(*)&is_active=eq.true&order=sort_order.asc,created_at.desc', { resource: 'public products and relationships' });
+  return supabaseFetch<DbProduct>('products?select=*,categories(name,slug),brands(name,country),product_variants(*)&is_active=eq.true&order=updated_at.desc,created_at.desc', { cache: 'no-store', resource: 'public products and relationships' });
 }
 
 export async function getHomepageSections(): Promise<DbHomepageSection[]> {

@@ -20,6 +20,7 @@ export function JsonLd({ data }: { data: Record<string, unknown> | Array<Record<
 }
 
 export function businessGraph(socialLinks: string[] = [], logoUrl?: string) {
+  const searchLogo = logoUrl || absoluteUrl('/chupahub-icon.svg');
   return {
   '@context': 'https://schema.org',
   '@graph': [
@@ -29,7 +30,8 @@ export function businessGraph(socialLinks: string[] = [], logoUrl?: string) {
       name: SITE_NAME,
       url: SITE_URL,
       description: DEFAULT_DESCRIPTION,
-      ...(logoUrl ? { logo: logoUrl } : {}),
+      logo: { '@type': 'ImageObject', url: searchLogo, width: 256, height: 256 },
+      image: searchLogo,
       sameAs: socialLinks.filter(Boolean),
     },
     {
