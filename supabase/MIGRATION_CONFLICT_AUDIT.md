@@ -1,4 +1,4 @@
-# ChupaHub migration conflict audit
+# Chupa Hub migration conflict audit
 
 ## The two overlapping schema uploads
 

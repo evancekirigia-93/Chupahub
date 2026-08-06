@@ -1,6 +1,6 @@
-# ChupaHub
+# Chupa Hub
 
-ChupaHub is a Next.js storefront and authenticated admin dashboard backed exclusively by Supabase in production.
+Chupa Hub is a Next.js storefront and authenticated admin dashboard backed exclusively by Supabase in production.
 
 ## Production architecture
 

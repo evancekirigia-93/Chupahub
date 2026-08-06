@@ -4,15 +4,16 @@ import { CategoryGrid, Journal, ProductRail, SeoArticle } from '@/components/Sit
 import { HeroCarousel } from '@/components/HeroCarousel';
 import { getBanners, getCategories, getHomepageSections, getProducts, getPromotions, getSiteContent, money } from '@/lib/supabase';
 import { stableCollectionSlug } from '@/lib/public-urls';
+import { DEFAULT_DESCRIPTION } from '@/lib/seo';
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 export const metadata: Metadata = {
-  title: 'Alcohol Delivery Nairobi – Wine, Whisky & Liquor',
-  description: 'Get fast alcohol delivery in Nairobi. Shop wine, whisky, gin, vodka, beer and mixers online from ChupaHub with convenient M-Pesa checkout.',
-  alternates: { canonical: '/' },
-  openGraph: { title: 'Alcohol Delivery Nairobi – Wine, Whisky & Liquor | ChupaHub', description: 'Shop premium drinks online with fast alcohol delivery across Nairobi.', url: '/', type: 'website' },
-  twitter: { card: 'summary', title: 'Alcohol Delivery Nairobi | ChupaHub', description: 'Wine, whisky, beer, gin and liquor delivered fast across Nairobi.' },
+  title: { absolute: 'ChupaHub | Online Wines, Spirits & Alcohol Delivery Nairobi' },
+  description: DEFAULT_DESCRIPTION,
+  alternates: { canonical: 'https://chupahub.com/' },
+  openGraph: { title: 'ChupaHub | Online Wines, Spirits & Alcohol Delivery Nairobi', description: DEFAULT_DESCRIPTION, url: 'https://chupahub.com/', siteName: 'ChupaHub', type: 'website', images: [{ url: '/chupahub-logo.svg', alt: 'ChupaHub logo' }] },
+  twitter: { card: 'summary', title: 'ChupaHub | Online Wines, Spirits & Alcohol Delivery Nairobi', description: DEFAULT_DESCRIPTION, images: ['/chupahub-logo.svg'] },
 };
 
 export default async function Home() {
@@ -20,12 +21,19 @@ export default async function Home() {
     getCategories(), getBanners(), getProducts(), getPromotions(), getSiteContent(), getHomepageSections(),
   ]);
   const topSellers = products.filter((product) => product.is_top_seller);
-  const arrivals = products.filter((product) => product.is_new_arrival);
+  const arrivals = products.filter((product) => product.is_new_arrival).sort((a, b) => Date.parse(b.updated_at || '') - Date.parse(a.updated_at || ''));
   const featured = products.filter((product) => product.is_featured);
-  const sections = configuredSections.length ? configuredSections.map(section => {
-    const selected = section.product_ids?.length ? section.product_ids.map(id => products.find(product => product.id === id)).filter((product): product is typeof products[number] => Boolean(product)) : section.use_best_sellers ? topSellers : section.category_id ? products.filter(product => product.categories?.slug === section.categories?.slug) : products;
+  const sections = (configuredSections.length ? configuredSections.map(section => {
+    const heading = section.heading.toLowerCase();
+    const selected = section.product_ids?.length
+      ? section.product_ids.map(id => products.find(product => product.id === id)).filter((product): product is typeof products[number] => Boolean(product))
+      : heading.includes('new arrival') ? arrivals
+      : heading.includes('deal') || heading.includes('featured') || heading.includes('offer') ? featured
+      : section.use_best_sellers || heading.includes('top seller') || heading.includes('best seller') ? topSellers
+      : section.category_id ? products.filter(product => product.categories?.slug === section.categories?.slug)
+      : products;
     return { title: section.heading, products: selected, href: `/collections/${stableCollectionSlug(section) || 'featured'}`, limit: section.item_limit };
-  }) : [{ title: 'Top Sellers', products: topSellers, href: '/collections/top-sellers', limit: 8 }, { title: 'New Arrivals', products: arrivals, href: '/collections/new-arrivals', limit: 8 }, { title: 'Featured Offers', products: featured, href: '/collections/featured', limit: 8 }];
+  }) : [{ title: 'Top Deals', products: featured, href: '/collections/featured', limit: 8 }, { title: 'Top Sellers', products: topSellers, href: '/collections/top-sellers', limit: 8 }, { title: 'New Arrivals', products: arrivals, href: '/collections/new-arrivals', limit: 8 }]).sort((a, b) => sectionPriority(a.title) - sectionPriority(b.title));
   const promotionHref = (promotion: typeof promotions[number]) => promotion.button_url || '/offers';
 
   return <main>
@@ -41,4 +49,12 @@ export default async function Home() {
     <Journal content={content} />
     <SeoArticle content={content} />
   </main>;
+}
+
+function sectionPriority(title: string) {
+  const normalized = title.toLowerCase();
+  if (normalized.includes('new arrival')) return 100;
+  if (normalized.includes('top deal') || normalized.includes('featured') || normalized.includes('offer')) return 0;
+  if (normalized.includes('top seller') || normalized.includes('best seller')) return 10;
+  return 50;
 }

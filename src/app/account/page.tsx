@@ -4,9 +4,9 @@ import { AccountDashboard } from '@/components/account/AccountDashboard';
 import { createServerSupabase } from '@/lib/supabase-server';
 
 export const dynamic = 'force-dynamic';
-const title = 'Your ChupaHub Customer Dashboard';
-const description = 'Manage ChupaHub orders, rewards, saved addresses, favourites and customer account details.';
-export const metadata: Metadata = { title, description, alternates: { canonical: '/account' }, openGraph: { title: `${title} | ChupaHub`, description, url: '/account', type: 'website' }, twitter: { card: 'summary', title: `${title} | ChupaHub`, description }, robots: { index: false, follow: false } };
+const title = 'Your Chupa Hub Customer Dashboard';
+const description = 'Manage Chupa Hub orders, rewards, saved addresses, favourites and customer account details.';
+export const metadata: Metadata = { title, description, alternates: { canonical: '/account' }, openGraph: { title: `${title} | Chupa Hub`, description, url: '/account', type: 'website' }, twitter: { card: 'summary', title: `${title} | Chupa Hub`, description }, robots: { index: false, follow: false } };
 
 export default async function AccountPage() {
   const supabase = await createServerSupabase();

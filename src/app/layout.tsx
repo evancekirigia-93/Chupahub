@@ -8,20 +8,37 @@ import { businessGraph, DEFAULT_DESCRIPTION, JsonLd, SITE_NAME, SITE_URL } from 
 const baseMetadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: 'Alcohol Delivery Nairobi | ChupaHub',
+    default: 'ChupaHub | Online Wines, Spirits & Alcohol Delivery Nairobi',
     template: '%s | ChupaHub',
   },
   description: DEFAULT_DESCRIPTION,
   applicationName: SITE_NAME,
-  keywords: ['Alcohol Delivery Nairobi', 'Wine Delivery Nairobi', 'Whisky Delivery Nairobi', 'Liquor Delivery Nairobi', 'Gin Delivery Nairobi', 'Beer Delivery Nairobi'],
+  keywords: [
+    'Alcohol Delivery Nairobi',
+    'Online Alcohol Delivery',
+    'Drinks Delivery Kenya',
+    'Liquor Delivery Nairobi',
+    'Wine Delivery Nairobi',
+    'Whisky Delivery Nairobi',
+    'Gin Delivery Nairobi',
+    'Beer Delivery Nairobi',
+    'Chupa Chap alternative',
+    'Oaks & Corks alternative',
+    'Greenspoon alternative',
+    'Quickmart alternative',
+  ],
   alternates: { canonical: '/' },
   openGraph: {
-    title: 'Alcohol Delivery Nairobi | ChupaHub',
+    title: 'ChupaHub | Online Wines, Spirits & Alcohol Delivery Nairobi',
     description: DEFAULT_DESCRIPTION,
     type: 'website', url: SITE_URL, siteName: SITE_NAME, locale: 'en_KE',
   },
-  twitter: { card: 'summary', title: 'Alcohol Delivery Nairobi | ChupaHub', description: DEFAULT_DESCRIPTION },
-  icons: { icon: '/chupahub-icon.svg', shortcut: '/chupahub-icon.svg', apple: '/chupahub-icon.svg' },
+  twitter: { card: 'summary', title: 'ChupaHub | Online Wines, Spirits & Alcohol Delivery Nairobi', description: DEFAULT_DESCRIPTION },
+  icons: {
+    icon: [{ url: '/chupahub-logo.svg', type: 'image/svg+xml', sizes: 'any' }],
+    shortcut: '/chupahub-logo.svg',
+    apple: [{ url: '/chupahub-logo.svg', type: 'image/svg+xml', sizes: 'any' }],
+  },
   manifest: '/site.webmanifest',
   robots: { index: true, follow: true, googleBot: { index: true, follow: true, 'max-image-preview': 'large', 'max-snippet': -1 } },
 };
@@ -30,7 +47,7 @@ export async function generateMetadata(): Promise<Metadata> {
   const content = await getSiteContent();
   return {
     ...baseMetadata,
-    ...(content.logo_url ? { openGraph: { ...baseMetadata.openGraph, images: [{ url: content.logo_url, alt: 'ChupaHub' }] } } : {}),
+    openGraph: { ...baseMetadata.openGraph, images: [{ url: content.logo_url || '/chupahub-logo.svg', alt: 'ChupaHub logo' }] },
   };
 }
 
