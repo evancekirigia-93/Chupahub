@@ -21,7 +21,7 @@ type SupabaseFetchOptions = { cache?: RequestCache; resource?: string };
 
 async function supabaseFetch<T>(path: string, options: SupabaseFetchOptions = {}): Promise<T[]> {
   if (!hasSupabaseConfig) {
-    console.error('[ChupaHub Supabase] Configuration is missing; returning an empty public result.', { resource: options.resource || path });
+    console.error('[Chupa Hub Supabase] Configuration is missing; returning an empty public result.', { resource: options.resource || path });
     return [];
   }
   try {
@@ -32,12 +32,12 @@ async function supabaseFetch<T>(path: string, options: SupabaseFetchOptions = {}
     if (!response.ok) {
       const details = (await response.text()).slice(0, 1000);
       const error = new Error(`Supabase ${options.resource || 'request'} failed with HTTP ${response.status}: ${details}`);
-      console.error('[ChupaHub Supabase]', error.message, { path, project: getSupabaseProjectRef() });
+      console.error('[Chupa Hub Supabase]', error.message, { path, project: getSupabaseProjectRef() });
       return [];
     }
     return response.json();
   } catch (error) {
-    console.error(`[ChupaHub Supabase] ${options.resource || 'request'} failed`, { path, project: getSupabaseProjectRef(), error });
+    console.error(`[Chupa Hub Supabase] ${options.resource || 'request'} failed`, { path, project: getSupabaseProjectRef(), error });
     return [];
   }
 }
@@ -61,7 +61,7 @@ export async function getBanners(): Promise<DbBanner[]> {
   });
   const now = Date.now();
   const activeRows = rows.filter((row) => (!row.starts_at || Date.parse(row.starts_at) <= now) && (!row.ends_at || Date.parse(row.ends_at) >= now));
-  console.info('[ChupaHub banners] Supabase synchronization complete', { project: getSupabaseProjectRef(), fetched: rows.length, visible: activeRows.length });
+  console.info('[Chupa Hub banners] Supabase synchronization complete', { project: getSupabaseProjectRef(), fetched: rows.length, visible: activeRows.length });
   return activeRows;
 }
 
@@ -86,7 +86,7 @@ export async function getCheckoutSettings(): Promise<CheckoutSettings> {
 }
 
 export async function getProducts(): Promise<DbProduct[]> {
-  return supabaseFetch<DbProduct>('products?select=*,categories(name,slug),brands(name,country),product_variants(*)&is_active=eq.true&order=sort_order.asc,created_at.desc', { resource: 'public products and relationships' });
+  return supabaseFetch<DbProduct>('products?select=*,categories(name,slug),brands(name,country),product_variants(*)&is_active=eq.true&order=updated_at.desc,created_at.desc', { cache: 'no-store', resource: 'public products and relationships' });
 }
 
 export async function getHomepageSections(): Promise<DbHomepageSection[]> {
