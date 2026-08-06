@@ -40,7 +40,7 @@ export function createBrowserSupabase() {
       },
     });
   } catch (error) {
-    console.error('[ChupaHub Supabase] Browser client configuration is invalid.', error);
+    console.error('[Chupa Hub Supabase] Browser client configuration is invalid.', error);
     browserClient = null;
   }
   return browserClient;

@@ -1,4 +1,4 @@
-# ChupaHub deployment checklist
+# Chupa Hub deployment checklist
 
 ## 1. Audit and apply Supabase migrations
 

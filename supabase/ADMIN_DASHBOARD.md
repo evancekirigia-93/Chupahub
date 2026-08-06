@@ -1,4 +1,4 @@
-# ChupaHub admin dashboard
+# Chupa Hub admin dashboard
 
 The production admin dashboard lives inside the existing Next.js storefront, not in a second Vercel project:
 
