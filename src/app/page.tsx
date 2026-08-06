@@ -4,15 +4,16 @@ import { CategoryGrid, Journal, ProductRail, SeoArticle } from '@/components/Sit
 import { HeroCarousel } from '@/components/HeroCarousel';
 import { getBanners, getCategories, getHomepageSections, getProducts, getPromotions, getSiteContent, money } from '@/lib/supabase';
 import { stableCollectionSlug } from '@/lib/public-urls';
+import { DEFAULT_DESCRIPTION } from '@/lib/seo';
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 export const metadata: Metadata = {
-  title: 'Alcohol Delivery Nairobi – Wine, Whisky & Liquor',
-  description: 'Get fast alcohol delivery in Nairobi. Shop wine, whisky, gin, vodka, beer and mixers online from Chupa Hub with convenient M-Pesa checkout.',
-  alternates: { canonical: '/' },
-  openGraph: { title: 'Alcohol Delivery Nairobi – Wine, Whisky & Liquor | Chupa Hub', description: 'Shop premium drinks online with fast alcohol delivery across Nairobi.', url: '/', type: 'website' },
-  twitter: { card: 'summary', title: 'Alcohol Delivery Nairobi | Chupa Hub', description: 'Wine, whisky, beer, gin and liquor delivered fast across Nairobi.' },
+  title: { absolute: 'ChupaHub | Online Wines, Spirits & Alcohol Delivery Nairobi' },
+  description: DEFAULT_DESCRIPTION,
+  alternates: { canonical: 'https://chupahub.com/' },
+  openGraph: { title: 'ChupaHub | Online Wines, Spirits & Alcohol Delivery Nairobi', description: DEFAULT_DESCRIPTION, url: 'https://chupahub.com/', siteName: 'ChupaHub', type: 'website', images: [{ url: '/chupahub-logo.svg', alt: 'ChupaHub logo' }] },
+  twitter: { card: 'summary', title: 'ChupaHub | Online Wines, Spirits & Alcohol Delivery Nairobi', description: DEFAULT_DESCRIPTION, images: ['/chupahub-logo.svg'] },
 };
 
 export default async function Home() {

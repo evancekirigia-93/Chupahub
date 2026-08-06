@@ -41,7 +41,7 @@ for each row execute function public.chupahub_default_slug();
 -- Seed editable website-content records only when missing. The storefront may safely use
 -- these public settings for shared text, navigation, colours and payment wording.
 insert into public.store_settings(key, value, description, is_public) values
-  ('site_content', '{"about":"Fast, responsible alcohol delivery across Nairobi.","contact_phone":"","contact_email":"","header_notice":"Delivery within Nairobi: 10-50min","footer_text":"Premium drinks delivered across Nairobi.","logo_text":"ChupaHub"}'::jsonb, 'Editable shared website text, header, footer and contact details.', true),
+  ('site_content', '{"about":"Fast, responsible alcohol delivery across Nairobi.","contact_phone":"","contact_email":"","header_notice":"Reliable delivery across Nairobi","footer_text":"Premium drinks delivered across Nairobi.","logo_text":"ChupaHub"}'::jsonb, 'Editable shared website text, header, footer and contact details.', true),
   ('site_design', '{"primary_color":"#f05a1a","accent_color":"#5b1b10","menu":["Shop","Offers","About","Contact"]}'::jsonb, 'Editable website colours and navigation labels.', true),
   ('homepage_sections', '{"categories":{"visible":true,"order":10,"heading":"Shop by category"},"top_sellers":{"visible":true,"order":20,"heading":"Top Sellers"},"new_arrivals":{"visible":true,"order":30,"heading":"New Arrivals"},"featured":{"visible":true,"order":40,"heading":"Featured Offers"}}'::jsonb, 'Homepage section headings, visibility and display order.', true)
 on conflict (key) do nothing;

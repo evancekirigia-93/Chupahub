@@ -33,7 +33,7 @@ export function Header({ content = {}, products = [] }: { content?: SiteContent;
   const primaryLinks = [['Shop','/shop'],['Beer','/beer'],['Wine','/wine'],['Whisky','/whisky'],['Gin','/gin'],['Vodka','/vodka'],['Offers','/offers'],['Track Order','/track-order'],['Contact','/contact']];
   const suggestions = query.trim().length < 1 ? [] : products.map(product => ({ product, score: searchScore(product, query) })).filter(result => result.score >= 0).sort((a, b) => b.score - a.score || a.product.name.localeCompare(b.product.name)).slice(0, 6).map(result => result.product);
   return <header className="brand-gradient sticky top-0 z-40">
-    <div className="flex items-center justify-between gap-2 px-3 py-2 text-xs font-bold text-white sm:px-5"><span>{content.header_notice || 'FREE DELIVERY ON ORDERS OF KES 10,000 OR MORE'}</span><span className="hidden sm:inline">Fast delivery · Drink responsibly — 18+ only</span></div>
+    <div className="flex items-center justify-between gap-2 px-3 py-2 text-xs font-bold text-white sm:px-5"><span>{content.header_notice || 'FREE DELIVERY ON ORDERS OF KES 10,000 OR MORE'}</span><span className="hidden sm:inline">Reliable delivery · Drink responsibly — 18+ only</span></div>
     <div className="flex w-full flex-wrap items-center gap-3 px-3 py-3 sm:px-5">
       <Link href="/" className="flex shrink-0 items-center" aria-label="Chupa Hub home"><BrandLogo src={content.logo_url} /></Link>
       <Link href="/checkout" className="hidden max-w-40 truncate rounded-xl bg-orange-50 px-3 py-2 text-xs font-bold text-brand-ink lg:block"><MapPinIcon className="mr-1 inline text-brand-orange" size={15}/>{location}</Link>

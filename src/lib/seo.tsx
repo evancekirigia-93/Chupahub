@@ -1,6 +1,6 @@
 export const SITE_URL = 'https://chupahub.com';
-export const SITE_NAME = 'Chupa Hub';
-export const DEFAULT_DESCRIPTION = 'Order wine, whisky, gin, vodka, beer and premium alcohol online with fast alcohol delivery across Nairobi, Kenya.';
+export const SITE_NAME = 'ChupaHub';
+export const DEFAULT_DESCRIPTION = 'Order genuine wines, whisky, gin, vodka, beer and other drinks online from ChupaHub. Enjoy fast, reliable alcohol delivery across Nairobi, 24/7.';
 
 export function absoluteUrl(path = '/') {
   return new URL(path, SITE_URL).toString();
@@ -20,7 +20,7 @@ export function JsonLd({ data }: { data: Record<string, unknown> | Array<Record<
 }
 
 export function businessGraph(socialLinks: string[] = [], logoUrl?: string) {
-  const searchLogo = logoUrl || absoluteUrl('/chupahub-icon.svg');
+  const searchLogo = logoUrl || absoluteUrl('/chupahub-logo.svg');
   return {
   '@context': 'https://schema.org',
   '@graph': [
@@ -30,7 +30,7 @@ export function businessGraph(socialLinks: string[] = [], logoUrl?: string) {
       name: SITE_NAME,
       url: SITE_URL,
       description: DEFAULT_DESCRIPTION,
-      logo: { '@type': 'ImageObject', url: searchLogo, width: 256, height: 256 },
+      logo: { '@type': 'ImageObject', url: searchLogo, width: 200, height: 320 },
       image: searchLogo,
       sameAs: socialLinks.filter(Boolean),
     },
@@ -39,7 +39,9 @@ export function businessGraph(socialLinks: string[] = [], logoUrl?: string) {
       '@id': `${SITE_URL}/#localbusiness`,
       name: SITE_NAME,
       url: SITE_URL,
-      description: 'Fast wine, whisky and alcohol delivery in Nairobi.',
+      description: DEFAULT_DESCRIPTION,
+      logo: { '@type': 'ImageObject', url: searchLogo, width: 200, height: 320 },
+      image: searchLogo,
       areaServed: { '@type': 'City', name: 'Nairobi' },
       currenciesAccepted: 'KES',
       paymentAccepted: 'M-Pesa, Visa, Mastercard, Cash',
