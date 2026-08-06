@@ -60,14 +60,17 @@ export function SeoArticle({ content = {} }: { content?: SiteContent }) {
   const summary = content.article_summary || 'Discover wines, spirits, beers, champagne and mixers online with convenient Chupa Hub delivery.';
   const body = content.article_body || `Chupa Hub Deliveries is a fast, convenient online platform for ordering wines, spirits, beers, champagne, whisky, gin, vodka, tequila, rum, ciders, mixers, and other beverages for delivery across Kenya. Whether you're planning a celebration, stocking your home bar, or simply need a quick delivery, Chupa Hub makes ordering drinks online simple and reliable.
 
-If you're familiar with stores such as Chupa Chap, Oaks & Corks, The Bar KE, or other well-known liquor retailers in Kenya, Chupa Hub offers a convenient online marketplace where you can discover a wide selection of drinks and have them delivered to your location.
+If you're familiar with delivery services and retailers such as Chupa Chap, Oaks & Corks, Greenspoon, Quickmart, The Bar KE, or other well-known shops in Kenya, Chupa Hub offers a convenient independent marketplace where you can discover a wide selection of drinks and have them delivered to your location.
 
 Customers searching for terms such as:
 
 • Chupa Chap
 • Oaks & Corks
+• Greenspoon
+• Quickmart
 • The Bar KE
 • online alcohol delivery Kenya
+• online drinks delivery Nairobi
 • liquor delivery near me
 • wine delivery Nairobi
 • whisky delivery Kenya
@@ -89,9 +92,9 @@ can use Chupa Hub to browse products, compare options, and order quickly from on
 
 Our goal is to make finding and ordering your favorite drinks as easy as ordering food online. Whether you're looking for premium whisky, fine wine, craft beer, champagne, spirits, or mixers, Chupa Hub provides a secure and convenient shopping experience with fast delivery and excellent customer service.
 
-Chupa Hub Deliveries is designed for customers who want a trusted alternative when searching online for alcohol delivery services in Kenya. If you're searching for online liquor stores, wine delivery, beer delivery, or drink delivery services similar to Chupa Chap, Oaks & Corks, or The Bar KE, Chupa Hub is ready to help you find what you need.
+Chupa Hub Deliveries is designed for customers who want a trusted alternative when searching online for alcohol delivery services in Kenya. If you're comparing online liquor stores, wine delivery, beer delivery, or drink delivery services such as Chupa Chap, Oaks & Corks, Greenspoon, Quickmart, or The Bar KE, Chupa Hub is ready to help you find what you need.
 
-Please note that Chupa Hub is an independent platform and is not affiliated with, endorsed by, or operated by Chupa Chap, Oaks & Corks, The Bar KE, or other third-party brands that may be referenced for comparison. All trademarks remain the property of their respective owners.
+Please note that Chupa Hub is an independent platform and is not affiliated with, endorsed by, or operated by Chupa Chap, Oaks & Corks, Greenspoon, Quickmart, The Bar KE, or other third-party brands referenced for comparison. All trademarks remain the property of their respective owners.
 
 Chupa Hub Deliveries promotes responsible drinking and only serves customers who are of legal drinking age.`;
   const articles = content.articles?.filter(article => article.is_active !== false && article.title.trim() && article.body.trim()) || [];
