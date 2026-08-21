@@ -36,9 +36,12 @@ export default async function Home() {
   }) : [{ title: 'Top Deals', products: featured, href: '/collections/featured', limit: 8 }, { title: 'Top Sellers', products: topSellers, href: '/collections/top-sellers', limit: 8 }, { title: 'New Arrivals', products: arrivals, href: '/collections/new-arrivals', limit: 8 }]).sort((a, b) => sectionPriority(a.title) - sectionPriority(b.title));
   const promotionHref = (promotion: typeof promotions[number]) => promotion.button_url || '/offers';
 
-  return <main>
+  return <main className="storefront-home">
     <HeroCarousel banners={banners} />
-    {promotions.length > 0 && <section className="mx-auto grid max-w-none gap-3 px-4 pt-5 md:grid-cols-2">
+    <section aria-label="ChupaHub service promises" className="service-strip mx-auto mt-4 grid grid-cols-2 divide-x divide-orange-100 overflow-hidden border-y border-orange-100 bg-white sm:mt-6 sm:grid-cols-4 sm:rounded-2xl sm:border">
+      {[['Fast Nairobi delivery','Clear delivery updates'],['Original products','Carefully selected stock'],['Secure checkout','Simple, protected ordering'],['Customer support','Help when you need it']].map(([title, detail]) => <div key={title} className="px-3 py-3 text-center sm:px-5 sm:py-4"><strong className="block text-xs font-black text-brand-ink sm:text-sm">{title}</strong><span className="mt-0.5 hidden text-xs text-slate-500 sm:block">{detail}</span></div>)}
+    </section>
+    {promotions.length > 0 && <section className="promotion-grid mx-auto grid gap-3 px-3 pt-5 sm:px-5 md:grid-cols-2">
       {promotions.map((promotion) => <Link key={promotion.id} href={promotionHref(promotion)} className="orange-gradient flex items-center justify-between rounded-2xl p-5 text-white shadow-orange">
         <div><p className="text-xs font-black uppercase tracking-widest">{promotion.badge_text || promotion.code || 'Promotion'}</p><h2 className="text-2xl font-black">{promotion.title}</h2><p className="mt-1 text-sm text-white/85">{promotion.description}</p></div>
         <div className="ml-4 shrink-0 rounded-full bg-white px-4 py-3 text-center font-black text-brand-deep">{promotion.discount_type === 'percent' ? `${promotion.discount_value}%` : money(promotion.discount_value)}</div>
