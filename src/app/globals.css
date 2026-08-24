@@ -227,8 +227,11 @@ body {
 }
 .product-rail-arrow {
   display: none;
-  width: 2rem;
-  height: 2rem;
+  position: absolute;
+  z-index: 8;
+  top: 55%;
+  width: 2.35rem;
+  height: 2.35rem;
   place-items: center;
   border: 1px solid rgba(244, 90, 22, .28);
   border-radius: 9999px;
@@ -239,9 +242,11 @@ body {
   line-height: 1;
   transition: transform .2s ease, background-color .2s ease;
 }
-.product-rail-arrow:hover { transform: translateY(-1px); background: #fff7ef; }
+.product-rail-arrow-left { left: .65rem; }
+.product-rail-arrow-right { right: .65rem; }
+.product-rail-arrow:hover { background: #fff7ef; transform: translateY(-50%) scale(1.05); }
 @media (min-width: 1024px) {
-  .product-rail-arrow { display: grid; }
+  .product-rail-arrow { display: grid; transform: translateY(-50%); }
 }
 .product-rail + .product-rail {
   border-top: 1px solid rgba(255, 90, 0, .10);
