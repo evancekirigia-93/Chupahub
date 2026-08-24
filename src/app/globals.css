@@ -70,7 +70,17 @@ body {
 }
 @media (min-width: 1024px) {
   .product-rail-grid {
-    grid-template-columns: repeat(6, minmax(0, 1fr));
+    display: flex;
+    gap: 1rem;
+    overflow-x: auto;
+    scroll-behavior: smooth;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+  }
+  .product-rail-grid::-webkit-scrollbar { display: none; }
+  .product-rail-grid > * {
+    flex: 0 0 calc((100% - 5rem) / 6);
+    scroll-snap-align: start;
   }
 }
 
@@ -208,6 +218,24 @@ body {
 .product-rail-grid > * {
   overflow: hidden;
 }
+.product-rail-arrow {
+  display: none;
+  width: 2rem;
+  height: 2rem;
+  place-items: center;
+  border: 1px solid rgba(244, 90, 22, .28);
+  border-radius: 9999px;
+  background: #fff;
+  color: #f45a16;
+  font-size: 1.25rem;
+  font-weight: 900;
+  line-height: 1;
+  transition: transform .2s ease, background-color .2s ease;
+}
+.product-rail-arrow:hover { transform: translateY(-1px); background: #fff7ef; }
+@media (min-width: 1024px) {
+  .product-rail-arrow { display: grid; }
+}
 .product-rail + .product-rail {
   border-top: 1px solid rgba(255, 90, 0, .10);
 }
@@ -231,8 +259,12 @@ body {
   }
   .category-sidebar {
     order: 1;
-    height: 38rem;
-    overflow: hidden;
+    height: 30rem;
+    overflow-x: hidden;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(244, 90, 22, .55) transparent;
     border: 1px solid rgba(255, 90, 0, .14);
     border-radius: 1.5rem;
     background: #fff;
@@ -268,4 +300,17 @@ body {
     margin-inline: auto;
   }
   .category-circle-name { font-size: .74rem; }
+  .category-sidebar::-webkit-scrollbar { width: 6px; }
+  .category-sidebar::-webkit-scrollbar-thumb { border-radius: 9999px; background: rgba(244, 90, 22, .55); }
+}
+
+@keyframes hero-gentle-bounce {
+  0%, 100% { transform: translateY(0) scale(1.01); }
+  50% { transform: translateY(-4px) scale(1.025); }
+}
+.hero-carousel article[aria-hidden="false"] img {
+  animation: hero-gentle-bounce 5s ease-in-out infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .hero-carousel article[aria-hidden="false"] img { animation: none; }
 }
