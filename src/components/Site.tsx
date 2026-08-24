@@ -103,7 +103,13 @@ Chupa Hub Deliveries promotes responsible drinking and only serves customers who
 }
 
 export function CategoryGrid({ categories }: { categories: DbCategory[] }) {
-  return <section className="category-grid mx-auto grid max-w-[1500px] grid-cols-3 gap-2 px-3 py-6 sm:grid-cols-4 sm:gap-3 sm:px-5 md:grid-cols-6 lg:grid-cols-8">{categories.map((category) => <Link href={`/category/${category.slug}`} key={category.id} className="group relative aspect-[4/3] overflow-hidden rounded-lg bg-neutral-100 shadow-sm ring-1 ring-black/5 transition hover:-translate-y-0.5 hover:shadow-card"><SmartImage src={category.image_url || 'https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?auto=format&fit=crop&w=700&q=80'} alt={`${category.name} category`} sizes="(max-width: 640px) 33vw, (max-width: 768px) 25vw, (max-width: 1024px) 17vw, (max-width: 1280px) 13vw, 9vw" className="transition duration-500 group-hover:scale-[1.03]" /><div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-black/75 to-transparent" /><div className="absolute inset-x-0 bottom-0 px-2 py-1.5 text-white"><h2 className="truncate text-[11px] font-semibold tracking-wide sm:text-xs">{category.name}</h2></div></Link>)}</section>;
+  return <aside className="category-sidebar" aria-label="Shop by category">
+    <div className="category-sidebar-heading"><span>Browse</span><h2>Shop categories</h2></div>
+    <div className="category-circle-list">{categories.map((category) => <Link href={`/category/${category.slug}`} key={category.id} className="category-circle-link group">
+      <span className="category-circle-image"><SmartImage src={category.image_url || 'https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?auto=format&fit=crop&w=700&q=80'} alt={`${category.name} category`} sizes="(max-width: 1023px) 96px, 112px" className="transition duration-300 group-hover:scale-105" /></span>
+      <span className="category-circle-name">{category.name}</span>
+    </Link>)}</div>
+  </aside>;
 }
 
 export function ProductCard({ p }: { p: DbProduct }) {
