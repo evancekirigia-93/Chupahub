@@ -104,7 +104,7 @@ Chupa Hub Deliveries promotes responsible drinking and only serves customers who
 
 export function CategoryGrid({ categories }: { categories: DbCategory[] }) {
   return <aside className="category-sidebar" aria-label="Shop by category">
-    <div className="category-sidebar-heading"><span>Browse</span><h2>Shop categories</h2></div>
+    <div className="category-sidebar-heading"><span>Browse</span><h2>Shop by category</h2></div>
     <div className="category-circle-list">{categories.map((category) => <Link href={`/category/${category.slug}`} key={category.id} className="category-circle-link group">
       <span className="category-circle-image"><SmartImage src={category.image_url || 'https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?auto=format&fit=crop&w=700&q=80'} alt={`${category.name} category`} sizes="(max-width: 1023px) 96px, 112px" className="transition duration-300 group-hover:scale-105" /></span>
       <span className="category-circle-name">{category.name}</span>
