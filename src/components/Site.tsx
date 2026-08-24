@@ -144,7 +144,7 @@ function CatalogCards({ products, limit }: { products: DbProduct[]; limit?: numb
 
 export function ProductRail({ title, products, href }: { title: string; products: DbProduct[]; href: string; limit?: number }) {
   const railRef = useRef<HTMLDivElement>(null);
-  const homepageLimit = 8;
+  const homepageLimit = 10;
   const scrollProducts = (direction: number) => railRef.current?.scrollBy({ left: direction * railRef.current.clientWidth * 0.82, behavior: 'smooth' });
   return <section className="product-rail relative mx-auto max-w-none overflow-hidden px-2 py-7 sm:px-3 sm:py-9">
     <div className="mb-4 flex items-end justify-between border-b border-orange-100 pb-3">
