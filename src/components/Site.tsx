@@ -142,6 +142,7 @@ function CatalogCards({ products, limit }: { products: DbProduct[]; limit?: numb
   }).slice(0, limit)}</>;
 }
 
-export function ProductRail({ title, products, href, limit = 8 }: { title: string; products: DbProduct[]; href: string; limit?: number }) {
-  return <section className="product-rail mx-auto max-w-[1500px] overflow-hidden px-3 py-7 sm:px-5 sm:py-9"><div className="mb-4 flex items-end justify-between border-b border-orange-100 pb-3"><div><span className="mb-1 block h-1 w-10 rounded-full bg-brand-orange"/><h2 className="text-xl font-extrabold tracking-tight text-brand-ink sm:text-2xl">{title}</h2></div><Link href={href} className="rounded-full border border-orange-200 bg-white px-3 py-1.5 text-xs font-black text-brand-orange transition hover:border-brand-orange hover:bg-orange-50 sm:text-sm">View all</Link></div><div className="product-rail-grid"><CatalogCards products={products} limit={limit} /></div></section>;
+export function ProductRail({ title, products, href }: { title: string; products: DbProduct[]; href: string; limit?: number }) {
+  const homepageLimit = 6;
+  return <section className="product-rail mx-auto max-w-[1500px] overflow-hidden px-3 py-7 sm:px-5 sm:py-9"><div className="mb-4 flex items-end justify-between border-b border-orange-100 pb-3"><div><span className="mb-1 block h-1 w-10 rounded-full bg-brand-orange"/><h2 className="text-xl font-extrabold tracking-tight text-brand-ink sm:text-2xl">{title}</h2></div><Link href={href} className="rounded-full border border-orange-200 bg-white px-3 py-1.5 text-xs font-black text-brand-orange transition hover:border-brand-orange hover:bg-orange-50 sm:text-sm">View all</Link></div><div className="product-rail-grid"><CatalogCards products={products} limit={homepageLimit} /></div></section>;
 }
