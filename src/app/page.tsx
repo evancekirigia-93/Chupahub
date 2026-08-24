@@ -43,7 +43,7 @@ export default async function Home() {
       <CategoryGrid categories={rootCategories} />
       <HeroCarousel banners={banners} />
     </section>
-    <section aria-label="ChupaHub service promises" className="service-strip mx-auto mt-4 grid grid-cols-2 divide-x divide-orange-100 overflow-hidden border-y border-orange-100 bg-white sm:mt-6 sm:grid-cols-4 sm:rounded-2xl sm:border">
+    <section aria-label="ChupaHub service promises" className="service-strip mx-auto mt-4 hidden grid-cols-2 divide-x divide-orange-100 overflow-hidden border-y border-orange-100 bg-white sm:mt-6 sm:grid sm:grid-cols-4 sm:rounded-2xl sm:border">
       {[['Fast Nairobi delivery','Clear delivery updates'],['Original products','Carefully selected stock'],['Secure checkout','Simple, protected ordering'],['Customer support','Help when you need it']].map(([title, detail]) => <div key={title} className="px-3 py-3 text-center sm:px-5 sm:py-4"><strong className="block text-xs font-black text-brand-ink sm:text-sm">{title}</strong><span className="mt-0.5 hidden text-xs text-slate-500 sm:block">{detail}</span></div>)}
     </section>
     {promotions.length > 0 && <section className="promotion-grid mx-auto grid gap-3 px-3 pt-5 sm:px-5 md:grid-cols-2">
