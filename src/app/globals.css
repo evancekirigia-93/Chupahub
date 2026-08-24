@@ -138,11 +138,11 @@ body {
   background: linear-gradient(to top, rgba(0, 38, 83, .16), transparent);
 }
 .service-strip {
-  width: min(calc(100% - 1.5rem), 1460px);
+  width: calc(100% - 1rem);
   box-shadow: 0 10px 30px rgba(0, 38, 83, .06);
 }
 .promotion-grid {
-  width: min(100%, 1500px);
+  width: calc(100% - 1rem);
 }
 .hero-shopping-layout {
   position: relative;
@@ -150,7 +150,7 @@ body {
   isolation: isolate;
   overflow: hidden;
   display: flex;
-  width: min(100%, 1500px);
+  width: calc(100% - 1rem);
   flex-direction: column;
 }
 .hero-shopping-layout .hero-carousel { order: 1; }
@@ -247,7 +247,7 @@ body {
   border-top: 1px solid rgba(255, 90, 0, .10);
 }
 @media (min-width: 640px) {
-  .hero-shopping-layout { width: min(calc(100% - 2rem), 1500px); }
+  .hero-shopping-layout { width: calc(100% - 1rem); }
   .category-sidebar { padding-inline: 0; }
   .category-circle-link { flex-basis: 96px; }
   .category-circle-image { width: 96px; height: 96px; }
