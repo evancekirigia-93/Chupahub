@@ -36,7 +36,7 @@ export default async function Home() {
   }) : [{ title: 'Top Deals', products: featured, href: '/collections/featured', limit: 8 }, { title: 'Top Sellers', products: topSellers, href: '/collections/top-sellers', limit: 8 }, { title: 'New Arrivals', products: arrivals, href: '/collections/new-arrivals', limit: 8 }]).sort((a, b) => sectionPriority(a.title) - sectionPriority(b.title));
   const promotionHref = (promotion: typeof promotions[number]) => promotion.button_url || '/offers';
 
-  const rootCategories = categories.filter((category) => !category.parent_id);
+  const rootCategories = categories.filter((category) => !category.parent_id && category.slug.toLowerCase() !== 'snacks');
 
   return <main className="storefront-home">
     <section className="hero-shopping-layout mx-auto">
