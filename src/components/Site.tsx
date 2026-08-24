@@ -146,7 +146,7 @@ export function ProductRail({ title, products, href }: { title: string; products
   const railRef = useRef<HTMLDivElement>(null);
   const homepageLimit = 8;
   const scrollProducts = (direction: number) => railRef.current?.scrollBy({ left: direction * railRef.current.clientWidth * 0.82, behavior: 'smooth' });
-  return <section className="product-rail mx-auto max-w-[1500px] overflow-hidden px-3 py-7 sm:px-5 sm:py-9">
+  return <section className="product-rail mx-auto max-w-none overflow-hidden px-2 py-7 sm:px-3 sm:py-9">
     <div className="mb-4 flex items-end justify-between border-b border-orange-100 pb-3">
       <div><span className="mb-1 block h-1 w-10 rounded-full bg-brand-orange"/><h2 className="text-xl font-extrabold tracking-tight text-brand-ink sm:text-2xl">{title}</h2></div>
       <div className="flex items-center gap-2">
