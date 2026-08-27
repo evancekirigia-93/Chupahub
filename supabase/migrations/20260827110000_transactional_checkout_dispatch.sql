@@ -107,8 +107,8 @@ begin
     nullif(p_order->>'delivery_place_id',''),nullif(p_order->>'delivery_place_name',''),
     coalesce((p_order->>'delivery_location_verified')::boolean,false),nullif(p_order->>'delivery_instructions',''),
     nullif(p_order->>'gift_note',''),p_order->>'payment_method',p_order->>'payment_status',p_order->>'status',
-    calculated_subtotal,(p_order->>'delivery_fee')::numeric,calculated_original-calculated_subtotal,
-    calculated_subtotal+(p_order->>'delivery_fee')::numeric
+    calculated_subtotal,case when calculated_subtotal>=10000 then 0 else (p_order->>'delivery_fee')::numeric end,calculated_original-calculated_subtotal,
+    calculated_subtotal+case when calculated_subtotal>=10000 then 0 else (p_order->>'delivery_fee')::numeric end
   ) returning * into created_order;
 
   for cart_line in select value from jsonb_array_elements(p_cart) value loop
