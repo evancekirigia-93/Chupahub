@@ -27,7 +27,6 @@
 .age-gate-exit { border: 1px solid #e7eaf0; background: #f8fafc; color: #526174; }
 .age-gate-note { margin-top: 1rem; color: #8792a2; font-size: .75rem; }
 
-/* Compact party offer strip matching the supplied slim reference. */
 .party-offer-panel {
   position: relative;
   overflow: hidden;
@@ -42,43 +41,11 @@
   padding: .35rem 1.05rem !important;
   clip-path: polygon(6% 0, 100% 0, 94% 100%, 0 100%);
 }
-.party-offer-copy {
-  min-width: 0;
-  flex: 1;
-  display: flex;
-  align-items: center;
-  gap: .55rem;
-  white-space: nowrap;
-}
-.party-offer-badge {
-  flex: 0 0 auto;
-  font-size: .53rem !important;
-  letter-spacing: .09em !important;
-}
-.party-offer-panel h2 {
-  flex: 0 0 auto;
-  margin: 0 !important;
-  font-size: .92rem !important;
-  line-height: 1 !important;
-}
-.party-offer-description {
-  display: block !important;
-  min-width: 0;
-  margin: 0 !important;
-  overflow: hidden;
-  font-size: .64rem !important;
-  line-height: 1.1 !important;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  opacity: .9;
-}
-.party-offer-value {
-  flex: 0 0 auto;
-  align-self: center !important;
-  padding: .35rem .58rem !important;
-  font-size: .76rem !important;
-  white-space: nowrap;
-}
+.party-offer-copy { min-width: 0; flex: 1; display: flex; align-items: center; gap: .55rem; white-space: nowrap; }
+.party-offer-badge { flex: 0 0 auto; font-size: .53rem !important; letter-spacing: .09em !important; }
+.party-offer-panel h2 { flex: 0 0 auto; margin: 0 !important; font-size: .92rem !important; line-height: 1 !important; }
+.party-offer-description { display: block !important; min-width: 0; margin: 0 !important; overflow: hidden; font-size: .64rem !important; line-height: 1.1 !important; text-overflow: ellipsis; white-space: nowrap; opacity: .9; }
+.party-offer-value { flex: 0 0 auto; align-self: center !important; padding: .35rem .58rem !important; font-size: .76rem !important; white-space: nowrap; }
 .party-offer-cta { display: none; }
 
 @media (min-width: 1024px) {
@@ -86,10 +53,11 @@
     --hero-panel-height: 400px;
     align-items: start !important;
     overflow: visible !important;
+    row-gap: 0 !important;
   }
   .hero-shopping-layout.has-party-offer {
     grid-template-columns: 250px minmax(0, 1fr) !important;
-    grid-template-rows: var(--hero-panel-height) auto !important;
+    grid-template-rows: var(--hero-panel-height) 58px !important;
   }
   .hero-shopping-layout .hero-carousel,
   .hero-shopping-layout .hero-carousel-stage {
@@ -99,8 +67,6 @@
     min-height: var(--hero-panel-height) !important;
     max-height: var(--hero-panel-height) !important;
   }
-
-  /* Show exactly six category tiles (2 columns x 3 rows) before scrolling. */
   .hero-shopping-layout .category-sidebar {
     grid-column: 1 !important;
     grid-row: 1 !important;
@@ -109,15 +75,13 @@
     max-height: var(--hero-panel-height) !important;
     overflow: hidden !important;
   }
-  .hero-shopping-layout .category-sidebar-heading {
-    margin-bottom: .65rem !important;
-  }
+  .hero-shopping-layout .category-sidebar-heading { margin-bottom: .45rem !important; }
   .hero-shopping-layout .category-circle-list {
     grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-    grid-auto-rows: 96px;
-    gap: .55rem .55rem !important;
-    height: 310px;
-    max-height: 310px;
+    grid-auto-rows: 94px;
+    gap: .4rem .5rem !important;
+    height: 302px;
+    max-height: 302px;
     overflow-x: hidden !important;
     overflow-y: auto !important;
     overscroll-behavior: contain;
@@ -127,45 +91,27 @@
   }
   .hero-shopping-layout .category-circle-list::-webkit-scrollbar { width: 5px; display: block; }
   .hero-shopping-layout .category-circle-list::-webkit-scrollbar-thumb { border-radius: 9999px; background: rgba(244, 90, 22, .55); }
-  .hero-shopping-layout .category-circle-image {
-    width: 72px !important;
-    height: 72px !important;
-  }
-  .hero-shopping-layout .category-circle-name {
-    margin-top: .3rem !important;
-    font-size: .68rem !important;
-  }
-
+  .hero-shopping-layout .category-circle-image { width: 70px !important; height: 70px !important; }
+  .hero-shopping-layout .category-circle-name { margin-top: .2rem !important; font-size: .68rem !important; }
   .hero-shopping-layout .party-offer-panel {
     grid-column: 2 !important;
     grid-row: 2 !important;
     justify-self: end !important;
+    align-self: start !important;
     width: min(54%, 560px) !important;
     height: 58px !important;
     min-height: 58px !important;
     max-height: 58px !important;
-    margin: .55rem 0 0 !important;
+    margin: 0 !important;
+    transform: translateY(-2px);
   }
+  .storefront-home > .product-rail:first-of-type { margin-top: .35rem !important; padding-top: .35rem !important; }
 }
 
 @media (min-width: 1280px) {
   .hero-shopping-layout { --hero-panel-height: 420px; }
-  .hero-shopping-layout.has-party-offer {
-    grid-template-columns: 260px minmax(0, 1fr) !important;
-  }
-  .hero-shopping-layout .category-circle-list {
-    height: 326px;
-    max-height: 326px;
-    grid-auto-rows: 101px;
-  }
-  .hero-shopping-layout .category-circle-image {
-    width: 76px !important;
-    height: 76px !important;
-  }
-  .hero-shopping-layout .party-offer-panel {
-    width: min(52%, 580px) !important;
-    height: 60px !important;
-    min-height: 60px !important;
-    max-height: 60px !important;
-  }
+  .hero-shopping-layout.has-party-offer { grid-template-columns: 260px minmax(0, 1fr) !important; grid-template-rows: var(--hero-panel-height) 60px !important; }
+  .hero-shopping-layout .category-circle-list { height: 316px; max-height: 316px; grid-auto-rows: 98px; }
+  .hero-shopping-layout .category-circle-image { width: 74px !important; height: 74px !important; }
+  .hero-shopping-layout .party-offer-panel { width: min(52%, 580px) !important; height: 60px !important; min-height: 60px !important; max-height: 60px !important; }
 }
