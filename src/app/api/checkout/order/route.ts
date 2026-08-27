@@ -1,4 +1,5 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { after, NextRequest, NextResponse } from 'next/server';
+import { processPendingNotifications } from '@/lib/server/notification-worker';
 import { kenyaPhone, requestStkPush } from '@/lib/server/mpesa';
 import { getAdminSupabase } from '@/lib/server/supabase-admin';
 import { createServerSupabase } from '@/lib/supabase-server';
@@ -76,6 +77,7 @@ export async function POST(request:NextRequest){
     });
     if(orderError) throw orderError;
     const order=result as {id:string;order_number:string;checkout_token:string;payment_status:string;total:number;duplicate?:boolean};
+    after(()=>processPendingNotifications(5).catch(error=>console.error('[notification-worker]',{requestId,error:safeMessage(error)})));
 
     if(body.paymentMethod==='mpesa'&&!order.duplicate){
       const phone=kenyaPhone(body.customer.phone);
