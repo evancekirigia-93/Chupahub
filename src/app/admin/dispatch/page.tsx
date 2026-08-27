@@ -65,7 +65,7 @@ export default function DispatchPage() {
     if (!supabase || !order || !canDispatch) return;
     setBusy(true); setError(''); setNotice('');
     const { data: { session } } = await supabase.auth.getSession();
-    const response = await fetch(`/api/admin/orders/${order.id}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${session?.access_token || ''}` }, body: JSON.stringify({ status: 'out_for_delivery', riderName: riderName.trim(), riderPhone: riderPhone.trim(), note: 'All dispatch items physically checked by admin.' }) });
+    const response = await fetch(`/api/admin/orders/${order.id}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${session?.access_token || ''}` }, body: JSON.stringify({ status: 'out_for_delivery', riderName: riderName.trim(), riderPhone: riderPhone.trim(), checkedItemIds: [...checked], note: 'All dispatch items physically checked by admin.' }) });
     const result = await response.json();
     if (!response.ok) setError(result.error || 'Unable to dispatch order.');
     else { try { await saveRider(); } catch (cause) { setError(cause instanceof Error ? `Order dispatched, but rider could not be saved: ${cause.message}` : 'Order dispatched, but rider could not be saved.'); } setNotice(`Order ${order.order_number || order.id.slice(0,8)} dispatched with ${order.order_items.length} checked item lines.`); setSelected(''); await load(); }
