@@ -65,20 +65,43 @@
     min-height: var(--hero-panel-height) !important;
     max-height: var(--hero-panel-height) !important;
   }
+
+  /* Show exactly six category tiles (2 columns x 3 rows) before scrolling. */
   .hero-shopping-layout .category-sidebar {
     grid-column: 1 !important;
     grid-row: 1 !important;
     height: var(--hero-panel-height) !important;
     min-height: 0 !important;
     max-height: var(--hero-panel-height) !important;
+    overflow: hidden !important;
+  }
+  .hero-shopping-layout .category-sidebar-heading {
+    margin-bottom: .65rem !important;
+  }
+  .hero-shopping-layout .category-circle-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    grid-auto-rows: 96px;
+    gap: .55rem .55rem !important;
+    height: 310px;
+    max-height: 310px;
     overflow-x: hidden !important;
     overflow-y: auto !important;
     overscroll-behavior: contain;
     scrollbar-width: thin;
     scrollbar-color: rgba(244, 90, 22, .55) transparent;
+    padding-right: .15rem !important;
   }
-  .hero-shopping-layout .category-sidebar::-webkit-scrollbar { width: 6px; }
-  .hero-shopping-layout .category-sidebar::-webkit-scrollbar-thumb { border-radius: 9999px; background: rgba(244, 90, 22, .55); }
+  .hero-shopping-layout .category-circle-list::-webkit-scrollbar { width: 5px; display: block; }
+  .hero-shopping-layout .category-circle-list::-webkit-scrollbar-thumb { border-radius: 9999px; background: rgba(244, 90, 22, .55); }
+  .hero-shopping-layout .category-circle-image {
+    width: 72px !important;
+    height: 72px !important;
+  }
+  .hero-shopping-layout .category-circle-name {
+    margin-top: .3rem !important;
+    font-size: .68rem !important;
+  }
+
   .hero-shopping-layout .party-offer-panel {
     grid-column: 2 !important;
     grid-row: 2 !important;
@@ -95,6 +118,15 @@
   .hero-shopping-layout { --hero-panel-height: 420px; }
   .hero-shopping-layout.has-party-offer {
     grid-template-columns: 260px minmax(0, 1fr) !important;
+  }
+  .hero-shopping-layout .category-circle-list {
+    height: 326px;
+    max-height: 326px;
+    grid-auto-rows: 101px;
+  }
+  .hero-shopping-layout .category-circle-image {
+    width: 76px !important;
+    height: 76px !important;
   }
   .hero-shopping-layout .party-offer-panel {
     width: min(68%, 760px) !important;
