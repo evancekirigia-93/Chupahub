@@ -7,6 +7,14 @@ create unique index if not exists orders_idempotency_key_unique
   on public.orders(idempotency_key) where idempotency_key is not null;
 
 alter table public.orders drop constraint if exists orders_status_check;
+update public.orders set status=case
+  when status in ('accepted','confirmed') then 'pending'
+  when status='processing' then 'packing'
+  when status in ('dispatched','delivered') then case when status='dispatched' then 'out_for_delivery' else 'completed' end
+  when status='rejected' then 'cancelled'
+  else status end
+where status in ('accepted','confirmed','processing','dispatched','delivered','rejected');
+
 alter table public.orders add constraint orders_status_check check (
   status in ('pending','pending_payment','paid','packing','out_for_delivery','completed','cancelled','refunded')
 );
