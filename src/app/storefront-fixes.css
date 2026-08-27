@@ -1,0 +1,58 @@
+.age-gate {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+  background: rgba(0, 24, 52, .78);
+  backdrop-filter: blur(10px);
+}
+.age-gate-card {
+  width: min(100%, 430px);
+  border: 1px solid rgba(255, 100, 25, .22);
+  border-radius: 1.75rem;
+  background: #fff;
+  padding: 2rem;
+  text-align: center;
+  box-shadow: 0 28px 80px rgba(0, 20, 45, .3);
+}
+.age-gate-logo { width: 76px; height: 76px; margin: 0 auto .75rem; object-fit: contain; }
+.age-gate-kicker { color: #f45a16; font-size: .72rem; font-weight: 900; letter-spacing: .14em; text-transform: uppercase; }
+.age-gate-card h2 { margin-top: .4rem; color: #002653; font-size: 2rem; font-weight: 900; line-height: 1.05; }
+.age-gate-copy { margin: .85rem auto 0; max-width: 340px; color: #526174; font-size: .95rem; line-height: 1.55; }
+.age-gate-actions { display: grid; gap: .65rem; margin-top: 1.3rem; }
+.age-gate-confirm, .age-gate-exit { display: block; width: 100%; border-radius: .9rem; padding: .9rem 1rem; font-weight: 900; }
+.age-gate-confirm { border: 0; background: linear-gradient(180deg, #e62e12, #ff6a1a); color: #fff; cursor: pointer; }
+.age-gate-exit { border: 1px solid #e7eaf0; background: #f8fafc; color: #526174; }
+.age-gate-note { margin-top: 1rem; color: #8792a2; font-size: .75rem; }
+
+@media (min-width: 1024px) {
+  .hero-shopping-layout {
+    --hero-panel-height: 400px;
+    align-items: stretch;
+  }
+  .hero-shopping-layout .hero-carousel,
+  .hero-shopping-layout .hero-carousel-stage,
+  .hero-shopping-layout .category-sidebar,
+  .hero-shopping-layout .party-offer-panel {
+    height: var(--hero-panel-height) !important;
+    min-height: var(--hero-panel-height) !important;
+    max-height: var(--hero-panel-height) !important;
+  }
+  .hero-shopping-layout .category-sidebar {
+    grid-row: 1 !important;
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+    overscroll-behavior: contain;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(244, 90, 22, .55) transparent;
+  }
+  .hero-shopping-layout .category-sidebar::-webkit-scrollbar { width: 6px; }
+  .hero-shopping-layout .category-sidebar::-webkit-scrollbar-thumb { border-radius: 9999px; background: rgba(244, 90, 22, .55); }
+  .hero-shopping-layout .party-offer-panel { align-self: stretch; }
+}
+
+@media (min-width: 1280px) {
+  .hero-shopping-layout { --hero-panel-height: 420px; }
+}
