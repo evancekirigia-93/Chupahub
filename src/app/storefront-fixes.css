@@ -48,6 +48,13 @@
 .party-offer-value { flex: 0 0 auto; align-self: center !important; padding: .35rem .58rem !important; font-size: .76rem !important; white-space: nowrap; }
 .party-offer-cta { display: none; }
 
+@keyframes partyDealCornerBounce {
+  0%, 100% { transform: translate(-2px, -3px); }
+  25% { transform: translate(-34px, 2px); }
+  50% { transform: translate(-2px, 7px); }
+  75% { transform: translate(-34px, 2px); }
+}
+
 @media (min-width: 1024px) {
   .hero-shopping-layout {
     --hero-panel-height: 400px;
@@ -103,8 +110,10 @@
     min-height: 58px !important;
     max-height: 58px !important;
     margin: 0 !important;
-    transform: translateY(-2px);
+    animation: partyDealCornerBounce 3.2s ease-in-out infinite;
+    will-change: transform;
   }
+  .hero-shopping-layout .party-offer-panel:hover { animation-play-state: paused; }
   .storefront-home > .product-rail:first-of-type { margin-top: .35rem !important; padding-top: .35rem !important; }
 }
 
@@ -114,4 +123,8 @@
   .hero-shopping-layout .category-circle-list { height: 316px; max-height: 316px; grid-auto-rows: 98px; }
   .hero-shopping-layout .category-circle-image { width: 74px !important; height: 74px !important; }
   .hero-shopping-layout .party-offer-panel { width: min(52%, 580px) !important; height: 60px !important; min-height: 60px !important; max-height: 60px !important; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-shopping-layout .party-offer-panel { animation: none !important; transform: none !important; }
 }
