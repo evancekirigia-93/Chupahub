@@ -37,14 +37,28 @@ export default async function Home() {
   const promotionHref = (promotion: typeof promotions[number]) => promotion.button_url || '/offers';
 
   const rootCategories = categories.filter((category) => !category.parent_id && category.slug.toLowerCase() !== 'snacks');
+  const partyOffer = promotions.find((promotion) => {
+    const text = `${promotion.title || ''} ${promotion.description || ''} ${promotion.badge_text || ''}`.toLowerCase();
+    return text.includes('party');
+  }) || promotions[0];
+  const remainingPromotions = partyOffer ? promotions.filter((promotion) => promotion.id !== partyOffer.id) : promotions;
 
   return <main className="storefront-home">
-    <section className="hero-shopping-layout mx-auto">
+    <section className={`hero-shopping-layout mx-auto${partyOffer ? ' has-party-offer' : ''}`}>
       <CategoryGrid categories={rootCategories} />
       <HeroCarousel banners={banners} />
+      {partyOffer && <Link href={promotionHref(partyOffer)} className="party-offer-panel orange-gradient text-white shadow-orange">
+        <div className="party-offer-copy">
+          <p className="party-offer-badge">{partyOffer.badge_text || partyOffer.code || 'Party Offer'}</p>
+          <h2>{partyOffer.title}</h2>
+          {partyOffer.description && <p className="party-offer-description">{partyOffer.description}</p>}
+        </div>
+        <div className="party-offer-value">{partyOffer.discount_type === 'percent' ? `${partyOffer.discount_value}%` : money(partyOffer.discount_value)}</div>
+        <span className="party-offer-cta">View offer</span>
+      </Link>}
     </section>
-    {promotions.length > 0 && <section className="promotion-grid mx-auto grid gap-3 px-3 pt-5 sm:px-5 md:grid-cols-2">
-      {promotions.map((promotion) => <Link key={promotion.id} href={promotionHref(promotion)} className="orange-gradient flex items-center justify-between rounded-2xl p-5 text-white shadow-orange">
+    {remainingPromotions.length > 0 && <section className="promotion-grid mx-auto grid gap-3 px-3 pt-5 sm:px-5 md:grid-cols-2">
+      {remainingPromotions.map((promotion) => <Link key={promotion.id} href={promotionHref(promotion)} className="orange-gradient flex items-center justify-between rounded-2xl p-5 text-white shadow-orange">
         <div><p className="text-xs font-black uppercase tracking-widest">{promotion.badge_text || promotion.code || 'Promotion'}</p><h2 className="text-2xl font-black">{promotion.title}</h2><p className="mt-1 text-sm text-white/85">{promotion.description}</p></div>
         <div className="ml-4 shrink-0 rounded-full bg-white px-4 py-3 text-center font-black text-brand-deep">{promotion.discount_type === 'percent' ? `${promotion.discount_value}%` : money(promotion.discount_value)}</div>
       </Link>)}
