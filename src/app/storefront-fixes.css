@@ -27,24 +27,58 @@
 .age-gate-exit { border: 1px solid #e7eaf0; background: #f8fafc; color: #526174; }
 .age-gate-note { margin-top: 1rem; color: #8792a2; font-size: .75rem; }
 
+/* Compact party offer strip matching the supplied slim reference. */
 .party-offer-panel {
   position: relative;
   overflow: hidden;
   width: 100%;
-  min-height: 110px !important;
-  max-height: none !important;
+  min-height: 56px !important;
+  max-height: 64px !important;
   flex-direction: row !important;
-  align-items: center;
+  align-items: center !important;
   justify-content: space-between !important;
-  gap: .75rem !important;
+  gap: .6rem !important;
   border-radius: 0 !important;
-  padding: .9rem 1.35rem !important;
-  clip-path: polygon(7% 0, 100% 0, 93% 100%, 0 100%);
+  padding: .35rem 1.05rem !important;
+  clip-path: polygon(6% 0, 100% 0, 94% 100%, 0 100%);
 }
-.party-offer-copy { min-width: 0; flex: 1; }
-.party-offer-panel h2 { margin-top: .15rem !important; font-size: 1.3rem !important; line-height: 1.05 !important; }
-.party-offer-description { margin-top: .25rem !important; display: -webkit-box; overflow: hidden; -webkit-box-orient: vertical; -webkit-line-clamp: 1; }
-.party-offer-value { flex: 0 0 auto; align-self: center !important; white-space: nowrap; }
+.party-offer-copy {
+  min-width: 0;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: .55rem;
+  white-space: nowrap;
+}
+.party-offer-badge {
+  flex: 0 0 auto;
+  font-size: .53rem !important;
+  letter-spacing: .09em !important;
+}
+.party-offer-panel h2 {
+  flex: 0 0 auto;
+  margin: 0 !important;
+  font-size: .92rem !important;
+  line-height: 1 !important;
+}
+.party-offer-description {
+  display: block !important;
+  min-width: 0;
+  margin: 0 !important;
+  overflow: hidden;
+  font-size: .64rem !important;
+  line-height: 1.1 !important;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  opacity: .9;
+}
+.party-offer-value {
+  flex: 0 0 auto;
+  align-self: center !important;
+  padding: .35rem .58rem !important;
+  font-size: .76rem !important;
+  white-space: nowrap;
+}
 .party-offer-cta { display: none; }
 
 @media (min-width: 1024px) {
@@ -106,11 +140,11 @@
     grid-column: 2 !important;
     grid-row: 2 !important;
     justify-self: end !important;
-    width: min(72%, 720px) !important;
-    height: 116px !important;
-    min-height: 116px !important;
-    max-height: 116px !important;
-    margin: .8rem 0 0 !important;
+    width: min(54%, 560px) !important;
+    height: 58px !important;
+    min-height: 58px !important;
+    max-height: 58px !important;
+    margin: .55rem 0 0 !important;
   }
 }
 
@@ -129,9 +163,9 @@
     height: 76px !important;
   }
   .hero-shopping-layout .party-offer-panel {
-    width: min(68%, 760px) !important;
-    height: 120px !important;
-    min-height: 120px !important;
-    max-height: 120px !important;
+    width: min(52%, 580px) !important;
+    height: 60px !important;
+    min-height: 60px !important;
+    max-height: 60px !important;
   }
 }
