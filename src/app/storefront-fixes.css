@@ -114,7 +114,11 @@
     will-change: transform;
   }
   .hero-shopping-layout .party-offer-panel:hover { animation-play-state: paused; }
-  .storefront-home > .product-rail:first-of-type { margin-top: .35rem !important; padding-top: .35rem !important; }
+  /* Pull the first homepage collection (e.g. Wines We Love) closer to the hero/party strip. */
+  .storefront-home > .product-rail:first-of-type {
+    margin-top: -.35rem !important;
+    padding-top: 0 !important;
+  }
 }
 
 @media (min-width: 1280px) {
