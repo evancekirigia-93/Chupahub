@@ -34,7 +34,7 @@ export async function PATCH(request:NextRequest,{params}:{params:Promise<{id:str
 
   // Use the admin JWT so auth.uid() and the database admin check remain effective.
   const {createClient}=await import('@supabase/supabase-js');
-  const userDb=createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!,process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,{
+  const userDb=createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!,(process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY||process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY)!,{
     global:{headers:{Authorization:`Bearer ${admin.token}`}},auth:{persistSession:false,autoRefreshToken:false}
   });
   const {data:updated,error}=await userDb.rpc('dispatch_order',{
