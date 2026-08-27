@@ -27,21 +27,50 @@
 .age-gate-exit { border: 1px solid #e7eaf0; background: #f8fafc; color: #526174; }
 .age-gate-note { margin-top: 1rem; color: #8792a2; font-size: .75rem; }
 
+/* Keep the party offer horizontal/slanted, not a tall upright card. */
+.party-offer-panel {
+  position: relative;
+  overflow: hidden;
+  min-height: 132px !important;
+  max-height: none !important;
+  width: 100%;
+  flex-direction: row !important;
+  align-items: center;
+  justify-content: space-between !important;
+  gap: .85rem !important;
+  border-radius: 0 !important;
+  padding: 1.1rem 1.6rem !important;
+  clip-path: polygon(9% 0, 100% 0, 91% 100%, 0 100%);
+}
+.party-offer-copy { min-width: 0; flex: 1; }
+.party-offer-panel h2 { margin-top: .2rem !important; font-size: 1.45rem !important; line-height: 1.05 !important; }
+.party-offer-description { margin-top: .35rem !important; display: -webkit-box; overflow: hidden; -webkit-box-orient: vertical; -webkit-line-clamp: 2; }
+.party-offer-value { flex: 0 0 auto; align-self: center !important; white-space: nowrap; }
+.party-offer-cta { display: none; }
+
 @media (min-width: 1024px) {
   .hero-shopping-layout {
     --hero-panel-height: 400px;
-    align-items: stretch;
+    align-items: stretch !important;
+    overflow: visible !important;
+  }
+  .hero-shopping-layout.has-party-offer {
+    grid-template-columns: 250px minmax(0, 1fr) 300px !important;
   }
   .hero-shopping-layout .hero-carousel,
-  .hero-shopping-layout .hero-carousel-stage,
-  .hero-shopping-layout .category-sidebar,
-  .hero-shopping-layout .party-offer-panel {
+  .hero-shopping-layout .hero-carousel-stage {
     height: var(--hero-panel-height) !important;
     min-height: var(--hero-panel-height) !important;
     max-height: var(--hero-panel-height) !important;
   }
+
+  /* Only the categories that fit are visible at once; the rest scroll downward. */
   .hero-shopping-layout .category-sidebar {
+    grid-column: 1 !important;
     grid-row: 1 !important;
+    height: var(--hero-panel-height) !important;
+    min-height: 0 !important;
+    max-height: var(--hero-panel-height) !important;
     overflow-x: hidden !important;
     overflow-y: auto !important;
     overscroll-behavior: contain;
@@ -50,9 +79,27 @@
   }
   .hero-shopping-layout .category-sidebar::-webkit-scrollbar { width: 6px; }
   .hero-shopping-layout .category-sidebar::-webkit-scrollbar-thumb { border-radius: 9999px; background: rgba(244, 90, 22, .55); }
-  .hero-shopping-layout .party-offer-panel { align-self: stretch; }
+
+  /* Same original horizontal feel, moved to the right of the hero. */
+  .hero-shopping-layout .party-offer-panel {
+    grid-column: 3 !important;
+    grid-row: 1 !important;
+    align-self: center !important;
+    height: 148px !important;
+    min-height: 148px !important;
+    max-height: 148px !important;
+    margin: 0 !important;
+  }
 }
 
 @media (min-width: 1280px) {
   .hero-shopping-layout { --hero-panel-height: 420px; }
+  .hero-shopping-layout.has-party-offer {
+    grid-template-columns: 260px minmax(0, 1fr) 330px !important;
+  }
+  .hero-shopping-layout .party-offer-panel {
+    height: 156px !important;
+    min-height: 156px !important;
+    max-height: 156px !important;
+  }
 }
