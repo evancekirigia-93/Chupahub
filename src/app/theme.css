@@ -1,0 +1,20 @@
+/* The reference uses a white search field against its black header. */
+.store-search {
+  color-scheme: light;
+  background: #fff;
+  color: #21150d;
+  border-color: #fff;
+}
+.store-search::placeholder { color: #7a7068; }
+.store-search:focus { border-color: #f58a2b; }
+.age-gate-card { background: #15110e; border-color: #67401e; }
+.age-gate-card h2 { color: #f8f1e8; }
+.age-gate-copy { color: #cbbeb1; }
+.age-gate-exit { background: #25180f; border-color: #55321b; color: #e4d7c9; }
+.age-gate-confirm { background: linear-gradient(180deg, #b9510c, #843005); }
+.product-rail { background: #080605; }
+.product-rail-arrow { background: #21150d; color: #ffb36c; }
+.product-rail-arrow:hover { background: #39200e; }
+footer.brand-gradient { background: linear-gradient(180deg, #080503, #291104); }
+.category-circle-image { border-color: #603518; outline-color: #a34d13; }
+.party-offer-value { background: #25180f; color: #ffb36c; }

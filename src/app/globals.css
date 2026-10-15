@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 :root {
-  color-scheme: light;
+  color-scheme: dark;
 }
 
 html {
@@ -11,20 +11,20 @@ html {
 }
 
 body {
-  background: #FFF5EC;
-  color: #002653;
+  background: #080605;
+  color: #F8F1E8;
 }
 
 .app-shell {
-  background: linear-gradient(180deg, #FFF5EC 0%, #ffffff 34rem);
+  background: linear-gradient(180deg, #000 0%, #140B05 28rem, #080605 60rem);
 }
 
 .orange-gradient {
-  background: linear-gradient(180deg, #D81C10 0%, #E62E12 35%, #F45A16 70%, #FF6A1A 100%);
+  background: linear-gradient(180deg, #B9510C 0%, #843005 100%);
 }
 
 .brand-gradient {
-  background: linear-gradient(180deg, #D81C10 0%, #E62E12 35%, #F45A16 70%, #FF6A1A 100%);
+  background: linear-gradient(180deg, #000 0%, #080503 52%, #542000 82%, #A74300 100%);
 }
 
 .tile-shade {
@@ -100,8 +100,8 @@ body {
   overflow-x: clip;
   min-height: 100vh;
   background:
-    radial-gradient(circle at 8% 8%, rgba(255, 90, 0, .07), transparent 22rem),
-    linear-gradient(180deg, #fff7ef 0, #fff 42rem);
+    radial-gradient(circle at 8% 8%, rgba(211, 98, 16, .10), transparent 22rem),
+    linear-gradient(180deg, #100904 0, #080605 42rem);
 }
 .hero-carousel {
   position: relative;
@@ -164,7 +164,7 @@ body {
 }
 .category-sidebar-heading span { display: none; }
 .category-sidebar-heading h2 {
-  color: #002653;
+  color: #F8F1E8;
   font-size: 1.05rem;
   font-weight: 900;
 }
@@ -201,7 +201,7 @@ body {
   display: block;
   margin-top: .45rem;
   overflow: hidden;
-  color: #002653;
+  color: #F8F1E8;
   font-size: .72rem;
   font-weight: 800;
   line-height: 1.1;
@@ -242,7 +242,7 @@ body {
   border-radius: 9999px;
   background: #fff;
   padding: .65rem .85rem;
-  color: #002653;
+  color: #F8F1E8;
   font-size: 1.05rem;
   font-weight: 900;
 }
@@ -323,7 +323,7 @@ body {
     overflow: visible;
     border: 1px solid rgba(255, 90, 0, .14);
     border-radius: 1.5rem;
-    background: #fff;
+    background: #15110E;
     padding: 1rem;
     box-shadow: 0 10px 30px rgba(0, 38, 83, .07);
   }
@@ -337,7 +337,7 @@ body {
   }
   .category-sidebar-heading h2 {
     margin-top: .15rem;
-    color: #002653;
+    color: #F8F1E8;
     font-size: 1.1rem;
     font-weight: 900;
   }
@@ -384,4 +384,42 @@ body {
 }
 @media (prefers-reduced-motion: reduce) {
   .hero-carousel article[aria-hidden="false"] img { animation: none; }
+}
+
+/* Shared dark surfaces and readable content for the black-and-orange theme. */
+@layer base {
+  *, ::before, ::after { border-color: #443023; }
+  input, select, textarea { accent-color: #f58a2b; }
+  input::placeholder, textarea::placeholder { color: #a99c90; }
+}
+
+@layer utilities {
+  .bg-white { background-color: #15110e; }
+  .bg-white\/95 { background-color: rgb(21 17 14 / .95); }
+  .bg-white\/90 { background-color: rgb(21 17 14 / .90); }
+  .bg-brand-ink { background-color: #32180a; }
+  .bg-brand-orange.text-white { color: #1b0d04; }
+  .text-brand-deep { color: #ffb36c; }
+  .bg-orange-50 { background-color: #2b190e; }
+  .bg-orange-100 { background-color: #44240f; }
+  .bg-orange-200 { background-color: #693813; }
+  .hover\:bg-orange-50:hover { background-color: #2b190e; }
+  .bg-neutral-50 { background-color: #1c1713; }
+  .bg-neutral-100 { background-color: #241d17; }
+  .bg-neutral-200 { background-color: #382c22; }
+  .text-neutral-400 { color: #ac9f93; }
+  .text-neutral-500, .text-slate-500 { color: #baada0; }
+  .text-neutral-600, .text-slate-600 { color: #cbbeb1; }
+  .text-neutral-700, .text-slate-700 { color: #dfd3c6; }
+  .text-neutral-800 { color: #f0e5d9; }
+  .border-orange-100, .border-orange-200 { border-color: #55321b; }
+  .border-neutral-100, .border-neutral-200 { border-color: #403126; }
+  .bg-red-50, .bg-red-100 { background-color: #391817; }
+  .text-red-600, .text-red-700 { color: #ff978b; }
+  .bg-green-50, .bg-green-100 { background-color: #142c1d; }
+  .text-green-600, .text-green-700, .text-green-800 { color: #90dfa8; }
+  .bg-amber-50, .bg-amber-100 { background-color: #362509; }
+  .text-amber-700, .text-amber-800 { color: #ffd18a; }
+  .bg-blue-50, .bg-blue-100 { background-color: #172c3b; }
+  .text-blue-700, .text-blue-800 { color: #9dcfff; }
 }

@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import './globals.css';
 import './storefront-fixes.css';
+import './theme.css';
 import { Footer, Header } from '@/components/Site';
 import { CartFeedback } from '@/components/CartFeedback';
 import { AgeGate } from '@/components/AgeGate';
