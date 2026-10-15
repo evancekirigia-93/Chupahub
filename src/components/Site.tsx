@@ -46,7 +46,38 @@ export function Header({ content = {}, products = [] }: { content?: SiteContent;
 
 export function Footer({ content = {}, products = [] }: { content?: SiteContent; products?: DbProduct[] }) {
   const socialLinks = [['Instagram', content.instagram_url], ['Facebook', content.facebook_url], ['TikTok', content.tiktok_url], ['WhatsApp', content.whatsapp_url]].filter(([, url]) => Boolean(url));
-  return <footer className="brand-gradient mt-16 text-left text-white"><div className="w-full px-3 py-8 sm:px-5"><section><BrandLogo footer src={content.logo_url} /><p className="mt-4 max-w-sm text-sm leading-6 text-white/75">{content.footer_text || 'Premium drinks delivered responsibly across Nairobi.'}</p>{socialLinks.length > 0 && <div className="mt-5 flex flex-wrap gap-3">{socialLinks.map(([name,url]) => <a key={name} href={url} target="_blank" rel="noreferrer" className="rounded-full border border-white/20 px-3 py-1.5 text-sm font-bold hover:border-brand-orange hover:text-brand-orange">{name}</a>)}</div>}</section><div className="mt-10 grid gap-10 sm:grid-cols-2 lg:grid-cols-3"><nav aria-label="Shop"><h2 className="font-black text-brand-ink">{content.footer_shop_title || 'Shop'}</h2><div className="mt-4 grid gap-3 text-sm text-white/75"><Link href="/category/all">All products</Link><Link href="/category/wine">Wines</Link><Link href="/category/whisky">Whisky</Link><Link href="/collections/new-arrivals">New arrivals</Link></div></nav><nav aria-label="Customer help"><h2 className="font-black text-brand-ink">{content.footer_help_title || 'Customer care'}</h2><div className="mt-4 grid gap-3 text-sm text-white/75"><Link href="/about">About Chupa Hub</Link><Link href="/contact">Contact</Link><Link href="/privacy">Privacy</Link><Link href="/terms">Terms</Link></div></nav><section><h2 className="font-black text-brand-ink">{content.footer_contact_title || 'Contact us'}</h2><div className="mt-4 space-y-3 text-sm text-white/75">{content.contact_phone && <a className="block" href={`tel:${content.contact_phone}`}>{content.contact_phone}</a>}{content.contact_email && <a className="block break-all" href={`mailto:${content.contact_email}`}>{content.contact_email}</a>}<p>Fast, responsible delivery · 18+ only</p></div></section></div></div><div className="border-t border-white/10 px-3 py-5 text-left text-xs text-white/55">{content.copyright_text || `© ${new Date().getFullYear()} Chupa Hub. Drink responsibly.`}</div></footer>;
+  return <footer className="site-footer brand-gradient mt-10 text-white">
+    <div className="mx-auto grid max-w-7xl grid-cols-2 gap-x-6 gap-y-8 px-5 py-9 sm:px-8 lg:grid-cols-[1.5fr_1fr_1fr_1.2fr] lg:gap-10 lg:py-12">
+      <section className="col-span-2 lg:col-span-1">
+        <BrandLogo footer src={content.logo_url}/>
+        <p className="mt-3 max-w-sm text-sm leading-6 text-white/70">{content.footer_text || 'Premium drinks delivered responsibly across Nairobi.'}</p>
+        {socialLinks.length > 0 && <div className="mt-4 flex flex-wrap gap-2">{socialLinks.map(([name,url]) => <a key={name} href={url} target="_blank" rel="noreferrer" className="rounded-lg border border-white/15 px-3 py-2 text-xs font-semibold transition hover:border-brand-orange hover:text-brand-orange">{name}</a>)}</div>}
+      </section>
+      <nav aria-label="Shop">
+        <h2 className="text-xs font-bold uppercase tracking-[.14em]">{content.footer_shop_title || 'Shop'}</h2>
+        <div className="mt-4 grid gap-3 text-sm text-white/75"><Link href="/category/all">All products</Link><Link href="/category/wine">Wines</Link><Link href="/category/whisky">Whisky</Link><Link href="/collections/new-arrivals">New arrivals</Link></div>
+      </nav>
+      <nav aria-label="Customer help">
+        <h2 className="text-xs font-bold uppercase tracking-[.14em]">{content.footer_help_title || 'Customer care'}</h2>
+        <div className="mt-4 grid gap-3 text-sm text-white/75"><Link href="/about">About Chupa Hub</Link><Link href="/contact">Contact</Link><Link href="/track-order">Track your order</Link><Link href="/faq">FAQs</Link></div>
+      </nav>
+      <section className="col-span-2 border-t border-white/10 pt-6 lg:col-span-1 lg:border-0 lg:pt-0">
+        <h2 className="text-xs font-bold uppercase tracking-[.14em]">{content.footer_contact_title || 'Contact us'}</h2>
+        <div className="mt-4 space-y-3 text-sm text-white/75">
+          {content.contact_phone && <a className="block w-fit" href={`tel:${content.contact_phone}`}>{content.contact_phone}</a>}
+          {content.contact_email && <a className="block w-fit break-all" href={`mailto:${content.contact_email}`}>{content.contact_email}</a>}
+          <p className="flex items-center gap-2"><MapPinIcon size={15} aria-hidden="true" className="shrink-0 text-brand-orange"/>Nairobi, Kenya</p>
+          <p className="text-xs leading-5 text-white/60">Drink responsibly. Alcohol is for adults aged 18 and over.</p>
+        </div>
+      </section>
+    </div>
+    <div className="border-t border-white/10">
+      <div className="mx-auto flex max-w-7xl flex-col gap-3 px-5 py-4 text-xs text-white/60 sm:flex-row sm:items-center sm:justify-between sm:px-8">
+        <p>{content.copyright_text || `© ${new Date().getFullYear()} Chupa Hub. All rights reserved.`}</p>
+        <div className="flex items-center gap-5"><Link href="/privacy">Privacy</Link><Link href="/terms">Terms</Link><span className="rounded-md border border-orange-400/40 px-2 py-1 font-bold text-orange-300">18+</span></div>
+      </div>
+    </div>
+  </footer>;
 }
 
 export function Journal({ content = {} }: { content?: SiteContent }) {

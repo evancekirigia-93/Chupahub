@@ -3,7 +3,8 @@ header.brand-gradient {
   background: linear-gradient(180deg, #000 0%, #080603 52%, #6b3a00 82%, #b85c00 100%);
 }
 footer.brand-gradient {
-  background: linear-gradient(180deg, #080603 0%, #321d00 65%, #b85c00 100%);
+  background: #100d0a;
+  border-top: 2px solid #f58a2b;
 }
 header.brand-gradient .text-brand-orange,
 footer.brand-gradient .text-brand-orange,
@@ -22,3 +23,7 @@ header.brand-gradient .store-search {
 }
 header.brand-gradient .store-search::placeholder { color: #7a7068; }
 header.brand-gradient .store-search:focus { border-color: #f58a2b; }
+
+footer.site-footer a { transition: color .18s ease, border-color .18s ease; }
+footer.site-footer a:hover { color: #f9a653; }
+footer.site-footer a:focus-visible { outline: 2px solid #f58a2b; outline-offset: 4px; border-radius: 3px; }
