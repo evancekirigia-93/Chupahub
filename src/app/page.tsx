@@ -20,14 +20,6 @@ export default async function Home() {
   const [categories, banners, products, promotions, content, configuredSections] = await Promise.all([
     getCategories(), getBanners(), getProducts(), getPromotions(), getSiteContent(), getHomepageSections(),
   ]);
-  const martellProduct = products.find(product => /martell/i.test(product.name) && /vsop|v\.s\.o\.p/i.test(product.name));
-  const heroBanners = [{
-    id: 'martell-vsop-promotion',
-    title: 'Martell VSOP 1 Litre — 30% off at Chupa Hub',
-    image_url: '/banners/martell-vsop-30-off.webp',
-    mobile_image_url: '/banners/martell-vsop-30-off-mobile.webp',
-    button_url: martellProduct ? `/product/${martellProduct.slug}` : '/search?q=Martell',
-  }, ...banners];
   const topSellers = products.filter((product) => product.is_top_seller);
   const arrivals = products.filter((product) => product.is_new_arrival).sort((a, b) => Date.parse(b.updated_at || '') - Date.parse(a.updated_at || ''));
   const featured = products.filter((product) => product.is_featured);
@@ -54,7 +46,7 @@ export default async function Home() {
   return <main className="storefront-home">
     <section className={`hero-shopping-layout mx-auto${partyOffer ? ' has-party-offer' : ''}`}>
       <CategoryGrid categories={rootCategories} />
-      <HeroCarousel banners={heroBanners} />
+      <HeroCarousel banners={banners} />
       {partyOffer && <Link href={promotionHref(partyOffer)} className="party-offer-panel orange-gradient text-white shadow-orange">
         <div className="party-offer-copy">
           <p className="party-offer-badge">{partyOffer.badge_text || partyOffer.code || 'Party Offer'}</p>
