@@ -48,7 +48,7 @@ export default async function AccountPage() {
   const name = customer.full_name || googleName;
   const phone = customer.phone || googlePhone;
   const [ordersResult,addressesResult,rewardResult]=await Promise.all([
-    supabase.from('orders').select('id,order_number,created_at,total,discount_total,delivery_fee,payment_status,status,rider_name,delivered_at,tracking_url,order_items(id,product_id,variant_id,product_name,quantity,unit_price,line_total,products(name,categories(name)))').eq('customer_id',customer.id).order('created_at',{ascending:false}),
+    supabase.from('orders').select('id,order_number,created_at,total,discount_total,delivery_fee,payment_status,status,rider_name,delivered_at,tracking_url,order_items!order_items_order_id_fkey(id,product_id,variant_id,product_name,quantity,unit_price,line_total,products(name,categories(name)))').eq('customer_id',customer.id).order('created_at',{ascending:false}),
     supabase.from('delivery_locations').select('id,label,address,apartment,building,delivery_instructions,is_default').eq('customer_id',customer.id).order('is_default',{ascending:false}),
     supabase.from('reward_accounts').select('id,points_balance,lifetime_points,points_redeemed').eq('customer_id',customer.id).maybeSingle(),
   ]);

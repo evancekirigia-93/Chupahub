@@ -38,14 +38,14 @@ export default function OrdersPage() {
     if (!session.session) { setError('Sign in as an administrator to view orders.'); setLoading(false); setRefreshing(false); return; }
     const { data: admin } = await supabase.rpc('current_admin');
     if (!admin) { setError('Administrator access required.'); setLoading(false); setRefreshing(false); return; }
-    const { data, error: requestError } = await supabase.from('orders').select('id,order_number,created_at,updated_at,customer_name,customer_phone,delivery_address,payment_method,payment_status,delivery_fee,total,status,delivery_location_verified,order_items(count)').order('created_at', { ascending: false }).limit(250);
+    const { data, error: requestError } = await supabase.from('orders').select('id,order_number,created_at,updated_at,customer_name,customer_phone,delivery_address,payment_method,payment_status,delivery_fee,total,status,delivery_location_verified,order_items!order_items_order_id_fkey(count)').order('created_at', { ascending: false }).limit(250);
     if (requestError) setError(requestError.message); else { setOrders((data || []) as Order[]); setError(''); setLastRefreshed(new Date()); }
     setLoading(false); setRefreshing(false);
   }, [supabase]);
 
   const fetchOrder = useCallback(async (id: string) => {
     if (!supabase) return null;
-    const { data } = await supabase.from('orders').select('id,order_number,created_at,updated_at,customer_name,customer_phone,delivery_address,payment_method,payment_status,delivery_fee,total,status,delivery_location_verified,order_items(count)').eq('id', id).maybeSingle();
+    const { data } = await supabase.from('orders').select('id,order_number,created_at,updated_at,customer_name,customer_phone,delivery_address,payment_method,payment_status,delivery_fee,total,status,delivery_location_verified,order_items!order_items_order_id_fkey(count)').eq('id', id).maybeSingle();
     return data as Order | null;
   }, [supabase]);
 
