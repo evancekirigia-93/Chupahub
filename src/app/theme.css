@@ -1,9 +1,9 @@
 /* Reference palette is intentionally limited to site chrome. */
 header.brand-gradient {
-  background: linear-gradient(180deg, #000 0%, #080503 52%, #542000 82%, #a74300 100%);
+  background: linear-gradient(180deg, #000 0%, #080603 52%, #6b3a00 82%, #b85c00 100%);
 }
 footer.brand-gradient {
-  background: linear-gradient(180deg, #080503, #291104);
+  background: linear-gradient(180deg, #080603 0%, #321d00 65%, #b85c00 100%);
 }
 header.brand-gradient .text-brand-orange,
 footer.brand-gradient .text-brand-orange,
