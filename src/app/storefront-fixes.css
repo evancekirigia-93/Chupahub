@@ -114,10 +114,9 @@
     will-change: transform;
   }
   .hero-shopping-layout .party-offer-panel:hover { animation-play-state: paused; }
-  /* Pull the first homepage collection (e.g. Wines We Love) closer to the hero/party strip. */
-  .storefront-home > .product-rail:first-of-type {
-    margin-top: -.35rem !important;
-    padding-top: 0 !important;
+  /* The hero is also a section, so :first-of-type cannot match this rail. */
+  .storefront-home > .hero-shopping-layout + .product-rail {
+    padding-top: .5rem;
   }
 }
 

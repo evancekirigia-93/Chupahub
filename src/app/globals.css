@@ -53,11 +53,11 @@ body {
 .product-rail-grid {
   display: flex;
   align-items: stretch;
-  gap: .85rem;
+  gap: .5rem;
   width: 100%;
   overflow-x: auto;
   overflow-y: hidden;
-  padding: .15rem .1rem .75rem;
+  padding: .15rem .1rem .25rem;
   scroll-behavior: smooth;
   scroll-snap-type: x mandatory;
   overscroll-behavior-x: contain;
@@ -66,18 +66,18 @@ body {
 }
 .product-rail-grid::-webkit-scrollbar { display: none; }
 .product-rail-grid > * {
-  flex: 0 0 calc((100% - 1.3rem) / 2.5);
+  flex: 0 0 calc((100% - .875rem) / 2.75);
   width: auto;
   min-width: 0;
   max-width: none;
   scroll-snap-align: start;
 }
 @media (min-width: 640px) {
-  .product-rail-grid { gap: 1rem; }
-  .product-rail-grid > * { flex-basis: calc((100% - 3rem) / 4.15); }
+  .product-rail-grid { gap: .75rem; }
+  .product-rail-grid > * { flex-basis: calc((100% - 2.625rem) / 4.5); }
 }
 @media (min-width: 1024px) {
-  .product-rail-grid > * { flex-basis: calc((100% - 7rem) / 8); }
+  .product-rail-grid > * { flex-basis: calc((100% - 6rem) / 9); }
 }
 
 @keyframes brand-partnership-scroll {
