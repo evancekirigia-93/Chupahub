@@ -42,7 +42,8 @@ export async function registerMartellBanner(db: SupabaseClient, products: Promot
   if (error) throw new Error(`Could not check the Martell banner registration: ${error.message}`);
   if (data?.value?.registered) return;
   const banner = martellBanner(products);
-  if (!banner.button_url) throw new Error('The Martell banner needs an active Martell VSOP 1 Litre product or 1 Litre variant before it can be saved.');
+  // An optional promotion must not turn a missing catalogue item into an admin error.
+  if (!banner.button_url) return;
   const { error: saveError } = await db.from('homepage_banners').upsert(banner, { onConflict: 'id', ignoreDuplicates: true });
   if (saveError) throw new Error(`Could not save the Martell banner: ${saveError.message}`);
   // A separate public marker lets the storefront respect later hiding/deletion.
