@@ -10,6 +10,7 @@ type CheckoutBody = {
   customer: { name: string; email?: string; phone: string; address: string; latitude: number; longitude: number; placeId?: string; placeName?: string; locationVerified?: boolean; deliveryInstructions?: string; apartment?: string; building?: string };
   paymentMethod: 'mpesa'|'cash'|'pickup';
   giftNote?: string;
+  partyPackageId?: number;
 };
 
 const uuidPattern=/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
@@ -60,8 +61,10 @@ export async function POST(request:NextRequest){
       }
     }
 
+    if (body.partyPackageId != null && (!Number.isInteger(body.partyPackageId) || body.partyPackageId < 1 || body.partyPackageId > 4)) return problem('Invalid party package.',400,requestId);
     const paymentStatus=body.paymentMethod==='mpesa'?'pending_payment':body.paymentMethod==='cash'?'cash_due':'pending';
-    const {data:result,error:orderError}=await db.rpc('create_checkout_order',{
+    const {data:result,error:orderError}=await db.rpc(body.partyPackageId ? 'create_party_checkout_order' : 'create_checkout_order',{
+      ...(body.partyPackageId ? { p_package_id: body.partyPackageId } : {}),
       p_idempotency_key:idempotencyKey,
       p_cart:body.cart,
       p_order:{
@@ -95,7 +98,7 @@ export async function POST(request:NextRequest){
   }catch(cause){
     const message=safeMessage(cause);
     console.error('[checkout]',{requestId,error:message});
-    const conflict=/stock|available|bottle size|product/i.test(message);
+    const conflict=/stock|available|bottle size|product|party package/i.test(message);
     return problem(conflict?message:'Checkout is temporarily unavailable. Please retry once.',conflict?409:500,requestId);
   }
 }

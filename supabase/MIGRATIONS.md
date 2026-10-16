@@ -93,3 +93,23 @@ environment variables from the same Supabase project:
 After redeployment, verify `/`, `/admin`, a product page, and `/checkout` on
 the production URL. Confirm the public URL's project reference matches the
 Supabase project's API URL. Never configure a service-role key in Vercel.
+
+## Party packages (2026-10-16)
+
+Apply `20261016120000_party_packages.sql` after the transactional checkout migration
+and before enabling party-package orders. This adds a separate service-role-only
+`create_party_checkout_order` RPC; ordinary checkout remains unchanged. The RPC
+validates the complete cart against the published `party_packages` setting,
+locks inventory, recalculates prices, applies 10% off the combined amount, and
+sets delivery to zero in the same transaction. Do not grant it to browser roles.
+
+In Admin → Party packages, configure Packages 1–4 with product sizes and quantities,
+then publish and save. Empty/unpublished packages are hidden. Package details
+appear at `/party-offers` through the homepage Party Offer link. Package checkout
+uses `/checkout?party=1` (through `4`) and leaves the customer's ordinary cart intact.
+Free delivery applies within the normal supported delivery area.
+
+Validation: `node scripts/test-party-packages.mjs`, `npm run typecheck`,
+`npm run build`, and `node scripts/check-migrations.mjs`. Production checkout still
+requires the existing server-role/payment configuration. Do not use real payments
+for smoke testing. Verify server-side totals and inventory in a development project.

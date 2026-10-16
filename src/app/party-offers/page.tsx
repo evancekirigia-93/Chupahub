@@ -1,0 +1,31 @@
+import Link from 'next/link';
+import { getPartyPackages, getProducts, money } from '@/lib/supabase';
+import { pricePartyPackage } from '@/lib/party-packages';
+
+export const dynamic = 'force-dynamic';
+export const metadata = { title: 'Party Offers | Four packages, 10% off & free delivery' };
+
+export default async function PartyOffers() {
+  const [packages, products] = await Promise.all([getPartyPackages(), getProducts()]);
+  const published = packages.filter(bundle => bundle.is_active && bundle.items.length);
+  return <main className="mx-auto max-w-6xl px-4 py-8 sm:py-12">
+    <Link href="/" className="text-sm font-bold text-brand-orange">← Back to the shop</Link>
+    <section className="mt-5 overflow-hidden rounded-3xl bg-brand-ink p-7 text-white sm:p-12">
+      <p className="text-xs font-bold uppercase tracking-[.2em] text-orange-300">Good company. Great value.</p>
+      <h1 className="mt-3 text-4xl font-black sm:text-6xl">Your party, sorted.</h1>
+      <p className="mt-4 max-w-xl text-white/80">Handpicked combinations for your next gathering. Every package comes with 10% off the combined product price, plus free delivery.</p>
+      <div className="mt-6 flex flex-wrap gap-3 text-sm font-bold"><span className="rounded-full bg-white/10 px-4 py-2">10% package saving</span><span className="rounded-full bg-white/10 px-4 py-2">Free delivery in our delivery area</span></div>
+    </section>
+    {!published.length && <p className="mt-8 rounded-2xl bg-white p-8 text-center">Our party packages are being curated. Check back soon.</p>}
+    <div className="mt-8 grid items-start gap-6 lg:grid-cols-2">{published.map(bundle => {
+      const priced = pricePartyPackage(bundle, products);
+      return <article key={bundle.id} className="overflow-hidden rounded-3xl border border-orange-100 bg-white shadow-card">
+        <header className="border-b border-orange-100 bg-orange-50/60 p-6"><p className="text-xs font-black uppercase tracking-widest text-brand-orange">Package {bundle.id} · Save 10%</p><h2 className="mt-2 text-2xl font-black">{bundle.name}</h2><p className="mt-2 text-sm text-slate-600">{bundle.description}</p></header>
+        <ul className="divide-y divide-orange-50 px-6">{priced.items.map(item => <li key={`${item.productId}-${item.variantId || 'base'}`} className="flex items-center gap-4 py-4"><div className="flex h-20 w-20 shrink-0 items-center justify-center rounded-2xl bg-neutral-50">{item.image && <img src={item.image} alt={item.name} className="h-full w-full object-contain p-2"/>}</div><div><Link href={`/product/${products.find(product => product.id === item.productId)?.slug || ''}`} className="font-bold hover:text-brand-orange">{item.name}</Link><p className="mt-1 text-sm text-slate-500">{item.quantity} × {item.size || 'bottle'}</p></div></li>)}</ul>
+        <div className="m-6 rounded-2xl bg-brand-soft p-5"><dl className="space-y-2 text-sm"><div className="flex justify-between"><dt>Combined product price</dt><dd>{money(priced.subtotal)}</dd></div><div className="flex justify-between font-bold text-green-700"><dt>Party saving · 10%</dt><dd>−{money(priced.discount)}</dd></div><div className="flex justify-between"><dt>Delivery</dt><dd className="font-bold text-green-700">FREE</dd></div><div className="flex justify-between border-t border-orange-200 pt-3 text-2xl font-black"><dt>Package total</dt><dd>{money(priced.total)}</dd></div></dl><p className="mt-2 text-right text-xs font-bold text-brand-orange">Plus free delivery</p></div>
+        <div className="px-6 pb-6">{priced.available ? <Link href={`/checkout?party=${bundle.id}`} className="orange-gradient block rounded-xl px-5 py-4 text-center font-black text-white">Choose package {bundle.id} →</Link> : <p className="rounded-xl bg-neutral-100 p-4 text-center font-bold text-neutral-600">Temporarily unavailable</p>}</div>
+      </article>;
+    })}</div>
+    <p className="mt-8 text-center text-sm text-slate-500">For adults 18+ only. Drink responsibly. Delivery is subject to our supported delivery area.</p>
+  </main>;
+}
