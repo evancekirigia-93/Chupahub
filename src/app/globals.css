@@ -361,7 +361,8 @@ body {
     order: 3;
     grid-column: 3;
     grid-row: 1;
-    height: 100%;
+    height: auto;
+    align-self: start;
     min-height: 400px;
     margin: 0;
     border-radius: 1.5rem;
@@ -472,3 +473,9 @@ body {
   transform: scale(1.2);
 }
 .hero-banner-artwork img { z-index: 1; }
+
+.party-offer-panel,
+.party-offer-panel > * {
+  animation: none;
+  transform: none;
+}
