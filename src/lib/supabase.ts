@@ -62,7 +62,8 @@ export async function getBanners(): Promise<DbBanner[]> {
   const now = Date.now();
   return rows.filter((row) =>
     row.id !== 'd1ae5c3e-15a4-4ef3-b966-5c054a49a999' &&
-    !/martell/i.test(`${row.title} ${row.image_url} ${row.mobile_image_url || ''}`) &&
+    !/(?:^|\/)martell-vsop-8999(?:-mobile)?\.webp(?:[?#]|$)/i.test(row.image_url) &&
+    !/(?:^|\/)martell-vsop-8999(?:-mobile)?\.webp(?:[?#]|$)/i.test(row.mobile_image_url || '') &&
     (!row.starts_at || Date.parse(row.starts_at) <= now) &&
     (!row.ends_at || Date.parse(row.ends_at) >= now)
   );
