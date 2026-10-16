@@ -424,10 +424,27 @@ body {
 /* Show the full desktop artwork without clipping its text during the bounce. */
 @keyframes hero-desktop-bounce {
   0%, 100% { transform: translateY(0) scale(.95); }
-  50% { transform: translateY(-6px) scale(.95); }
+  50% { transform: translateY(-1.5%) scale(.95); }
 }
 @media (min-width: 640px) {
-  .hero-carousel-stage > article .hero-banner-artwork img { object-fit: contain; z-index: 1; }
+  .hero-carousel-stage {
+    height: auto;
+    min-height: 0;
+    max-height: none;
+    contain: layout paint;
+  }
+  .hero-carousel-stage > article[aria-hidden="false"] { position: relative; }
+  .hero-carousel-stage > article > a { position: relative; display: block; }
+  .hero-carousel-stage .hero-banner-artwork { display: block; }
+  .hero-carousel-stage > article .hero-banner-artwork img {
+    position: relative;
+    display: block;
+    width: 100%;
+    height: auto;
+    max-height: none;
+    object-fit: contain;
+    z-index: 1;
+  }
   .hero-carousel article[aria-hidden="false"] .hero-banner-artwork img {
     animation-name: hero-desktop-bounce;
   }
