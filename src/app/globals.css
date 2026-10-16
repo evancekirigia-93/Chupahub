@@ -479,3 +479,20 @@ body {
   animation: none;
   transform: none;
 }
+
+/* Desktop images run edge to edge; move the frame rather than shrinking artwork. */
+@keyframes hero-frame-bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+@media (min-width: 640px) {
+  .hero-carousel { animation: hero-frame-bounce 3s ease-in-out infinite; }
+  .hero-carousel article .hero-banner-artwork img,
+  .hero-carousel article[aria-hidden="false"] .hero-banner-artwork img {
+    animation: none;
+    transform: none;
+  }
+}
+@media (min-width: 640px) and (prefers-reduced-motion: reduce) {
+  .hero-carousel { animation: none; }
+}
