@@ -496,3 +496,9 @@ body {
 @media (min-width: 640px) and (prefers-reduced-motion: reduce) {
   .hero-carousel { animation: none; }
 }
+
+/* Slightly larger product images on phones only. */
+@media (max-width: 639px) {
+  .product-rail-grid > * { flex-basis: calc((100% - .75rem) / 2.5); }
+  .store-product-card > div:first-child { aspect-ratio: 1 / 1.08; }
+}
