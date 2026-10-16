@@ -420,3 +420,15 @@ body {
 @media (prefers-reduced-motion: reduce) {
   .hero-carousel article[aria-hidden="false"] img { animation: none; }
 }
+
+/* Desktop artwork fills the stage; phone images retain their natural proportions. */
+@keyframes hero-desktop-bounce {
+  0%, 100% { transform: translateY(0) scale(1.04); }
+  50% { transform: translateY(-6px) scale(1.04); }
+}
+@media (min-width: 640px) {
+  .hero-carousel-stage > article img { object-fit: cover; }
+  .hero-carousel article[aria-hidden="false"] img {
+    animation-name: hero-desktop-bounce;
+  }
+}
