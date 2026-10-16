@@ -23,16 +23,15 @@ export default async function PartyOffers() {
         <header className="border-b border-orange-100 bg-orange-50/60 p-6"><p className="text-xs font-black uppercase tracking-widest text-brand-orange">Package {bundle.id} · Save 10%</p><h2 className="mt-2 text-2xl font-black">{bundle.name}</h2><p className="mt-2 text-sm text-slate-600">{bundle.description}</p></header>
         <section className="flex-1 px-4 pb-2 pt-5 sm:px-6" aria-label={`Products in ${bundle.name}`}>
           <div className="mb-4 flex items-center justify-between gap-3"><h3 className="text-sm font-black text-brand-ink">Inside your package</h3><span className="text-xs text-slate-500">{priced.items.reduce((total, item) => total + item.quantity, 0)} items included</span></div>
-          <ul className="grid grid-cols-2 gap-3 sm:gap-4">{priced.items.map(item => {
+          <ul className="grid grid-cols-1 gap-x-4 gap-y-2 sm:grid-cols-2">{priced.items.map(item => {
             const product = products.find(product => product.id === item.productId);
             const href = `/product/${product?.slug || ''}${item.variantId ? `?variant=${encodeURIComponent(item.variantId)}` : ''}`;
             return <li key={`${item.productId}-${item.variantId || 'base'}`} className="min-w-0">
-              <Link href={href} className="group flex h-full flex-col overflow-hidden rounded-2xl border border-neutral-100 bg-white transition hover:border-orange-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand-orange">
-                <div className="relative flex h-36 items-center justify-center bg-[#faf9f7] p-4 sm:h-44">
-                  {item.image ? <img src={item.image} alt={item.name} loading="lazy" className="h-full w-full object-contain transition-transform duration-300 motion-safe:group-hover:scale-105"/> : <span className="text-center text-xs text-slate-400">Image coming soon</span>}
-                  <span className="absolute right-2 top-2 rounded-full border border-orange-100 bg-white px-2.5 py-1 text-xs font-black text-brand-ink">×{item.quantity}</span>
+              <Link href={href} className="group flex h-full items-center gap-3 rounded-lg bg-white py-2 focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand-orange">
+                <div className="flex h-20 w-12 shrink-0 items-center justify-center bg-white">
+                  {item.image ? <img src={item.image} alt={item.name} loading="lazy" className="h-full w-full object-contain"/> : <span className="text-center text-xs text-slate-400">Image coming soon</span>}
                 </div>
-                <div className="flex flex-1 flex-col p-3 sm:p-4"><h4 className="min-h-[2.75rem] break-words text-sm font-bold leading-snug text-brand-ink group-hover:text-brand-orange">{item.name}</h4><p className="mt-2 border-t border-neutral-100 pt-2 text-xs font-medium text-slate-500">{item.size || 'Standard bottle'}<span className="mx-1.5 text-slate-300">·</span>{item.quantity} included</p></div>
+                <div className="min-w-0 flex-1"><h4 className="break-words text-sm font-bold leading-snug text-brand-ink group-hover:text-brand-orange">{item.name}</h4><p className="mt-1 text-xs font-medium text-slate-500">{item.size || 'Standard bottle'}<span className="mx-1.5 text-slate-300">·</span>{item.quantity} included</p></div>
               </Link>
             </li>;
           })}</ul>
