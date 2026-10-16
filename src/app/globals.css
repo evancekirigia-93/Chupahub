@@ -412,8 +412,8 @@ body {
 
 /* Gentle motion stays inside the image area so promotional text stays visible. */
 @keyframes hero-gentle-bounce {
-  0%, 100% { transform: translateY(0) scale(.95); }
-  50% { transform: translateY(-6px) scale(.95); }
+  0%, 100% { transform: translateY(0) scale(.98); }
+  50% { transform: translateY(-.75%) scale(.98); }
 }
 .hero-carousel article[aria-hidden="false"] .hero-banner-artwork img {
   animation: hero-gentle-bounce 3s ease-in-out infinite;
