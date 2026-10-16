@@ -432,3 +432,7 @@ body {
     animation-name: hero-desktop-bounce;
   }
 }
+
+@media (max-width: 639px) {
+  .hero-carousel { border-radius: 1.25rem; }
+}
