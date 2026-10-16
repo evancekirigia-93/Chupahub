@@ -64,15 +64,15 @@
   }
   .hero-shopping-layout.has-party-offer {
     grid-template-columns: 250px minmax(0, 1fr) !important;
-    grid-template-rows: var(--hero-panel-height) 58px !important;
+    grid-template-rows: auto 58px !important;
   }
   .hero-shopping-layout .hero-carousel,
   .hero-shopping-layout .hero-carousel-stage {
     grid-column: 2 !important;
     grid-row: 1 !important;
-    height: var(--hero-panel-height) !important;
-    min-height: var(--hero-panel-height) !important;
-    max-height: var(--hero-panel-height) !important;
+    height: auto !important;
+    min-height: 0 !important;
+    max-height: none !important;
   }
   .hero-shopping-layout .category-sidebar {
     grid-column: 1 !important;
@@ -110,8 +110,8 @@
     min-height: 58px !important;
     max-height: 58px !important;
     margin: 0 !important;
-    animation: partyDealCornerBounce 3.2s ease-in-out infinite;
-    will-change: transform;
+    animation: none;
+    transform: none;
   }
   .hero-shopping-layout .party-offer-panel:hover { animation-play-state: paused; }
   /* The hero is also a section, so :first-of-type cannot match this rail. */
@@ -122,7 +122,7 @@
 
 @media (min-width: 1280px) {
   .hero-shopping-layout { --hero-panel-height: 420px; }
-  .hero-shopping-layout.has-party-offer { grid-template-columns: 260px minmax(0, 1fr) !important; grid-template-rows: var(--hero-panel-height) 60px !important; }
+  .hero-shopping-layout.has-party-offer { grid-template-columns: 260px minmax(0, 1fr) !important; grid-template-rows: auto 60px !important; }
   .hero-shopping-layout .category-circle-list { height: 316px; max-height: 316px; grid-auto-rows: 98px; }
   .hero-shopping-layout .category-circle-image { width: 74px !important; height: 74px !important; }
   .hero-shopping-layout .party-offer-panel { width: min(52%, 580px) !important; height: 60px !important; min-height: 60px !important; max-height: 60px !important; }

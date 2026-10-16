@@ -38,7 +38,7 @@ export function HeroCarousel({ banners }: { banners: DbBanner[] }) {
   }} onTouchCancel={() => { touchStart.current = null; swiping.current = false; setPaused(false); }} onClickCapture={event => {
     if (swiping.current) { event.preventDefault(); event.stopPropagation(); swiping.current = false; }
   }} aria-roledescription="carousel" aria-label="Chupa Hub promotions" className="hero-carousel relative mx-auto overflow-hidden bg-neutral-100 shadow-card sm:mt-5 sm:rounded-[2rem]">
-    <div className="hero-carousel-stage relative h-[68vw] min-h-[240px] max-h-[320px] w-full sm:h-[320px] sm:max-h-none lg:h-[400px] xl:h-[420px]">{slides.map((banner,index) => <article key={banner.id} aria-hidden={index !== current} className={`absolute inset-0 transition-opacity duration-700 ${index === current ? 'z-10 opacity-100' : 'pointer-events-none opacity-0'}`}>{banner.button_url?<Link href={banner.button_url} aria-label={banner.title || 'Open promotion'} className="absolute inset-0"><BannerImage banner={banner} priority={index === 0} /></Link>:<BannerImage banner={banner} priority={index === 0} />}</article>)}</div>
+    <div className="hero-carousel-stage relative w-full">{slides.map((banner,index) => <article key={banner.id} aria-hidden={index !== current} className={`absolute inset-0 transition-opacity duration-700 ${index === current ? 'z-10 opacity-100' : 'pointer-events-none opacity-0'}`}>{banner.button_url?<Link href={banner.button_url} aria-label={banner.title || 'Open promotion'} className="absolute inset-0"><BannerImage banner={banner} priority={index === 0} /></Link>:<BannerImage banner={banner} priority={index === 0} />}</article>)}</div>
     {slides.length > 1 && <div className="absolute bottom-3 left-1/2 z-20 flex -translate-x-1/2 gap-2">{slides.map((banner,index) => <button key={banner.id} onClick={() => setCurrent(index)} aria-label={`Show hero image ${index + 1}`} className={`h-2.5 rounded-full shadow transition-all ${index === current ? 'w-7 bg-white' : 'w-2.5 bg-white/60'}`}/>)}</div>}
   </section>;
 }
@@ -52,6 +52,6 @@ function BannerImage({ banner, priority }: { banner: DbBanner; priority: boolean
     </picture>
     <picture className="hero-banner-artwork">
     {banner.mobile_image_url && <source media="(max-width: 639px)" srcSet={banner.mobile_image_url}/>}
-    <img src={banner.image_url} alt={banner.title || 'Chupa Hub promotion'} loading={priority ? 'eager' : 'lazy'} fetchPriority={priority ? 'high' : 'auto'} className="absolute inset-0 h-full w-full object-contain"/>
+    <img src={banner.image_url} alt={banner.title || 'Chupa Hub promotion'} loading={priority ? 'eager' : 'lazy'} fetchPriority={priority ? 'high' : 'auto'} className="block h-auto w-full object-contain"/>
   </picture></>;
 }
