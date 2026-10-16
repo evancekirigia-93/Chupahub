@@ -4,7 +4,6 @@ import { ChevronLeft, ChevronRight } from 'lucide-react';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import type { DbBanner } from '@/lib/supabase';
-import { SmartImage } from '@/components/SmartImage';
 
 export function HeroCarousel({ banners }: { banners: DbBanner[] }) {
   const slides = banners.slice(0, 4);
@@ -25,11 +24,8 @@ export function HeroCarousel({ banners }: { banners: DbBanner[] }) {
 
 
 function BannerImage({ banner, priority }: { banner: DbBanner; priority: boolean }) {
-  if (banner.mobile_image_url) {
-    return <picture>
-      <source media="(max-width: 639px)" srcSet={banner.mobile_image_url}/>
-      <img src={banner.image_url} alt={banner.title || 'Chupa Hub promotion'} loading={priority ? 'eager' : 'lazy'} fetchPriority={priority ? 'high' : 'auto'} className="absolute inset-0 h-full w-full object-contain"/>
-    </picture>;
-  }
-  return <SmartImage src={banner.image_url} alt={banner.title || 'Chupa Hub promotion'} sizes="100vw" priority={priority} quality={92} className="scale-[1.01]"/>;
+  return <picture>
+    {banner.mobile_image_url && <source media="(max-width: 639px)" srcSet={banner.mobile_image_url}/>}
+    <img src={banner.image_url} alt={banner.title || 'Chupa Hub promotion'} loading={priority ? 'eager' : 'lazy'} fetchPriority={priority ? 'high' : 'auto'} className="absolute inset-0 h-full w-full object-contain"/>
+  </picture>;
 }

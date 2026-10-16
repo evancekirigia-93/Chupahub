@@ -1,4 +1,3 @@
-import { martellBanner, MARTELL_BANNER_ID, MARTELL_REGISTRATION_KEY } from './martell-promotion';
 export const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
 export const supabasePublicKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY || '';
 export const hasSupabaseConfig = Boolean(supabaseUrl && supabasePublicKey);
@@ -61,13 +60,12 @@ export async function getBanners(): Promise<DbBanner[]> {
     cache: 'no-store', resource: 'public homepage banners',
   });
   const now = Date.now();
-  const activeRows = rows.filter((row) => (!row.starts_at || Date.parse(row.starts_at) <= now) && (!row.ends_at || Date.parse(row.ends_at) >= now));
-  console.info('[Chupa Hub banners] Supabase synchronization complete', { project: getSupabaseProjectRef(), fetched: rows.length, visible: activeRows.length });
-  const registration = await supabaseFetch<{ value: { registered?: boolean } }>(`store_settings?select=value&key=eq.${MARTELL_REGISTRATION_KEY}&is_public=eq.true&limit=1`, { cache: 'no-store', resource: 'Martell banner registration' });
-  if (registration[0]?.value?.registered) return activeRows;
-  // Keep the promotion visible until an authenticated admin registers it.
-  if (rows.some(row => row.id === MARTELL_BANNER_ID)) return activeRows;
-  return [martellBanner(await getProducts()), ...activeRows];
+  return rows.filter((row) =>
+    row.id !== 'd1ae5c3e-15a4-4ef3-b966-5c054a49a999' &&
+    !/martell/i.test(`${row.title} ${row.image_url} ${row.mobile_image_url || ''}`) &&
+    (!row.starts_at || Date.parse(row.starts_at) <= now) &&
+    (!row.ends_at || Date.parse(row.ends_at) >= now)
+  );
 }
 
 export async function getPromotions(): Promise<DbPromotion[]> {

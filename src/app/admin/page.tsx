@@ -4,7 +4,6 @@ import { FormEvent, useCallback, useEffect, useMemo, useState } from 'react';
 import { ImagePlus, LayoutDashboard, Package, PanelTop, Tag, Truck, LogOut, Save, Eye, Plus, Pencil, Trash2, ClipboardList, Coins } from 'lucide-react';
 import { createBrowserSupabase } from '@/lib/supabase-browser';
 import { processAdminImage } from '@/lib/image-upload';
-import { registerMartellBanner } from '@/lib/martell-promotion';
 import { HomepageProductPicker } from '@/components/admin/HomepageProductPicker';
 import { LiveOrdersNav } from '@/components/admin/LiveOrdersNav';
 import { stableCollectionSlug } from '@/lib/public-urls';
@@ -54,19 +53,7 @@ export default function AdminPage() {
         supabase.from('store_settings').select('value').eq('key', 'site_content').maybeSingle(),
         supabase.from('homepage_product_sections').select('id,heading,category_id,product_ids,use_best_sellers,item_limit,sort_order,is_active').order('sort_order'),
       ]);
-      let bannerRegistrationError: { message: string } | null = null;
-      if (!p.error && !b.error) {
-        try {
-          await registerMartellBanner(supabase, p.data || []);
-          const savedBanners = await supabase.from('homepage_banners').select('id,title,subtitle,image_url,mobile_image_url,button_label,button_url,is_active,sort_order').order('sort_order');
-          if (savedBanners.error) bannerRegistrationError = savedBanners.error;
-          else b.data = savedBanners.data;
-        } catch (cause) {
-          bannerRegistrationError = { message: cause instanceof Error ? cause.message : 'Could not register the Martell banner.' };
-        }
-      }
       const failures = [
-        ['Martell banner', bannerRegistrationError],
         ['products (including categories relationship)', p.error],
         ['categories', c.error],
         ['homepage_banners', b.error],
