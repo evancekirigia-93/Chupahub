@@ -414,11 +414,11 @@ body {
   0%, 100% { transform: translateY(0) scale(.95); }
   50% { transform: translateY(-6px) scale(.95); }
 }
-.hero-carousel article[aria-hidden="false"] img {
+.hero-carousel article[aria-hidden="false"] .hero-banner-artwork img {
   animation: hero-gentle-bounce 3s ease-in-out infinite;
 }
 @media (prefers-reduced-motion: reduce) {
-  .hero-carousel article[aria-hidden="false"] img { animation: none; }
+  .hero-carousel article[aria-hidden="false"] .hero-banner-artwork img { animation: none; }
 }
 
 /* Desktop artwork fills the stage; phone images retain their natural proportions. */
@@ -428,11 +428,32 @@ body {
 }
 @media (min-width: 640px) {
   .hero-carousel-stage > article img { object-fit: cover; }
-  .hero-carousel article[aria-hidden="false"] img {
+  .hero-carousel article[aria-hidden="false"] .hero-banner-artwork img {
     animation-name: hero-desktop-bounce;
   }
 }
 
 @media (max-width: 639px) {
   .hero-carousel { border-radius: 1.25rem; }
+}
+
+.hero-banner-backdrop { display: none; }
+@media (max-width: 639px) {
+  .hero-carousel-stage .hero-banner-backdrop {
+    display: block;
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    pointer-events: none;
+  }
+  .hero-carousel-stage > article .hero-banner-backdrop img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: blur(18px);
+    transform: scale(1.2);
+  }
+  .hero-banner-artwork img { z-index: 1; }
 }

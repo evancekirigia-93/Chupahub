@@ -45,8 +45,13 @@ export function HeroCarousel({ banners }: { banners: DbBanner[] }) {
 
 
 function BannerImage({ banner, priority }: { banner: DbBanner; priority: boolean }) {
-  return <picture>
+  return <>
+    <picture className="hero-banner-backdrop" aria-hidden="true">
+      {banner.mobile_image_url && <source media="(max-width: 639px)" srcSet={banner.mobile_image_url}/>}
+      <img src={banner.image_url} alt="" loading={priority ? 'eager' : 'lazy'}/>
+    </picture>
+    <picture className="hero-banner-artwork">
     {banner.mobile_image_url && <source media="(max-width: 639px)" srcSet={banner.mobile_image_url}/>}
     <img src={banner.image_url} alt={banner.title || 'Chupa Hub promotion'} loading={priority ? 'eager' : 'lazy'} fetchPriority={priority ? 'high' : 'auto'} className="absolute inset-0 h-full w-full object-contain"/>
-  </picture>;
+  </picture></>;
 }
