@@ -28,6 +28,7 @@ jobs:
       - run: npm ci
       - run: npm run typecheck
       - run: npm run test:visitors
+      - run: npm run test:notifications
       - run: npm run build
       - name: Check migration ordering
         run: node scripts/check-migrations.mjs

@@ -43,6 +43,6 @@ export async function PATCH(request:NextRequest,{params}:{params:Promise<{id:str
     p_checked_item_ids:body.checkedItemIds,p_note:body.note||'All dispatch items physically checked by admin.'
   });
   if(error)return responseError(error.message,400);
-  after(()=>processPendingNotifications(5).catch(workerError=>console.error('[notification-worker]',workerError)));
+  after(()=>processPendingNotifications(5,id).catch(workerError=>console.error('[notification-worker]',workerError)));
   return Response.json({ok:true,order:updated});
 }

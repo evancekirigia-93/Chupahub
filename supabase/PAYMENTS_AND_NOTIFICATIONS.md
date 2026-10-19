@@ -42,3 +42,20 @@ No SMS, WhatsApp, or email credentials are included in this repository. Until a 
 ## Google Maps delivery search
 
 Create a browser API key in Google Cloud Console and enable **Maps JavaScript API**, **Places API (New)**, and **Geocoding API**. Set `NEXT_PUBLIC_GOOGLE_MAPS_API_KEY` in Vercel. Restrict the key to HTTP referrers for the exact Chupa Hub production domain, approved Vercel preview domains, and `http://localhost:3000/*` only when developing. Apply API restrictions so the key can call only those three APIs. The key is intentionally browser-visible; its referrer and API restrictions are mandatory. Checkout stores the selected Google Place ID, place name, formatted address, coordinates, and verification state. Manual fallback orders are visibly stored as unverified.
+
+## New-order owner email alerts
+
+New orders notify **evancekirigia@gmail.com**. Apply the pending additive migration `20261019130000_admin_order_email.sql` after auditing the linked project's migration history. Its order-insert trigger queues an `order_new_order_admin` email in the same transaction as the order, including guest orders without email and party-package orders. Existing orders are not backfilled. Products, images, categories, banners and store settings are not modified.
+
+In **Vercel → Project → Settings → Environment Variables**, configure:
+
+- `RESEND_API_KEY`: a valid server-only Resend sending key, entered securely.
+- `EMAIL_FROM`: `Chupa Hub <orders@chupahub.com>`, after verifying `chupahub.com` as a sending domain in Resend. Use only an authorized, verified sender.
+- `EMAIL_PROVIDER=resend` (optional when the key exists).
+- `ADMIN_ORDER_EMAIL=evancekirigia@gmail.com` for the existing admin email connection test. The order trigger's owner recipient is explicitly set to this same address; changing that address requires a follow-up migration.
+- `CRON_SECRET`: a securely generated server-only secret. Vercel uses it to authenticate the notification recovery endpoint.
+- Keep the existing server-side Supabase URL and service-role configuration in place.
+
+Redeploy after saving the variables. Checkout processes the new order's queue immediately after responding, independently of unrelated older notifications. Vercel Cron also invokes `/api/notifications/process` daily at 00:00 UTC (03:00 Nairobi) for recovery; the daily schedule supports Hobby plans. The endpoint rejects requests without the configured bearer secret. Delivery attempts with missing provider configuration remain recoverable after configuration is corrected. Permanent provider failures are recorded rather than reported as sent. Retries use the notification ID as Resend's idempotency key to avoid duplicate delivery during the provider's idempotency window.
+
+Verify production by placing a controlled order, confirming the owner delivery row reaches `sent`, and checking the actual inbox. The existing authenticated admin email test endpoint `/api/admin/email` can verify the provider independently of checkout. Never claim inbox delivery based solely on mocked tests or a queued row. `npm run test:notifications` tests the actual trigger in isolated PostgreSQL and mocks the provider transport and worker; it sends no email and creates no production orders.

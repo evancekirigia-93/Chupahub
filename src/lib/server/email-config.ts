@@ -4,7 +4,7 @@ export function getEmailConfig() {
   const provider = process.env.EMAIL_PROVIDER?.trim().toLowerCase() || (process.env.RESEND_API_KEY?.trim() ? 'resend' : null);
   const apiKey = process.env.RESEND_API_KEY?.trim();
   const from = process.env.EMAIL_FROM?.trim();
-  const adminEmail = process.env.ADMIN_ORDER_EMAIL?.trim();
+  const adminEmail = process.env.ADMIN_ORDER_EMAIL?.trim() || 'evancekirigia@gmail.com';
   const missing = [!apiKey ? 'RESEND_API_KEY' : null, !from ? 'EMAIL_FROM' : null].filter((value): value is string => Boolean(value));
   const configured = provider === 'resend' && missing.length === 0;
   return { provider, apiKey, from, adminEmail, configured, missing, status: (configured ? 'configured' : 'not_configured') as EmailProviderStatus };

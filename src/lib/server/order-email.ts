@@ -61,7 +61,7 @@ export async function sendOrderEmail(db: SupabaseClient, order: EmailOrder, even
     deliveryId = claimed.id;
   }
   const copy = eventCopy[event];
-  const result = await deliverEmail(recipient, copy.subject(order.orderNumber), orderEmailHtml(order, event));
+  const result = await deliverEmail(recipient, copy.subject(order.orderNumber), orderEmailHtml(order, event), `notification-${deliveryId}`);
   const attempts = Number(existing?.attempts || 0) + result.attempts;
   await db.from('notification_deliveries').update({ status: result.status, attempts, provider_message_id: result.reference || null, error_message: result.error || null, sent_at: result.status === 'sent' ? new Date().toISOString() : null }).eq('id', deliveryId);
   const details = { orderId: order.id, event, recipient, status: result.status, attempts, providerReference: result.reference || null, error: result.error || null };

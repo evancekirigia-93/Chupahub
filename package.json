@@ -6,7 +6,8 @@
     "lint": "tsc --noEmit",
     "typecheck": "tsc --noEmit",
     "verify": "npm run typecheck && npm run build",
-    "test:visitors": "node --test scripts/test-visitor-analytics.mjs"
+    "test:visitors": "node --test scripts/test-visitor-analytics.mjs",
+    "test:notifications": "node --test scripts/test-order-notifications.mjs"
   },
   "dependencies": {
     "@googlemaps/js-api-loader": "2.1.1",

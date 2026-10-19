@@ -80,7 +80,7 @@ export async function POST(request:NextRequest){
     });
     if(orderError) throw orderError;
     const order=result as {id:string;order_number:string;checkout_token:string;payment_status:string;total:number;duplicate?:boolean};
-    after(()=>processPendingNotifications(5).catch(error=>console.error('[notification-worker]',{requestId,error:safeMessage(error)})));
+    after(()=>processPendingNotifications(5,order.id).catch(error=>console.error('[notification-worker]',{requestId,error:safeMessage(error)})));
 
     if(body.paymentMethod==='mpesa'&&!order.duplicate){
       const phone=kenyaPhone(body.customer.phone);
