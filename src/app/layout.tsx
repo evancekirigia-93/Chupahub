@@ -1,3 +1,4 @@
+import { VisitorTracker } from '@/components/analytics/VisitorTracker';
 import type { Metadata } from 'next';
 import './globals.css';
 import './storefront-fixes.css';
@@ -61,6 +62,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
     <html lang="en">
       <head />
       <body className="app-shell min-h-screen">
+        <VisitorTracker />
         <AgeGate />
         <Header content={content} products={products} />
         <CartFeedback />
