@@ -1,3 +1,4 @@
+import { GoogleAnalytics } from '@/components/analytics/GoogleAnalytics';
 import { VisitorTracker } from '@/components/analytics/VisitorTracker';
 import type { Metadata } from 'next';
 import './globals.css';
@@ -62,6 +63,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
     <html lang="en">
       <head />
       <body className="app-shell min-h-screen">
+        <GoogleAnalytics />
         <VisitorTracker />
         <AgeGate />
         <Header content={content} products={products} />
