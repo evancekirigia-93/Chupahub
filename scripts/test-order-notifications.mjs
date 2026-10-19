@@ -101,3 +101,38 @@ test('worker targets the new order, recovers unconfigured deliveries, and claims
   await processPendingNotifications(5, 'order-id');
   assert.equal(sends, 1, 'a competing worker cannot send an already-claimed notification');
 });
+
+test('customer email design preserves accurate order details and escapes customer content', async () => {
+  const { orderEmailHtml } = await load('src/lib/server/order-email.ts', { '@/lib/server/resend-email': { deliverEmail() { throw new Error('Template tests must never send email'); } } });
+  const order = {
+    id: 'sample-order', orderNumber: 'CH-1042', customerName: '<script>unsafe</script>',
+    deliveryAddress: 'Westlands & Parklands', paymentMethod: 'mpesa',
+    subtotal: 5000, deliveryFee: 250, total: 4750, estimatedDelivery: 'Delivery estimate will follow',
+    items: [{ name: 'Whisky <Reserve>', quantity: 2, unitPrice: 2500, lineTotal: 5000 }],
+    riderName: 'Sample Rider', riderPhone: '+254700000000',
+  };
+  for (const event of ['placed', 'accepted', 'preparing', 'dispatched', 'delivered', 'cancelled', 'new_order_admin']) {
+    const html = orderEmailHtml(order, event);
+    assert.match(html, /CHUPA/);
+    assert.match(html, /CH-1042/);
+    assert.match(html, /KES 4,750\.00/);
+    assert.match(html, /KES 500\.00/, 'savings reconcile subtotal, delivery and total');
+    assert.match(html, /M-Pesa/);
+    assert.match(html, /Whisky &lt;Reserve&gt;/);
+    assert.match(html, /&lt;script&gt;unsafe&lt;\/script&gt;/);
+    assert.doesNotMatch(html, /<script>/);
+    assert.match(html, /scope="col"/);
+    assert.match(html, /max-width:600px/);
+    assert.match(html, /\[if mso\]/);
+    assert.equal(html.includes('Sample Rider'), event === 'dispatched');
+    assert.equal(html.includes('Delivery estimate will follow'), !['delivered', 'cancelled'].includes(event));
+    assert.ok(Buffer.byteLength(html) < 100_000, 'normal email stays below Gmail clipping threshold');
+    assert.ok(html.includes(event === 'new_order_admin' ? '/admin/orders/sample-order' : 'https://chupahub.com/contact'));
+  }
+  const normal = orderEmailHtml({ ...order, total: 5250 }, 'placed');
+  assert.doesNotMatch(normal, />Savings</);
+  assert.doesNotMatch(normal, /paid|Payment confirmed/i, 'confirmation never implies payment has been received');
+  const pickup = orderEmailHtml({ ...order, paymentMethod: 'pickup', deliveryAddress: 'Store pickup' }, 'placed');
+  assert.match(pickup, /Collection update/);
+  assert.doesNotMatch(pickup, /Delivery estimate will follow/);
+});
