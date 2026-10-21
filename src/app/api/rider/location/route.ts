@@ -16,7 +16,7 @@ export async function GET(request:NextRequest){
   if(!auth)return json({error:'Rider login required'},403);
   const {data,error}=await auth.db.from('delivery_tracking')
     .select('order_id,started_at,finished_at,last_seen_at,orders!inner(order_number,status,delivery_address,delivery_instructions)')
-    .eq('rider_id',auth.rider.user_id).is('finished_at',null);
+    .eq('rider_id',auth.rider.user_id);
   if(error)return json({error:'Unable to load deliveries'},500);
   return json({deliveries:data||[]});
 }
