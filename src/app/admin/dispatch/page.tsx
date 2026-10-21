@@ -1,7 +1,6 @@
 'use client';
 
 import Link from 'next/link';
-import { useSearchParams } from 'next/navigation';
 import { Check, Package, PackageCheck, RefreshCw, Truck } from 'lucide-react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { createBrowserSupabase } from '@/lib/supabase-browser';
@@ -21,7 +20,7 @@ const productImage = (item: DispatchItem) => Array.isArray(item.products) ? item
 
 export default function DispatchPage() {
   const supabase = useMemo(() => createBrowserSupabase(), []);
-  const requestedOrder=useSearchParams().get('order');
+
   const [orders,setOrders] = useState<DispatchOrder[]>([]), [selected,setSelected] = useState('');
   const [checked,setChecked] = useState<Set<string>>(new Set()), [riderName,setRiderName] = useState(''), [riderPhone,setRiderPhone] = useState(''), [riderId,setRiderId] = useState(''), [savedRiders,setSavedRiders] = useState<Rider[]>([]);
   const [loading,setLoading] = useState(true), [busy,setBusy] = useState(false), [error,setError] = useState(''), [notice,setNotice] = useState('');
@@ -50,7 +49,7 @@ export default function DispatchPage() {
   }, [orders, selected]);
 
   const order = orders.find(item => item.id === selected) || orders[0];
-  useEffect(() => { if (!selected && orders[0]) setSelected(orders.find(item=>item.id===requestedOrder)?.id||orders[0].id); }, [orders, selected]);
+  useEffect(() => { if (!selected && orders[0]) setSelected(orders.find(item=>item.id===(typeof window!=='undefined'?new URLSearchParams(window.location.search).get('order'):null))?.id||orders[0].id); }, [orders, selected]);
   const allChecked = Boolean(order?.order_items.length) && order.order_items.every(item => checked.has(item.id));
   const canDispatch = allChecked && riderName.trim().length > 1 && riderPhone.trim().length >= 7 && Boolean(riderId) && !busy;
 
