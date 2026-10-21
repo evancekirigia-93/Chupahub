@@ -75,8 +75,7 @@ export default function RiderPage(){
    {!d.accepted_at&&<button onClick={()=>void tripAction(d.order_id,'accept')} className="mt-3 rounded-xl bg-green-700 px-5 py-3 font-bold text-white">Accept dispatched order</button>}
    {d.accepted_at&&!d.finished_at&&d.orders.status==='delivered'&&<button onClick={()=>void tripAction(d.order_id,'complete')} className="mt-3 rounded-xl bg-green-700 px-5 py-3 font-bold text-white">Complete trip</button>}
    {d.accepted_at&&!d.finished_at&&d.orders.status==='out_for_delivery'&&(active===d.order_id?<button onClick={stop} className="mt-3 rounded-xl bg-red-700 px-5 py-3 font-bold text-white">Stop sharing GPS</button>:
-   <button onClick={()=>start(d.order_id)} className="mt-3 rounded-xl bg-orange-600 px-5 py-3 font-bold text-white">Start GPS sharing</button>}
-  )}</section>)}</div>
+   <button onClick={()=>start(d.order_id)} className="mt-3 rounded-xl bg-orange-600 px-5 py-3 font-bold text-white">Start GPS sharing</button>)}</section>)}</div>
   {!deliveries.length&&!error&&<p className="mt-5">No deliveries assigned yet.</p>}
  </main>;
 }
