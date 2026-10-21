@@ -30,6 +30,15 @@ export async function PATCH(request:NextRequest,{params}:{params:Promise<{id:str
     return Response.json({ok:true,order:updated,paymentLabel:body.paymentStatus==='paid'?'Paid':'Unpaid'});
   }
 
+  if(body.status==='cancelled'){
+    if(['cancelled','rejected','delivered','out_for_delivery','dispatched'].includes(order.status))return responseError('This order cannot be cancelled from Orders. Contact support for dispatched or completed orders.',409);
+    const {data:updated,error}=await admin.db.from('orders').update({status:'cancelled',updated_at:new Date().toISOString()}).eq('id',id).eq('status',order.status).select('id,status').maybeSingle();
+    if(error)return responseError(error.message,400);
+    if(!updated)return responseError('Order changed; refresh and try again.',409);
+    await admin.db.from('audit_log').insert({table_name:'orders',record_id:id,action:'CANCEL_ORDER',old_data:{status:order.status},new_data:{status:'cancelled',note:body.note||'Cancelled by admin'},user_id:admin.userId});
+    return Response.json({ok:true,order:updated});
+  }
+
   if(body.status!=='out_for_delivery')return responseError('Orders can only be marked paid, unpaid, or dispatched from this endpoint.',400);
   if(!Array.isArray(body.checkedItemIds)||!body.checkedItemIds.length)return responseError('Tick every product before dispatching.',400);
 
