@@ -30,3 +30,18 @@ export async function POST(request:NextRequest){
  }
  return respond({ok:true,rider:{user_id:created.user.id,name,phone,email}},201);
 }
+
+export async function PATCH(request:NextRequest){
+ const db=await adminDb(request);if(!db)return respond({error:'Admin access required'},403);
+ const body=await request.json().catch(()=>null) as {user_id?:string;name?:string;phone?:string;active?:boolean}|null;
+ if(!body?.user_id||!(/^[0-9a-f-]{36}$/i.test(body.user_id)))return respond({error:'Valid rider ID required'},400);
+ const changes:Record<string,string|boolean>={};
+ if(body.name!==undefined){const name=body.name.trim();if(name.length<2||name.length>100)return respond({error:'Invalid rider name'},400);changes.name=name;}
+ if(body.phone!==undefined){const phone=body.phone.trim();if(phone.length<7||phone.length>30)return respond({error:'Invalid rider phone'},400);changes.phone=phone;}
+ if(body.active!==undefined){if(typeof body.active!=='boolean')return respond({error:'Invalid active status'},400);changes.active=body.active;}
+ if(!Object.keys(changes).length)return respond({error:'No changes supplied'},400);
+ const {data,error}=await db.from('delivery_riders').update(changes).eq('user_id',body.user_id).select('user_id,name,phone,active').maybeSingle();
+ if(error)return respond({error:'Could not update rider'},500);
+ if(!data)return respond({error:'Rider not found'},404);
+ return respond({ok:true,rider:data});
+}
