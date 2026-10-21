@@ -1,0 +1,54 @@
+'use client';
+import { useEffect,useRef,useState } from 'react';
+import { createBrowserSupabase } from '@/lib/supabase-browser';
+
+type Delivery={order_id:string;last_seen_at:string|null;orders:{order_number:string;status:string;delivery_address:string;delivery_instructions:string|null}};
+export default function RiderPage(){
+ const [deliveries,setDeliveries]=useState<Delivery[]>([]);
+ const [error,setError]=useState(''),[notice,setNotice]=useState('');
+ const [active,setActive]=useState<string|null>(null);
+ const watch=useRef<number|null>(null);
+ const sending=useRef(false);
+ const activeRef=useRef<string|null>(null);
+ const stop=()=>{if(watch.current!==null&&typeof navigator!=='undefined'){navigator.geolocation.clearWatch(watch.current);watch.current=null;}activeRef.current=null;setActive(null);};
+ useEffect(()=>()=>{if(watch.current!==null)navigator.geolocation.clearWatch(watch.current);},[]);
+ async function token(){const db=createBrowserSupabase();const {data}=await db!.auth.getSession();return data.session?.access_token;}
+ async function load(){
+  const access=await token();if(!access){setError('Sign in to Chupahub with your rider account first.');return;}
+  const response=await fetch('/api/rider/location',{headers:{Authorization:`Bearer ${access}`},cache:'no-store'});
+  const result=await response.json();if(!response.ok){setError(result.error||'Unable to load deliveries');return;}
+  setDeliveries(result.deliveries);setError('');
+ }
+ useEffect(()=>{void load();},[]);
+ async function send(orderId:string,position:GeolocationPosition){
+  if(sending.current)return;sending.current=true;
+  try{
+   const access=await token();if(!access){stop();setError('Session expired');return;}
+   const response=await fetch('/api/rider/location',{method:'POST',headers:{'Content-Type':'application/json',Authorization:`Bearer ${access}`},body:JSON.stringify({orderId,latitude:position.coords.latitude,longitude:position.coords.longitude,accuracy:position.coords.accuracy})});
+   if(!response.ok){const data=await response.json();setError(data.error||'GPS update failed');if(response.status===403||response.status===409)stop();}
+   else setNotice(`Location updated at ${new Date().toLocaleTimeString()}`);
+  }catch{setError('Network unavailable; location will retry when GPS reports again.');}
+  finally{sending.current=false;}
+ }
+ function start(id:string){
+  if(!navigator.geolocation){setError('This device does not support GPS');return;}
+  stop();setError('');activeRef.current=id;setActive(id);
+  watch.current=navigator.geolocation.watchPosition(p=>{if(activeRef.current===id)void send(id,p);},
+   e=>setError(`GPS unavailable: ${e.message}`),{enableHighAccuracy:true,maximumAge:0,timeout:20000});
+  setNotice('GPS sharing active while this page remains running. Keep the screen awake for browser tracking.');
+ }
+ return <main className="mx-auto max-w-2xl p-4 sm:p-8"><h1 className="text-3xl font-black">Chupahub Rider</h1>
+  <p className="mt-2 text-neutral-600">Your assigned deliveries. Browser GPS is foreground-only; background tracking requires the Android rider app.</p>
+  {error&&<p role="alert" className="mt-4 rounded-xl bg-red-100 p-3 text-red-800">{error}</p>}
+  {notice&&<p role="status" className="mt-4 rounded-xl bg-green-100 p-3 text-green-800">{notice}</p>}
+  <button onClick={()=>void load()} className="mt-4 rounded-xl border px-4 py-2">Refresh deliveries</button>
+  <div className="mt-4 space-y-4">{deliveries.map(d=><section key={d.order_id} className="rounded-2xl border bg-white p-5">
+   <h2 className="text-xl font-bold">#{d.orders.order_number}</h2><p>{d.orders.delivery_address}</p>
+   {d.orders.delivery_instructions&&<p className="text-sm text-neutral-500">{d.orders.delivery_instructions}</p>}
+   <p className="mt-2 text-sm">Last GPS update: {d.last_seen_at?new Date(d.last_seen_at).toLocaleString():'Not started'}</p>
+   {active===d.order_id?<button onClick={stop} className="mt-3 rounded-xl bg-red-700 px-5 py-3 font-bold text-white">Stop sharing GPS</button>:
+   <button onClick={()=>start(d.order_id)} className="mt-3 rounded-xl bg-orange-600 px-5 py-3 font-bold text-white">Start GPS sharing</button>}
+  </section>)}</div>
+  {!deliveries.length&&!error&&<p className="mt-5">No deliveries assigned yet.</p>}
+ </main>;
+}
