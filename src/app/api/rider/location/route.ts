@@ -32,10 +32,12 @@ export async function POST(request:NextRequest){
   if(!assignment)return json({error:'No active assignment'},403);
   const order=assignment.orders as unknown as {status:string};
   if(order.status!=='out_for_delivery')return json({error:'Delivery not active'},409);
+  const {data:accepted}=await auth.db.from('delivery_tracking').select('started_at').eq('order_id',body.orderId).eq('rider_id',auth.rider.user_id).maybeSingle();
+  if(!accepted?.started_at)return json({error:'Accept this delivery before starting GPS tracking'},409);
   if(assignment.last_seen_at&&Date.now()-new Date(assignment.last_seen_at).getTime()<3000)return json({ok:true,throttled:true});
   const {error}=await auth.db.from('delivery_tracking').update({
     latitude:body.latitude,longitude:body.longitude,accuracy_m:body.accuracy,
-    started_at:new Date().toISOString(),last_seen_at:new Date().toISOString(),updated_at:new Date().toISOString()
+    last_seen_at:new Date().toISOString(),updated_at:new Date().toISOString()
   }).eq('order_id',body.orderId).eq('rider_id',auth.rider.user_id).is('finished_at',null);
   if(error)return json({error:'Unable to save location'},500);
   return json({ok:true});
