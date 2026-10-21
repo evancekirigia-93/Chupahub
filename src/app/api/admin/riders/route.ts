@@ -22,7 +22,7 @@ export async function POST(request:NextRequest){
  if(name.length<2||name.length>100||!/^\S+@\S+\.\S+$/.test(email)||phone.length<7||phone.length>30||password.length<12||password.length>128)
   return respond({error:'Provide a name, valid email, phone and password of at least 12 characters.'},400);
  const {data:created,error:createError}=await db.auth.admin.createUser({email,password,email_confirm:true,app_metadata:{chupahub_role:'rider'}});
- if(createError||!created.user)return respond({error:createError?.message||'Could not create rider login'},400);
+ if(createError||!created.user)return respond({error:createError?.message||'Could not create rider login. If this email already has an account, use the link-existing-rider option.'},400);
  const {error}=await db.from('delivery_riders').insert({user_id:created.user.id,name,phone,active:true});
  if(error){
   await db.auth.admin.deleteUser(created.user.id);
@@ -44,4 +44,22 @@ export async function PATCH(request:NextRequest){
  if(error)return respond({error:'Could not update rider'},500);
  if(!data)return respond({error:'Rider not found'},404);
  return respond({ok:true,rider:data});
+}
+
+export async function PUT(request:NextRequest){
+ const db=await adminDb(request);if(!db)return respond({error:'Admin access required'},403);
+ const body=await request.json().catch(()=>null) as {email?:string;name?:string;phone?:string}|null;
+ const email=body?.email?.trim().toLowerCase()||'',name=body?.name?.trim()||'',phone=body?.phone?.trim()||'';
+ if(!/^\S+@\S+\.\S+$/.test(email)||name.length<2||name.length>100||phone.length<7||phone.length>30)return respond({error:'Valid email, name and phone required'},400);
+ let existingId:string|undefined;
+ for(let page=1;page<=20;page++){
+  const {data,error}=await db.auth.admin.listUsers({page,perPage:100});
+  if(error)return respond({error:'Could not verify existing account'},500);
+  existingId=data.users.find(user=>user.email?.toLowerCase()===email)?.id;
+  if(existingId||data.users.length<100)break;
+ }
+ if(!existingId)return respond({error:'No existing login found for this email. Use Add rider to create one.'},404);
+ const {error}=await db.from('delivery_riders').upsert({user_id:existingId,name,phone,active:true},{onConflict:'user_id'});
+ if(error)return respond({error:'Unable to link existing rider account'},500);
+ return respond({ok:true,message:'Existing account linked as an active rider. Their existing password remains unchanged.'});
 }
