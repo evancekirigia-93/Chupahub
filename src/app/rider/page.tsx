@@ -2,7 +2,7 @@
 import { FormEvent,useEffect,useRef,useState } from 'react';
 import { createBrowserSupabase } from '@/lib/supabase-browser';
 
-type Delivery={order_id:string;last_seen_at:string|null;orders:{order_number:string;status:string;delivery_address:string;delivery_instructions:string|null}};
+type Delivery={order_id:string;last_seen_at:string|null;accepted_at:string|null;finished_at:string|null;distance_km:number;rider_pay_kes:number;orders:{order_number:string;status:string;delivery_address:string;delivery_instructions:string|null}};
 export default function RiderPage(){
  const [signedIn,setSignedIn]=useState(false);const [deliveries,setDeliveries]=useState<Delivery[]>([]);
  const [error,setError]=useState(''),[notice,setNotice]=useState('');
@@ -26,6 +26,14 @@ export default function RiderPage(){
   if(!db){setError('Authentication is unavailable');return;}
   const {error}=await db.auth.signInWithPassword({email:String(fd.get('email')),password:String(fd.get('password'))});
   if(error){setError(error.message);return;}await load();
+ }
+ async function tripAction(orderId:string,action:'accept'|'complete'){
+  const access=await token();if(!access){setError('Please sign in again');return;}
+  const response=await fetch('/api/rider/trips',{method:'POST',headers:{Authorization:`Bearer ${access}`,'Content-Type':'application/json'},body:JSON.stringify({orderId,action})});
+  const data=await response.json();
+  if(!response.ok){setError(data.error||'Trip action failed');return;}
+  setNotice(action==='accept'?'Order accepted. Start GPS when you begin riding.':'Trip completed.');
+  await load();
  }
  async function send(orderId:string,position:GeolocationPosition){
   if(sending.current)return;sending.current=true;
@@ -54,13 +62,21 @@ export default function RiderPage(){
    <button className="rounded-xl bg-orange-600 p-3 font-bold text-white">Sign in as rider</button>
   </form>}
   <button onClick={()=>void load()} className="mt-4 rounded-xl border px-4 py-2">Refresh deliveries</button>
+  {signedIn&&<div className="mt-5 grid grid-cols-2 gap-3 rounded-2xl bg-orange-50 p-4">
+   <div><p className="text-sm">Total distance recorded</p><b>{deliveries.reduce((n,d)=>n+Number(d.distance_km||0),0).toFixed(2)} km</b></div>
+   <div><p className="text-sm">Total rider earnings</p><b>KSh {deliveries.reduce((n,d)=>n+Number(d.rider_pay_kes||0),0).toLocaleString()}</b></div>
+  </div>}
   <div className="mt-4 space-y-4">{deliveries.map(d=><section key={d.order_id} className="rounded-2xl border bg-white p-5">
    <h2 className="text-xl font-bold">#{d.orders.order_number}</h2><p>{d.orders.delivery_address}</p>
    {d.orders.delivery_instructions&&<p className="text-sm text-neutral-500">{d.orders.delivery_instructions}</p>}
+   <p className="mt-2 text-sm">Trip distance: {Number(d.distance_km||0).toFixed(2)} km · Rider pay: KSh {Number(d.rider_pay_kes||0).toLocaleString()}</p>
+   <p className="mt-2 text-sm">{d.finished_at?'Completed':d.accepted_at?'Accepted':'Awaiting acceptance'}</p>
    <p className="mt-2 text-sm">Last GPS update: {d.last_seen_at?new Date(d.last_seen_at).toLocaleString():'Not started'}</p>
-   {active===d.order_id?<button onClick={stop} className="mt-3 rounded-xl bg-red-700 px-5 py-3 font-bold text-white">Stop sharing GPS</button>:
+   {!d.accepted_at&&<button onClick={()=>void tripAction(d.order_id,'accept')} className="mt-3 rounded-xl bg-green-700 px-5 py-3 font-bold text-white">Accept dispatched order</button>}
+   {d.accepted_at&&!d.finished_at&&d.orders.status==='delivered'&&<button onClick={()=>void tripAction(d.order_id,'complete')} className="mt-3 rounded-xl bg-green-700 px-5 py-3 font-bold text-white">Complete trip</button>}
+   {d.accepted_at&&!d.finished_at&&d.orders.status==='out_for_delivery'&&(active===d.order_id?<button onClick={stop} className="mt-3 rounded-xl bg-red-700 px-5 py-3 font-bold text-white">Stop sharing GPS</button>:
    <button onClick={()=>start(d.order_id)} className="mt-3 rounded-xl bg-orange-600 px-5 py-3 font-bold text-white">Start GPS sharing</button>}
-  </section>)}</div>
+  )}</section>)}</div>
   {!deliveries.length&&!error&&<p className="mt-5">No deliveries assigned yet.</p>}
  </main>;
 }
