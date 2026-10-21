@@ -21,7 +21,6 @@ export default function AdminRidersPage(){
    form.reset();setNotice('Rider login created. Share the email and temporary password securely, and ask the rider to change it.');await load();
   }catch(e){setError(e instanceof Error?e.message:'Unexpected error');}finally{setBusy(false);}
  }
- async function linkExisting(e:FormEvent<HTMLFormElement>){e.preventDefault();setBusy(true);setError('');setNotice('');try{const form=e.currentTarget;const token=await access();const response=await fetch('/api/admin/riders',{method:'PUT',headers:{Authorization:`Bearer ${token}`,'Content-Type':'application/json'},body:JSON.stringify(Object.fromEntries(new FormData(form)))});const result=await response.json();if(!response.ok)throw new Error(result.error||'Could not link rider');form.reset();setNotice(result.message);await load();}catch(e){setError(e instanceof Error?e.message:'Could not link rider');}finally{setBusy(false);}}
  return <main className="mx-auto max-w-4xl p-4 sm:p-8">
   <Link href="/admin" className="text-orange-600">← Admin dashboard</Link>
   <h1 className="mt-3 text-3xl font-black">Rider accounts</h1>
@@ -35,7 +34,6 @@ export default function AdminRidersPage(){
    <label className="font-bold">Temporary password (4+ characters)<input name="password" required type="password" minLength={4} maxLength={128} autoComplete="new-password" className="mt-1 w-full rounded-xl border p-3 font-normal"/></label>
    <button disabled={busy} className="rounded-xl bg-orange-600 px-5 py-3 font-bold text-white disabled:opacity-50 sm:col-span-2">{busy?'Creating rider…':'Add rider'}</button>
   </form>
-  <form onSubmit={linkExisting} className="mt-5 grid gap-3 rounded-2xl border border-orange-200 bg-white p-5 sm:grid-cols-2"><h2 className="text-xl font-black sm:col-span-2">Already registered? Link existing rider account</h2><p className="text-sm text-neutral-600 sm:col-span-2">Use this when the email already exists in Chupahub login, but the rider is missing from the dispatch list. Their existing password stays unchanged.</p><input name="name" required minLength={2} placeholder="Rider name (e.g. Evans)" className="rounded-xl border p-3"/><input name="phone" required minLength={7} placeholder="Phone" className="rounded-xl border p-3"/><input name="email" required type="email" placeholder="Existing login email" className="rounded-xl border p-3 sm:col-span-2"/><button disabled={busy} className="rounded-xl bg-brand-orange p-3 font-bold text-white sm:col-span-2">Link existing rider</button></form>
   <div className="mt-6 rounded-2xl bg-white p-5 shadow-card"><h2 className="text-xl font-black">Registered riders</h2>
    {riders.map(r=><div key={r.user_id} className="border-b py-3"><b>{r.name}</b> · {r.phone} · {r.active?'Active':'Inactive'}</div>)}
    {!riders.length&&<p className="mt-3 text-neutral-500">No riders registered.</p>}
