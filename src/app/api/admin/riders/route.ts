@@ -19,8 +19,8 @@ export async function POST(request:NextRequest){
  const db=await adminDb(request);if(!db)return respond({error:'Admin access required'},403);
  const body=await request.json().catch(()=>null) as {name?:string;email?:string;phone?:string;password?:string}|null;
  const name=body?.name?.trim()||'',email=body?.email?.trim().toLowerCase()||'',phone=body?.phone?.trim()||'',password=body?.password||'';
- if(name.length<2||name.length>100||!/^\S+@\S+\.\S+$/.test(email)||phone.length<7||phone.length>30||password.length<12||password.length>128)
-  return respond({error:'Provide a name, valid email, phone and password of at least 12 characters.'},400);
+ if(name.length<2||name.length>100||!/^\S+@\S+\.\S+$/.test(email)||phone.length<7||phone.length>30||password.length<4||password.length>128)
+  return respond({error:'Provide a name, valid email, phone and password of at least 4 characters.'},400);
  const {data:created,error:createError}=await db.auth.admin.createUser({email,password,email_confirm:true,app_metadata:{chupahub_role:'rider'}});
  if(createError||!created.user)return respond({error:createError?.message||'Could not create rider login. If this email already has an account, use the link-existing-rider option.'},400);
  const {error}=await db.from('delivery_riders').insert({user_id:created.user.id,name,phone,active:true});
