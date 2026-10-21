@@ -31,7 +31,8 @@ export async function POST(request:NextRequest){
     .eq('order_id',body.orderId).eq('rider_id',auth.rider.user_id).is('finished_at',null).maybeSingle();
   if(!assignment)return json({error:'No active assignment'},403);
   const order=assignment.orders as unknown as {status:string};
-  if(!assignment.accepted_at)return json({error:'Accept this delivery before starting GPS'},409);\n  if(order.status!=='out_for_delivery')return json({error:'Delivery not active'},409);
+  if(!assignment.accepted_at)return json({error:'Accept this delivery before starting GPS'},409); 
+  if(order.status!=='out_for_delivery')return json({error:'Delivery not active'},409);
   if(assignment.last_seen_at&&Date.now()-new Date(assignment.last_seen_at).getTime()<3000)return json({ok:true,throttled:true});
   const lat=Number(body.latitude),lng=Number(body.longitude);
   let distance=Number(assignment.distance_km||0);
@@ -45,6 +46,7 @@ export async function POST(request:NextRequest){
     latitude:body.latitude,longitude:body.longitude,accuracy_m:body.accuracy,
     distance_km:distance,last_seen_at:new Date().toISOString(),updated_at:new Date().toISOString()
   }).eq('order_id',body.orderId).eq('rider_id',auth.rider.user_id).is('finished_at',null);
-  if(error)return json({error:'Unable to save location'},500);\n  if(Number(body.accuracy)<=100)await auth.db.from('delivery_tracking_points').insert({order_id:body.orderId,rider_id:auth.rider.user_id,latitude:lat,longitude:lng,accuracy_m:body.accuracy});
+  if(error)return json({error:'Unable to save location'},500); 
+  if(Number(body.accuracy)<=100)await auth.db.from('delivery_tracking_points').insert({order_id:body.orderId,rider_id:auth.rider.user_id,latitude:lat,longitude:lng,accuracy_m:body.accuracy});
   return json({ok:true});
 }
