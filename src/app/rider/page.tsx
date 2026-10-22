@@ -2,7 +2,7 @@
 import { FormEvent,useEffect,useRef,useState } from 'react';
 import { createBrowserSupabase } from '@/lib/supabase-browser';
 
-type Delivery={order_id:string;started_at:string|null;last_seen_at:string|null;orders:{order_number:string;status:string;delivery_address:string;delivery_instructions:string|null}};
+type Delivery={order_id:string;started_at:string|null;last_seen_at:string|null;orders:{order_number:string;status:string;delivery_address:string;delivery_instructions:string|null;customer_name:string|null;customer_phone:string|null;payment_method:string|null;payment_status:string|null;total:number}};
 export default function RiderPage(){
  const [signedIn,setSignedIn]=useState(false);const [deliveries,setDeliveries]=useState<Delivery[]>([]);
  const [error,setError]=useState(''),[notice,setNotice]=useState('');
@@ -17,9 +17,11 @@ export default function RiderPage(){
   const access=await token();if(!access){setError('Sign in to Chupahub with your rider account first.');return;}
   const response=await fetch('/api/rider/location',{headers:{Authorization:`Bearer ${access}`},cache:'no-store'});
   const result=await response.json();if(!response.ok){setError(result.error||'Unable to load deliveries');return;}
-  setDeliveries(result.deliveries);setSignedIn(true);setError('');
+  setDeliveries((result.deliveries||[]).filter((d:Delivery)=>d.orders.status==='out_for_delivery'));setSignedIn(true);setError('');
  }
  useEffect(()=>{void load();},[]);
+ useEffect(()=>{const timer=setInterval(()=>void load(),30000);return()=>clearInterval(timer);},[]);
+ useEffect(()=>{const accepted=deliveries.find(d=>d.started_at&&d.orders.status==='out_for_delivery');if(accepted&&activeRef.current!==accepted.order_id)start(accepted.order_id);if(!accepted&&activeRef.current)stop();},[deliveries]);
  async function login(e:FormEvent<HTMLFormElement>){
   e.preventDefault();setError('');
   const fd=new FormData(e.currentTarget);const db=createBrowserSupabase();
@@ -33,7 +35,7 @@ export default function RiderPage(){
    const access=await token();if(!access){stop();setError('Session expired');return;}
    const response=await fetch('/api/rider/location',{method:'POST',headers:{'Content-Type':'application/json',Authorization:`Bearer ${access}`},body:JSON.stringify({orderId,latitude:position.coords.latitude,longitude:position.coords.longitude,accuracy:position.coords.accuracy})});
    if(!response.ok){const data=await response.json();setError(data.error||'GPS update failed');if(response.status===403||response.status===409)stop();}
-   else setNotice(`Location updated at ${new Date().toLocaleTimeString()}`);
+   else setError('');
   }catch{setError('Network unavailable; location will retry when GPS reports again.');}
   finally{sending.current=false;}
  }
@@ -44,7 +46,7 @@ export default function RiderPage(){
    const response=await fetch('/api/rider/location',{method:'PATCH',headers:{'Content-Type':'application/json',Authorization:`Bearer ${access}`},body:JSON.stringify({orderId:id})});
    const result=await response.json();if(!response.ok)throw new Error(result.error||'Unable to accept order');
    setDeliveries(current=>current.map(d=>d.order_id===id?{...d,started_at:d.started_at||new Date().toISOString()}:d));
-   setNotice('Order accepted. GPS tracking is starting.');
+   setNotice('Order accepted. Delivery details are ready.');
    start(id);
   }catch(e){setError(e instanceof Error?e.message:'Unable to accept order');}
  }
@@ -53,10 +55,11 @@ export default function RiderPage(){
   stop();setError('');activeRef.current=id;setActive(id);
   watch.current=navigator.geolocation.watchPosition(p=>{if(activeRef.current===id)void send(id,p);},
    e=>setError(`GPS unavailable: ${e.message}`),{enableHighAccuracy:true,maximumAge:0,timeout:20000});
-  setNotice('Order accepted. Location tracking is active while this page remains open.');
+  setNotice('Order accepted.');
  }
+ async function complete(id:string){setError('');const access=await token();if(!access){setError('Session expired');return;}try{const response=await fetch('/api/rider/location',{method:'PUT',headers:{'Content-Type':'application/json',Authorization:`Bearer ${access}`},body:JSON.stringify({orderId:id})});const result=await response.json();if(!response.ok)throw new Error(result.error||'Unable to mark delivered');if(activeRef.current===id)stop();setDeliveries(current=>current.filter(d=>d.order_id!==id));setNotice('Delivery completed.');}catch(e){setError(e instanceof Error?e.message:'Unable to complete delivery');}}
  return <main className="mx-auto max-w-2xl p-4 sm:p-8"><h1 className="text-3xl font-black">Chupahub Rider</h1>
-  <p className="mt-2 text-neutral-600">Your assigned deliveries. Browser GPS is foreground-only; background tracking requires the Android rider app.</p>
+  <p className="mt-2 text-neutral-600">Your assigned customer deliveries.</p>
   {error&&<p role="alert" className="mt-4 rounded-xl bg-red-100 p-3 text-red-800">{error}</p>}
   {notice&&<p role="status" className="mt-4 rounded-xl bg-green-100 p-3 text-green-800">{notice}</p>}
   {!signedIn&&<form onSubmit={login} className="mt-4 grid gap-3 rounded-xl bg-white p-4">
@@ -68,9 +71,9 @@ export default function RiderPage(){
   <div className="mt-4 space-y-4">{deliveries.map(d=><section key={d.order_id} className="rounded-2xl border bg-white p-5">
    <h2 className="text-xl font-bold">#{d.orders.order_number}</h2><p>{d.orders.delivery_address}</p>
    {d.orders.delivery_instructions&&<p className="text-sm text-neutral-500">{d.orders.delivery_instructions}</p>}
-   <p className="mt-2 text-sm">Last GPS update: {d.last_seen_at?new Date(d.last_seen_at).toLocaleString():'Not started'}</p>
+   <p className="mt-3 font-semibold">Customer: {d.orders.customer_name||'Customer'}</p><p>Contact: {d.orders.customer_phone?<a className="text-orange-600 underline" href={`tel:${d.orders.customer_phone}`}>{d.orders.customer_phone}</a>:'Not provided'}</p><p>Payment: {d.orders.payment_method||'Not specified'} · {d.orders.payment_status||'Pending'}</p><p className="font-semibold">Order total: KSh {Number(d.orders.total||0).toLocaleString('en-KE')}</p>
    {!d.started_at?<button onClick={()=>void accept(d.order_id)} className="mt-3 rounded-xl bg-orange-600 px-5 py-3 font-bold text-white">Accept order</button>:
-   <div className="mt-3"><p className="font-semibold text-green-700">Order accepted</p>{active===d.order_id?<button onClick={stop} className="mt-2 rounded-xl border px-5 py-3 font-bold">Pause location tracking</button>:<button onClick={()=>start(d.order_id)} className="mt-2 rounded-xl bg-orange-600 px-5 py-3 font-bold text-white">Resume location tracking</button>}</div>}
+   <div className="mt-3"><p className="font-semibold text-green-700">Order accepted</p><button onClick={()=>void complete(d.order_id)} className="mt-3 rounded-xl bg-green-700 px-5 py-3 font-bold text-white">Mark as Delivered</button></div>}
   </section>)}</div>
   {!deliveries.length&&!error&&<p className="mt-5">No deliveries assigned yet.</p>}
  </main>;
