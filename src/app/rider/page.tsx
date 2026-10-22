@@ -2,7 +2,7 @@
 import { FormEvent,useEffect,useRef,useState } from 'react';
 import { createBrowserSupabase } from '@/lib/supabase-browser';
 
-type Delivery={order_id:string;started_at:string|null;last_seen_at:string|null;finished_at:string|null;delivery_fee:number|null;orders:{order_number:string;status:string;delivery_address:string;delivery_instructions:string|null;customer_name:string|null;customer_phone:string|null;payment_method:string|null;payment_status:string|null;total:number}};
+type Delivery={order_id:string;started_at:string|null;last_seen_at:string|null;finished_at:string|null;rider_earning:number|null;orders:{order_number:string;status:string;delivery_address:string;delivery_instructions:string|null;customer_name:string|null;customer_phone:string|null;payment_method:string|null;payment_status:string|null;total:number}};
 export default function RiderPage(){
  const [signedIn,setSignedIn]=useState(false);const [deliveries,setDeliveries]=useState<Delivery[]>([]);
  const [error,setError]=useState(''),[notice,setNotice]=useState('');
@@ -78,8 +78,8 @@ export default function RiderPage(){
    {!d.started_at?<button onClick={()=>void accept(d.order_id)} className="mt-3 rounded-xl bg-orange-600 px-5 py-3 font-bold text-white">Accept order</button>:
    <div className="mt-3"><p className="font-semibold text-green-700">Order accepted</p><button onClick={()=>void complete(d.order_id)} className="mt-3 rounded-xl bg-green-700 px-5 py-3 font-bold text-white">Mark as Delivered</button></div>}
   </section>)}</div>
-  {!activeDeliveries.length&&<p className="mt-3 text-neutral-600">No active deliveries.</p>}<h2 className="mt-7 text-xl font-bold">Completed deliveries ({completedDeliveries.length})</h2><div className="mt-3 space-y-3">{completedDeliveries.map(d=><section key={d.order_id} className="rounded-xl border bg-white p-4"><p className="font-bold">#{d.orders.order_number}</p><p className="text-sm text-green-700">Delivered {d.finished_at?new Date(d.finished_at).toLocaleString():''}</p><p className="text-sm">Delivery earning: {d.delivery_fee===null?'Not set':`KSh ${Number(d.delivery_fee).toLocaleString('en-KE')}`}</p></section>)}</div>
+  {!activeDeliveries.length&&<p className="mt-3 text-neutral-600">No active deliveries.</p>}<h2 className="mt-7 text-xl font-bold">Completed deliveries ({completedDeliveries.length})</h2><div className="mt-3 space-y-3">{completedDeliveries.map(d=><section key={d.order_id} className="rounded-xl border bg-white p-4"><p className="font-bold">#{d.orders.order_number}</p><p className="text-sm text-green-700">Delivered {d.finished_at?new Date(d.finished_at).toLocaleString():''}</p><p className="text-sm">Delivery earning: {d.rider_earning===null?'Not set':`KSh ${Number(d.rider_earning).toLocaleString('en-KE')}`}</p></section>)}</div>
  </main>;
 }
 
-function computedEarnings(deliveries:Delivery[]):number|null{if(deliveries.some(d=>d.delivery_fee===null))return null;return deliveries.reduce((sum,d)=>sum+Number(d.delivery_fee||0),0);}
+function computedEarnings(deliveries:Delivery[]):number|null{if(deliveries.some(d=>d.rider_earning===null))return null;return deliveries.reduce((sum,d)=>sum+Number(d.rider_earning||0),0);}
