@@ -73,9 +73,10 @@ export async function PUT(request:NextRequest){
  const order=assignment.orders as unknown as {status:string};
  if(order.status!=='out_for_delivery')return json({error:'Order is not active'},409);
  const now=new Date().toISOString();
- const {data:updated,error}=await auth.db.from('orders').update({status:'delivered',updated_at:now}).eq('id',body.orderId).eq('status','out_for_delivery').select('id').maybeSingle();
- if(error)return json({error:'Unable to complete delivery'},500);
+ const {data:updated,error}=await auth.db.from('orders').update({status:'completed',updated_at:now}).eq('id',body.orderId).eq('status','out_for_delivery').select('id').maybeSingle();
+ if(error){console.error('[rider complete order]',error);return json({error:'Unable to complete delivery: '+error.message},500);}
  if(!updated)return json({error:'Order status changed. Refresh deliveries.'},409);
- await auth.db.from('delivery_tracking').update({finished_at:now,updated_at:now}).eq('order_id',body.orderId).eq('rider_id',auth.rider.user_id);
+ const {error:finishError}=await auth.db.from('delivery_tracking').update({finished_at:now,updated_at:now}).eq('order_id',body.orderId).eq('rider_id',auth.rider.user_id);
+ if(finishError){console.error('[rider tracking finish]',finishError);return json({error:'Order marked completed, but rider history could not be updated: '+finishError.message},500);}
  return json({ok:true});
 }
