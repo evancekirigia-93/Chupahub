@@ -59,7 +59,7 @@ export default function RiderPage(){
  }
  async function complete(id:string){setError('');const access=await token();if(!access){setError('Session expired');return;}try{const response=await fetch('/api/rider/location',{method:'PUT',headers:{'Content-Type':'application/json',Authorization:`Bearer ${access}`},body:JSON.stringify({orderId:id})});const result=await response.json();if(!response.ok)throw new Error(result.error||'Unable to mark delivered');if(activeRef.current===id)stop();await load();setNotice('Delivery completed.');}catch(e){setError(e instanceof Error?e.message:'Unable to complete delivery');}}
  const activeDeliveries=deliveries.filter(d=>d.orders.status==='out_for_delivery'&&!d.finished_at);
- const completedDeliveries=deliveries.filter(d=>d.orders.status==='delivered'||!!d.finished_at);
+ const completedDeliveries=deliveries.filter(d=>(d.orders.status==='delivered'||d.orders.status==='completed')||!!d.finished_at);
  const earnings=computedEarnings(completedDeliveries);
  return <main className="min-h-screen bg-neutral-50 px-4 py-8 sm:px-8"><div className="mx-auto max-w-5xl"><div className="rounded-2xl bg-white p-6 shadow-card"><p className="text-sm font-black uppercase tracking-wide text-orange-600">Chupa Hub · Delivery operations</p><h1 className="mt-2 text-3xl font-black text-slate-900">Rider Dashboard</h1>
   <p className="mt-2 text-neutral-600">{signedIn?'Manage your assigned deliveries and earnings.':'Sign in to access your assigned deliveries.'}</p>
