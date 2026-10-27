@@ -44,6 +44,15 @@ export default async function Home() {
   const remainingPromotions = partyOffer ? promotions.filter((promotion) => promotion.id !== partyOffer.id) : promotions;
 
   return <main className="storefront-home">
+    <header className="mx-auto max-w-7xl px-3 py-5 sm:px-5">
+      <h1 className="text-2xl font-black tracking-tight text-brand-ink sm:text-3xl">Wines, Spirits &amp; Alcohol Delivery in Nairobi</h1>
+      <p className="mt-2 text-sm leading-6 text-neutral-600">Shop whisky, wine, gin, vodka and beer online at Chupa Hub. Browse current prices, choose your drinks and enter your delivery address at checkout.</p>
+      <nav aria-label="Popular drinks and delivery information" className="mt-3 flex flex-wrap gap-x-5 gap-y-2 text-sm font-bold text-brand-orange">
+        <Link href="/shop">Shop all drinks</Link>
+        <Link href="/offers">Explore offers</Link>
+        <Link href="/contact">Ask about delivery</Link>
+      </nav>
+    </header>
     <section className={`hero-shopping-layout mx-auto${partyOffer ? ' has-party-offer' : ''}`}>
       <CategoryGrid categories={rootCategories} />
       <HeroCarousel banners={banners} />
