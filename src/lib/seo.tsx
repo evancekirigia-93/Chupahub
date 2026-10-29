@@ -1,6 +1,6 @@
 export const SITE_URL = 'https://chupahub.com';
 export const SITE_NAME = 'ChupaHub';
-export const DEFAULT_DESCRIPTION = 'Order genuine wines, whisky, gin, vodka, beer and other drinks online from ChupaHub. Enjoy fast, reliable alcohol delivery across Nairobi, 24/7.';
+export const DEFAULT_DESCRIPTION = 'Shop wine, whisky, whiskey, tequila and beer online at Chupa Hub. Compare prices in KES and check alcohol delivery options for your Nairobi address at checkout.';
 
 export function absoluteUrl(path = '/') {
   return new URL(path, SITE_URL).toString();
@@ -20,7 +20,7 @@ export function JsonLd({ data }: { data: Record<string, unknown> | Array<Record<
 }
 
 export function businessGraph(socialLinks: string[] = [], logoUrl?: string) {
-  const searchLogo = logoUrl || absoluteUrl('/chupahub-logo.svg');
+  const searchLogo = absoluteUrl(logoUrl || '/chupahub-logo.svg');
   return {
   '@context': 'https://schema.org',
   '@graph': [
@@ -28,6 +28,7 @@ export function businessGraph(socialLinks: string[] = [], logoUrl?: string) {
       '@type': 'Organization',
       '@id': `${SITE_URL}/#organization`,
       name: SITE_NAME,
+      alternateName: 'Chupa Hub',
       url: SITE_URL,
       description: DEFAULT_DESCRIPTION,
       logo: { '@type': 'ImageObject', url: searchLogo, width: 200, height: 320 },
@@ -38,13 +39,13 @@ export function businessGraph(socialLinks: string[] = [], logoUrl?: string) {
       '@type': ['LocalBusiness', 'LiquorStore'],
       '@id': `${SITE_URL}/#localbusiness`,
       name: SITE_NAME,
+      alternateName: 'Chupa Hub',
       url: SITE_URL,
       description: DEFAULT_DESCRIPTION,
       logo: { '@type': 'ImageObject', url: searchLogo, width: 200, height: 320 },
       image: searchLogo,
-      areaServed: { '@type': 'City', name: 'Nairobi' },
+      areaServed: { '@type': 'City', name: 'Nairobi', containedInPlace: { '@type': 'Country', name: 'Kenya' } },
       currenciesAccepted: 'KES',
-      paymentAccepted: 'M-Pesa, Visa, Mastercard, Cash',
       parentOrganization: { '@id': `${SITE_URL}/#organization` },
     },
     {

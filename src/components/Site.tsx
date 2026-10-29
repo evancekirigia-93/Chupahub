@@ -80,47 +80,15 @@ export function Journal({ content = {} }: { content?: SiteContent }) {
 }
 
 export function SeoArticle({ content = {} }: { content?: SiteContent }) {
-  const title = content.article_title || "Chupa Hub Deliveries – Kenya's Online Alcohol & Drinks Delivery Platform";
+  const title = content.article_title || "Buying Wine, Spirits and Beer Online in Nairobi";
   const summary = content.article_summary || 'Discover wines, spirits, beers, champagne and mixers online with convenient Chupa Hub delivery.';
-  const body = content.article_body || `Chupa Hub Deliveries is a fast, convenient online platform for ordering wines, spirits, beers, champagne, whisky, gin, vodka, tequila, rum, ciders, mixers, and other beverages for delivery across Kenya. Whether you're planning a celebration, stocking your home bar, or simply need a quick delivery, Chupa Hub makes ordering drinks online simple and reliable.
+  const body = content.article_body || `Order alcohol online in Nairobi from Chupa Hub. Browse wine, whisky and whiskey, tequila, beer, gin, vodka and mixers, compare listed prices in Kenyan shillings, and check each product's bottle size and availability before adding it to your basket.
 
-If you're familiar with delivery services and retailers such as Chupa Chap, Oaks & Corks, Greenspoon, Quickmart, The Bar KE, or other well-known shops in Kenya, Chupa Hub offers a convenient independent marketplace where you can discover a wide selection of drinks and have them delivered to your location.
+To arrange delivery, enter your address at checkout and review the delivery fee and available payment methods before placing your order. Delivery eligibility depends on your location; contact customer care if you need help confirming an address or a delivery time.
 
-Customers searching for terms such as:
+Choosing drinks: compare red, white and rosé wine; Scotch whisky and bourbon whiskey; blanco and reposado tequila; or local and imported beer. Product descriptions and available sizes help you choose a bottle for your preferences and budget.
 
-• Chupa Chap
-• Oaks & Corks
-• Greenspoon
-• Quickmart
-• The Bar KE
-• online alcohol delivery Kenya
-• online drinks delivery Nairobi
-• liquor delivery near me
-• wine delivery Nairobi
-• whisky delivery Kenya
-• beer delivery
-• champagne delivery
-• gin delivery
-• vodka delivery
-• tequila delivery
-• same-day alcohol delivery
-• drinks delivery
-• buy alcohol online
-• buy wine online Kenya
-• premium liquor store
-• online liquor shop
-• alcohol delivery service
-• drinks delivered to your door
-
-can use Chupa Hub to browse products, compare options, and order quickly from one easy-to-use platform.
-
-Our goal is to make finding and ordering your favorite drinks as easy as ordering food online. Whether you're looking for premium whisky, fine wine, craft beer, champagne, spirits, or mixers, Chupa Hub provides a secure and convenient shopping experience with fast delivery and excellent customer service.
-
-Chupa Hub Deliveries is designed for customers who want a trusted alternative when searching online for alcohol delivery services in Kenya. If you're comparing online liquor stores, wine delivery, beer delivery, or drink delivery services such as Chupa Chap, Oaks & Corks, Greenspoon, Quickmart, or The Bar KE, Chupa Hub is ready to help you find what you need.
-
-Please note that Chupa Hub is an independent platform and is not affiliated with, endorsed by, or operated by Chupa Chap, Oaks & Corks, Greenspoon, Quickmart, The Bar KE, or other third-party brands referenced for comparison. All trademarks remain the property of their respective owners.
-
-Chupa Hub Deliveries promotes responsible drinking and only serves customers who are of legal drinking age.`;
+For questions about an existing order, use the contact page. Only adults aged 18 and over may buy alcohol. Please drink responsibly.`;
   const articles = content.articles?.filter(article => article.is_active !== false && article.title.trim() && article.body.trim()) || [];
   const visibleArticles = articles.length ? articles : [{ id: 'default', title, summary, body, is_active: true }];
   return <section className="mx-auto max-w-4xl space-y-3 px-4 pb-10">{visibleArticles.map(article => <details key={article.id} className="group rounded-2xl border border-orange-100 bg-white px-5 py-4 text-sm shadow-sm"><summary className="cursor-pointer list-none font-black text-brand-ink"><span className="text-brand-orange">Journal</span> · {article.title}<span className="float-right text-brand-orange group-open:hidden">Read article</span><span className="float-right hidden text-brand-orange group-open:inline">Close</span></summary>{article.summary && <p className="mt-2 text-neutral-500">{article.summary}</p>}<article className="mt-4 border-t border-orange-100 pt-4 leading-7 text-neutral-700"><h2 className="text-xl font-black text-brand-ink">{article.title}</h2><p className="mt-3 whitespace-pre-line">{article.body}</p></article></details>)}</section>;

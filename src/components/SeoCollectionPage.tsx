@@ -1,3 +1,4 @@
+import { DeliveryGuide } from '@/components/DeliveryGuide';
 import Link from 'next/link';
 import { Suspense } from 'react';
 import { CategoryCatalog } from '@/components/CategoryCatalog';
@@ -10,12 +11,13 @@ export async function SeoCollectionPage({ page }: { page: SeoPage }) {
   const products = page.categorySlug ? await getProductsByCategory(page.categorySlug) : await getProducts();
   const visible = page.offers ? products.filter(product => effectivePrice(product).active || (product.product_variants || []).some(variant => effectivePrice(variant).active)) : products;
   if (page.categorySlug) {
-    const categoryTitle = page.categorySlug.replaceAll('-', ' ').replace(/\b\w/g, letter => letter.toUpperCase());
+    const categoryTitle = page.heading;
     return <>
       <JsonLd data={[collectionSchema(page, visible.length), breadcrumbSchema([{ name: 'Home', url: '/' }, { name: page.heading, url: page.path }])]} />
       <Suspense fallback={<CatalogLoading title={categoryTitle} count={visible.length}/>}>
         <CategoryCatalog title={categoryTitle} slug={page.categorySlug} products={visible}/>
       </Suspense>
+      <DeliveryGuide path={page.path} />
     </>;
   }
   return <main className="mx-auto max-w-7xl px-4 py-8">
@@ -24,6 +26,7 @@ export async function SeoCollectionPage({ page }: { page: SeoPage }) {
     <header className="rounded-3xl bg-white p-6 shadow-card"><p className="font-bold uppercase tracking-wide text-brand-orange">Shop Chupa Hub</p><h1 className="mt-1 text-4xl font-black text-brand-ink sm:text-5xl">{page.heading}</h1><p className="mt-3 max-w-3xl leading-7 text-neutral-600">{page.description}</p></header>
     <nav aria-label="Drink categories" className="mt-5 flex flex-wrap gap-2">{shopLinks.map(([label, href]) => <Link key={href} href={href} className={`rounded-full border px-4 py-2 text-sm font-bold ${href === page.path ? 'border-brand-orange bg-orange-50 text-brand-deep' : 'border-orange-100 bg-white text-brand-ink'}`}>{label}</Link>)}</nav>
     {visible.length ? <section aria-label={`${page.heading} products`} className="mt-4 grid grid-cols-2 gap-2 sm:grid-cols-3 sm:gap-3 md:grid-cols-5 xl:grid-cols-6">{visible.flatMap(product => { const variants = (product.product_variants || []).filter(variant => variant.is_active !== false); return [<ProductCard key={product.id} p={product}/>, ...variants.slice(1).map(variant => <ProductVariantCard key={variant.id} product={product} variant={variant}/>)]; })}</section> : <p className="mt-6 rounded-2xl bg-white p-6 text-neutral-600">No active products are currently available in this section.</p>}
+    <DeliveryGuide path={page.path} />
   </main>;
 }
 

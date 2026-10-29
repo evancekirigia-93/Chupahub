@@ -27,10 +27,9 @@ const baseMetadata: Metadata = {
     'Whisky Delivery Nairobi',
     'Gin Delivery Nairobi',
     'Beer Delivery Nairobi',
-    'Chupa Chap alternative',
-    'Oaks & Corks alternative',
-    'Greenspoon alternative',
-    'Quickmart alternative',
+    'Tequila Delivery Nairobi',
+    'Whiskey Delivery Nairobi',
+    'Buy Wine Online Nairobi',
   ],
   alternates: { canonical: '/' },
   openGraph: {

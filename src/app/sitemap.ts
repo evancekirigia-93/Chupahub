@@ -5,7 +5,7 @@ import { seoPages } from '@/lib/seo-pages';
 import { categoryCanonicalPath } from '@/lib/public-urls';
 
 export const revalidate = 300;
-const publicPages = ['/', ...Object.values(seoPages).map(page => page.path), '/search', '/collections/top-sellers', '/collections/new-arrivals', '/collections/featured', '/about', '/contact', '/faq', '/track-order', '/privacy', '/terms'];
+const publicPages = ['/', ...Object.values(seoPages).map(page => page.path), '/collections/top-sellers', '/collections/new-arrivals', '/collections/featured', '/about', '/contact', '/faq', '/privacy', '/terms'];
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const [categories, allProducts] = await Promise.all([getCategories(), getProducts()]);
@@ -13,7 +13,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const categoryEntries = [...new Map(categories.map(category => [categoryCanonicalPath(category.slug), category])).entries()];
   const collectionLastModified = (predicate: (product: typeof products[number]) => boolean) => products.filter(predicate).map(product => product.updated_at).filter(Boolean).sort().at(-1);
   return [
-    ...[...new Set(publicPages)].map(path => ({ url: absoluteUrl(path) })),
+    ...[...new Set(publicPages.filter(path => !path.startsWith('/collections/')))].map(path => ({ url: absoluteUrl(path) })),
     ...categoryEntries.filter(([path]) => !publicPages.includes(path)).map(([path, category]) => ({ url: absoluteUrl(path), ...(category.updated_at ? { lastModified: category.updated_at } : {}) })),
     { url: absoluteUrl('/collections/top-sellers'), ...(collectionLastModified(product => Boolean(product.is_top_seller)) ? { lastModified: collectionLastModified(product => Boolean(product.is_top_seller)) } : {}) },
     { url: absoluteUrl('/collections/new-arrivals'), ...(collectionLastModified(product => Boolean(product.is_new_arrival)) ? { lastModified: collectionLastModified(product => Boolean(product.is_new_arrival)) } : {}) },
